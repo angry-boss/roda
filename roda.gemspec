@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email             = ["code@jeremyevans.net"]
   s.homepage          = "http://roda.jeremyevans.net"
   s.license           = "MIT"
-  s.required_ruby_version = ">= 1.9.2"
+  s.required_ruby_version = ">= 2.4"
   s.metadata = {
     'bug_tracker_uri'   => 'https://github.com/jeremyevans/roda/issues',
     'changelog_uri'     => 'http://roda.jeremyevans.net/rdoc/files/CHANGELOG.html',
@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
 
   s.bindir = 'bin'
   s.executables << 'rackup'
-  
+
   s.add_runtime_dependency "rack"
   s.add_development_dependency "rake"
   s.add_development_dependency "minitest", ">= 5.7.0"
