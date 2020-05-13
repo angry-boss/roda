@@ -46,13 +46,35 @@ jobs:
 
   test-ruby-2.5:
     docker:
-      - image: circleci/ruby:2.5.2
+      - image: circleci/ruby:2.5
         # Spawn a process owned by root
         # This works around an issue explained here:
         # https://github.com/circleci/circleci-images/pull/132
         command: sudo /bin/sh
       - image: memcached:1.4
-    steps: *default-steps
+    steps: 
+      - checkout
+
+      # bundler: failed to load command: rubocop (/home/circleci/project/vendor/bundle/ruby/2.5.0/bin/rubocop)
+      - run: gem install rubocop
+      - run: sudo apt-get install lighttpd libfcgi-dev libmemcached-dev
+
+      # Restore bundle cache
+      - type: cache-restore
+        key: roda-{{ checksum "roda.gemspec" }}-{{ checksum "Gemfile" }}
+
+      # Bundle install dependencies
+      - run: bundle install --path vendor/bundle
+
+      # Store bundle cache
+      - type: cache-save
+        key: roda-{{ checksum "roda.gemspec" }}-{{ checksum "Gemfile" }}
+        paths:
+          - vendor/bundle
+
+      - run: rubocop
+
+      - run: bundle exec rake ci
 
   test-ruby-2.6:
     docker:
