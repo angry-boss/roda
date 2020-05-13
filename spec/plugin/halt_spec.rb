@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe "halt plugin" do
@@ -6,7 +8,7 @@ describe "halt plugin" do
       r.halt [200, {}, ['foo']]
     end
 
-    body.must_equal  "foo"
+    body.must_equal "foo"
   end
 
   it "should consider string argument as response body" do
@@ -14,7 +16,7 @@ describe "halt plugin" do
       r.halt "foo"
     end
 
-    body.must_equal  "foo"
+    body.must_equal "foo"
   end
 
   it "should consider integer argument as response status" do
@@ -22,7 +24,7 @@ describe "halt plugin" do
       r.halt 300
     end
 
-    status.must_equal 300 
+    status.must_equal 300
   end
 
   it "should consider other single arguments similar to block bodies" do
@@ -30,11 +32,11 @@ describe "halt plugin" do
       plugin :halt
       plugin :json
       route do |r|
-        r.halt({'a'=>1})
+        r.halt({ 'a' => 1 })
       end
     end
 
-    body.must_equal  '{"a":1}'
+    body.must_equal '{"a":1}'
   end
 
   it "should consider 2 arguments as response status and body" do
@@ -42,7 +44,7 @@ describe "halt plugin" do
       r.halt 300, "foo"
     end
 
-    status.must_equal 300 
+    status.must_equal 300
     body.must_equal "foo"
   end
 
@@ -51,30 +53,30 @@ describe "halt plugin" do
       plugin :halt
       plugin :json
       route do |r|
-        r.halt(300, {'a'=>1})
+        r.halt(300, { 'a' => 1 })
       end
     end
 
-    status.must_equal 300 
-    body.must_equal  '{"a":1}'
+    status.must_equal 300
+    body.must_equal '{"a":1}'
   end
 
   it "should consider 3 arguments as response" do
     app(:halt) do |r|
-      r.halt 300, {'a'=>'b'}, "foo"
+      r.halt 300, { 'a' => 'b' }, "foo"
     end
 
-    status.must_equal 300 
+    status.must_equal 300
     header('a').must_equal 'b'
     body.must_equal "foo"
   end
 
   it "should consider an array as a rack response" do
     app(:halt) do |r|
-      r.halt [300, {'a'=>'b'}, ["foo"]]
+      r.halt [300, { 'a' => 'b' }, ["foo"]]
     end
 
-    status.must_equal 300 
+    status.must_equal 300
     header('a').must_equal 'b'
     body.must_equal "foo"
   end
@@ -84,18 +86,18 @@ describe "halt plugin" do
       plugin :halt
       plugin :json
       route do |r|
-        r.halt(300, {'a'=>'b'}, {'a'=>1})
+        r.halt(300, { 'a' => 'b' }, { 'a' => 1 })
       end
     end
 
-    status.must_equal 300 
+    status.must_equal 300
     header('a').must_equal 'b'
-    body.must_equal  '{"a":1}'
+    body.must_equal '{"a":1}'
   end
 
   it "should raise an error for too many arguments" do
     app(:halt) do |r|
-      r.halt 300, {'a'=>'b'}, "foo", 1
+      r.halt 300, { 'a' => 'b' }, "foo", 1
     end
 
     proc{req}.must_raise(Roda::RodaError)
@@ -111,7 +113,7 @@ describe "halt plugin" do
 
   it "should raise an error for single argument not integer, String, or Array" do
     app(:halt) do |r|
-      r.halt('a'=>'b')
+      r.halt('a' => 'b')
     end
 
     proc{req}.must_raise(Roda::RodaError)

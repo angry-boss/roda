@@ -24,7 +24,7 @@ class Roda
     #     production?  # => false
     #
     #     # Set the environment for the application
-    #     self.environment = :test 
+    #     self.environment = :test
     #     test?        # => true
     #
     #     configure do
@@ -43,7 +43,7 @@ class Roda
       # Set the environment to use for the app.  Default to ENV['RACK_ENV']
       # if no environment is given.  If ENV['RACK_ENV'] is not set and
       # no environment is given, assume the development environment.
-      def self.configure(app, env=ENV["RACK_ENV"])
+      def self.configure(app, env = ENV["RACK_ENV"])
         app.environment = (env || 'development').to_sym
       end
 

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "public plugin" do 
+describe "public plugin" do
   it "adds r.public for serving static files from public folder" do
     app(:bare) do
-      plugin :public, :root=>'spec/views'
+      plugin :public, root: 'spec/views'
 
       route do |r|
         r.public
@@ -23,7 +25,7 @@ describe "public plugin" do
   it "respects the application's :root option" do
     app(:bare) do
       opts[:root] = File.expand_path('../../', __FILE__)
-      plugin :public, :root=>'views'
+      plugin :public, root: 'views'
 
       route do |r|
         r.public
@@ -35,7 +37,7 @@ describe "public plugin" do
 
   it "keeps existing :root option if loaded a second time" do
     app(:bare) do
-      plugin :public, :root=>'spec/views'
+      plugin :public, root: 'spec/views'
       plugin :public
 
       route do |r|
@@ -53,7 +55,7 @@ describe "public plugin" do
 
   it "handles serving gzip files in gzip mode if client supports gzip" do
     app(:bare) do
-      plugin :public, :root=>'spec/views', :gzip=>true
+      plugin :public, root: 'spec/views', gzip: true
 
       route do |r|
         r.public
@@ -66,17 +68,17 @@ describe "public plugin" do
     body('/about.erb').must_equal File.read('spec/views/about.erb')
     header('Content-Encoding', '/about.erb').must_be_nil
 
-    body('/about/_test.erb', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip').must_equal File.binread('spec/views/about/_test.erb.gz')
-    h = req('/about/_test.erb', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip')[1]
+    body('/about/_test.erb', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip').must_equal File.binread('spec/views/about/_test.erb.gz')
+    h = req('/about/_test.erb', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip')[1]
     h['Content-Encoding'].must_equal 'gzip'
     h['Content-Type'].must_equal 'text/plain'
 
-    body('/about/_test.css', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip').must_equal File.binread('spec/views/about/_test.css.gz')
-    h = req('/about/_test.css', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip')[1]
+    body('/about/_test.css', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip').must_equal File.binread('spec/views/about/_test.css.gz')
+    h = req('/about/_test.css', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip')[1]
     h['Content-Encoding'].must_equal 'gzip'
     h['Content-Type'].must_equal 'text/css'
 
-    s, h, b = req('/about/_test.css', 'HTTP_IF_MODIFIED_SINCE'=>h["Last-Modified"], 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip')
+    s, h, b = req('/about/_test.css', 'HTTP_IF_MODIFIED_SINCE' => h["Last-Modified"], 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip')
     s.must_equal 304
     h['Content-Encoding'].must_be_nil
     h['Content-Type'].must_be_nil

@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "run_handler plugin" do 
+describe "run_handler plugin" do
   it "makes r.run :not_found=>:pass keep going on 404" do
     pr = proc{|env| [(env['PATH_INFO'] == '/a' ? 404 : 201), {}, ['b']]}
     app(:run_handler) do |r|
-      r.run pr, :not_found=>:pass
+      r.run pr, not_found: :pass
       'a'
     end
 
@@ -28,7 +30,7 @@ describe "run_handler plugin" do
   it "works when both :not_found=>:pass and block are given" do
     pr = proc{|env| [(env['PATH_INFO'] == '/a' ? 202 : 201), {}, ['b']]}
     app(:run_handler) do |r|
-      r.run(pr, :not_found=>:pass){|a| a[0] *= 2}
+      r.run(pr, not_found: :pass){|a| a[0] *= 2}
       'a'
     end
 

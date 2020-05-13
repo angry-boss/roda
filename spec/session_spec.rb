@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 describe "session handling" do
@@ -17,7 +19,7 @@ describe "session handling" do
 
   it "should return session if rack session middleware is used" do
     app(:bare) do
-      use Rack::Session::Cookie, :secret=>'1'
+      use Rack::Session::Cookie, secret: '1'
 
       route do |r|
         r.on do

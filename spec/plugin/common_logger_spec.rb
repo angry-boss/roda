@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 require 'logger'
@@ -18,19 +20,19 @@ describe "common_logger plugin" do
 
     @logger.rewind
     @logger.truncate(0)
-    body('', 'HTTP_X_FORWARDED_FOR'=>'1.1.1.1', 'REMOTE_USER'=>'je', 'REQUEST_METHOD'=>'POST', 'QUERY_STRING'=>'', "HTTP_VERSION"=>'HTTP/1.1').must_equal ''
+    body('', 'HTTP_X_FORWARDED_FOR' => '1.1.1.1', 'REMOTE_USER' => 'je', 'REQUEST_METHOD' => 'POST', 'QUERY_STRING' => '', "HTTP_VERSION" => 'HTTP/1.1').must_equal ''
     @logger.rewind
     @logger.read.must_match(/\A1\.1\.1\.1 - je \[\d\d\/[A-Z][a-z]{2}\/\d\d\d\d:\d\d:\d\d:\d\d [-+]\d\d\d\d\] "POST  HTTP\/1.1" 200 - 0.\d\d\d\d\n\z/)
 
     @logger.rewind
     @logger.truncate(0)
-    body('/b', 'REMOTE_ADDR'=>'1.1.1.2', 'QUERY_STRING'=>'foo=bar', "HTTP_VERSION"=>'HTTP/1.0').must_equal '/b'
+    body('/b', 'REMOTE_ADDR' => '1.1.1.2', 'QUERY_STRING' => 'foo=bar', "HTTP_VERSION" => 'HTTP/1.0').must_equal '/b'
     @logger.rewind
     @logger.read.must_match(/\A1\.1\.1\.2 - - \[\d\d\/[A-Z][a-z]{2}\/\d\d\d\d:\d\d:\d\d:\d\d [-+]\d\d\d\d\] "GET \/b\?foo=bar HTTP\/1.0" 200 2 0.\d\d\d\d\n\z/)
 
     @logger.rewind
     @logger.truncate(0)
-    body('/b', 'REMOTE_ADDR'=>'1.1.1.2', 'QUERY_STRING'=>'foo=bar', "HTTP_VERSION"=>'HTTP/1.0', "SCRIPT_NAME"=>"/a").must_equal '/b'
+    body('/b', 'REMOTE_ADDR' => '1.1.1.2', 'QUERY_STRING' => 'foo=bar', "HTTP_VERSION" => 'HTTP/1.0', "SCRIPT_NAME" => "/a").must_equal '/b'
     @logger.rewind
     @logger.read.must_match(/\A1\.1\.1\.2 - - \[\d\d\/[A-Z][a-z]{2}\/\d\d\d\d:\d\d:\d\d:\d\d [-+]\d\d\d\d\] "GET \/a\/b\?foo=bar HTTP\/1.0" 200 2 0.\d\d\d\d\n\z/)
 

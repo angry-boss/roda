@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 describe "response #[] and #[]=" do
@@ -194,6 +196,6 @@ describe "roda_class" do
       response.class.roda_class.opts[:a] + response.roda_class.opts[:a]
     end
 
-    body.must_equal  "aa"
+    body.must_equal "aa"
   end
 end

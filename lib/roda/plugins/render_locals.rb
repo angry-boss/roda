@@ -27,13 +27,13 @@ class Roda
     # layout :: The default locals to use for layout rendering
     # merge :: Whether to merge template locals into layout locals
     module RenderLocals
-      def self.load_dependencies(app, opts=OPTS)
+      def self.load_dependencies(app, opts = OPTS)
         app.plugin :render
       end
 
-      def self.configure(app, opts=OPTS)
-        app.opts[:render_locals] = (app.opts[:render_locals] || {}).merge(opts[:render]||{}).freeze
-        app.opts[:layout_locals] = (app.opts[:layout_locals] || {}).merge(opts[:layout]||{}).freeze
+      def self.configure(app, opts = OPTS)
+        app.opts[:render_locals] = (app.opts[:render_locals] || {}).merge(opts[:render] || {}).freeze
+        app.opts[:layout_locals] = (app.opts[:layout_locals] || {}).merge(opts[:layout] || {}).freeze
         if opts.has_key?(:merge)
           app.opts[:merge_locals] = opts[:merge]
           app.opts[:layout_locals] = app.opts[:render_locals].merge(app.opts[:layout_locals]).freeze
@@ -75,7 +75,7 @@ class Roda
         # If using a layout, then use the plugin's layout locals as the default locals.
         def view_layout_opts(opts)
           if layout_opts = super
-            merge_locals = layout_opts.has_key?(:merge_locals) ? layout_opts[:merge_locals] : self.opts[:merge_locals] 
+            merge_locals = layout_opts.has_key?(:merge_locals) ? layout_opts[:merge_locals] : self.opts[:merge_locals]
 
             locals = {}
             locals.merge!(layout_locals)

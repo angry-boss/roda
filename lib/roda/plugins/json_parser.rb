@@ -29,7 +29,7 @@ class Roda
       #          (such as an array) is uploaded in JSON format.  A value of
       #          :always will wrap all values, and a value of :unless_hash will
       #          only wrap values that are not already hashes.
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         app.opts[:json_parser_error_handler] = opts[:error_handler] || app.opts[:json_parser_error_handler] || DEFAULT_ERROR_HANDLER
         app.opts[:json_parser_parser] = opts[:parser] || app.opts[:json_parser_parser] || app.opts[:json_parser] || JSON.method(:parse)
         app.opts[:json_parser_include_request] = opts[:include_request] if opts.has_key?(:include_request)
@@ -64,7 +64,7 @@ class Roda
 
             wrap = roda_class.opts[:json_parser_wrap]
             if wrap == :always || (wrap == :unless_hash && !json_params.is_a?(Hash))
-              json_params = {"_json"=>json_params}
+              json_params = { "_json" => json_params }
             end
             env["roda.json_params"] = json_params
             env["rack.request.form_input"] = input

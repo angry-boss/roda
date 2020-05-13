@@ -27,7 +27,7 @@ class Roda
     #   template :index, engine: :str do
     #     "<p>Hello #{@user}!</p>"
     #   end
-    #   
+    #
     # The block you use is reevaluted on every call, allowing you to easily
     # include additional setup logic:
     #
@@ -36,7 +36,7 @@ class Roda
     #     @user.downcase!
     #     "<p>#{greating} <%= @user %>!</p>"
     #   end
-    #   
+    #
     # This plugin also works with the view_options plugin, as long as you
     # prefix the template name with the view subdirectory:
     #
@@ -68,7 +68,7 @@ class Roda
         end
 
         # Store a new template block and options for the given template name.
-        def template(name, options=nil, &block)
+        def template(name, options = nil, &block)
           opts[:named_templates][name.to_s] = [options, define_roda_method("named_templates_#{name}", 0, &block)].freeze
           nil
         end

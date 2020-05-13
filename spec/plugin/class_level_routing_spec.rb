@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "class_level_routing plugin" do 
+describe "class_level_routing plugin" do
   before do
-    app(:bare) do 
+    app(:bare) do
       plugin :class_level_routing
       plugin :all_verbs
 
@@ -43,18 +45,18 @@ describe "class_level_routing plugin" do
     body('/foo').must_equal 'foo'
     body('/foo/bar').must_equal 'foobar'
     body('/d/go').must_equal 'bazgetgo'
-    body('/d/go', 'REQUEST_METHOD'=>'POST').must_equal 'bazpostgo'
+    body('/d/go', 'REQUEST_METHOD' => 'POST').must_equal 'bazpostgo'
     body('/bar').must_equal "x-get-bar"
-    body('/bar', 'REQUEST_METHOD'=>'POST').must_equal "x-post-bar"
-    body('/bar', 'REQUEST_METHOD'=>'DELETE').must_equal "x-delete-bar"
-    body('/bar', 'REQUEST_METHOD'=>'HEAD').must_equal "x-head-bar"
-    body('/bar', 'REQUEST_METHOD'=>'OPTIONS').must_equal "x-options-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PATCH').must_equal "x-patch-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PUT').must_equal "x-put-bar"
-    body('/bar', 'REQUEST_METHOD'=>'TRACE').must_equal "x-trace-bar"
+    body('/bar', 'REQUEST_METHOD' => 'POST').must_equal "x-post-bar"
+    body('/bar', 'REQUEST_METHOD' => 'DELETE').must_equal "x-delete-bar"
+    body('/bar', 'REQUEST_METHOD' => 'HEAD').must_equal "x-head-bar"
+    body('/bar', 'REQUEST_METHOD' => 'OPTIONS').must_equal "x-options-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PATCH').must_equal "x-patch-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PUT').must_equal "x-put-bar"
+    body('/bar', 'REQUEST_METHOD' => 'TRACE').must_equal "x-trace-bar"
     if ::Rack::Request.method_defined?("link?")
-      body('/bar', 'REQUEST_METHOD'=>'LINK').must_equal "x-link-bar"
-      body('/bar', 'REQUEST_METHOD'=>'UNLINK').must_equal "x-unlink-bar"
+      body('/bar', 'REQUEST_METHOD' => 'LINK').must_equal "x-link-bar"
+      body('/bar', 'REQUEST_METHOD' => 'UNLINK').must_equal "x-unlink-bar"
     end
 
     status.must_equal 200
@@ -65,15 +67,15 @@ describe "class_level_routing plugin" do
     body('/foo').must_equal 'foo'
     body('/foo/bar').must_equal 'foobar'
     body('/d/go').must_equal 'bazgetgo'
-    body('/d/go', 'REQUEST_METHOD'=>'POST').must_equal 'bazpostgo'
+    body('/d/go', 'REQUEST_METHOD' => 'POST').must_equal 'bazpostgo'
     body('/bar').must_equal "x-get-bar"
-    body('/bar', 'REQUEST_METHOD'=>'POST').must_equal "x-post-bar"
-    body('/bar', 'REQUEST_METHOD'=>'DELETE').must_equal "x-delete-bar"
-    body('/bar', 'REQUEST_METHOD'=>'HEAD').must_equal "x-head-bar"
-    body('/bar', 'REQUEST_METHOD'=>'OPTIONS').must_equal "x-options-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PATCH').must_equal "x-patch-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PUT').must_equal "x-put-bar"
-    body('/bar', 'REQUEST_METHOD'=>'TRACE').must_equal "x-trace-bar"
+    body('/bar', 'REQUEST_METHOD' => 'POST').must_equal "x-post-bar"
+    body('/bar', 'REQUEST_METHOD' => 'DELETE').must_equal "x-delete-bar"
+    body('/bar', 'REQUEST_METHOD' => 'HEAD').must_equal "x-head-bar"
+    body('/bar', 'REQUEST_METHOD' => 'OPTIONS').must_equal "x-options-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PATCH').must_equal "x-patch-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PUT').must_equal "x-put-bar"
+    body('/bar', 'REQUEST_METHOD' => 'TRACE').must_equal "x-trace-bar"
   end
 
   it "only calls class level routes if routing tree doesn't handle request" do
@@ -101,15 +103,15 @@ describe "class_level_routing plugin" do
     body('/foo').must_equal 'ifoo'
     body('/foo/bar').must_equal 'foobar'
     body('/d/go').must_equal 'bazgetgo'
-    body('/d/go', 'REQUEST_METHOD'=>'POST').must_equal 'bazpostgo'
+    body('/d/go', 'REQUEST_METHOD' => 'POST').must_equal 'bazpostgo'
     body('/bar').must_equal ""
-    body('/bar', 'REQUEST_METHOD'=>'POST').must_equal "ibar"
-    body('/bar', 'REQUEST_METHOD'=>'DELETE').must_equal "x-delete-bar"
-    body('/bar', 'REQUEST_METHOD'=>'HEAD').must_equal "x-head-bar"
-    body('/bar', 'REQUEST_METHOD'=>'OPTIONS').must_equal "x-options-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PATCH').must_equal "x-patch-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PUT').must_equal "x-put-bar"
-    body('/bar', 'REQUEST_METHOD'=>'TRACE').must_equal "x-trace-bar"
+    body('/bar', 'REQUEST_METHOD' => 'POST').must_equal "ibar"
+    body('/bar', 'REQUEST_METHOD' => 'DELETE').must_equal "x-delete-bar"
+    body('/bar', 'REQUEST_METHOD' => 'HEAD').must_equal "x-head-bar"
+    body('/bar', 'REQUEST_METHOD' => 'OPTIONS').must_equal "x-options-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PATCH').must_equal "x-patch-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PUT').must_equal "x-put-bar"
+    body('/bar', 'REQUEST_METHOD' => 'TRACE').must_equal "x-trace-bar"
   end
 
   it "works with the not_found plugin if loaded before" do
@@ -121,15 +123,15 @@ describe "class_level_routing plugin" do
     body('/foo').must_equal 'foo'
     body('/foo/bar').must_equal 'foobar'
     body('/d/go').must_equal 'bazgetgo'
-    body('/d/go', 'REQUEST_METHOD'=>'POST').must_equal 'bazpostgo'
+    body('/d/go', 'REQUEST_METHOD' => 'POST').must_equal 'bazpostgo'
     body('/bar').must_equal "x-get-bar"
-    body('/bar', 'REQUEST_METHOD'=>'POST').must_equal "x-post-bar"
-    body('/bar', 'REQUEST_METHOD'=>'DELETE').must_equal "x-delete-bar"
-    body('/bar', 'REQUEST_METHOD'=>'HEAD').must_equal "x-head-bar"
-    body('/bar', 'REQUEST_METHOD'=>'OPTIONS').must_equal "x-options-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PATCH').must_equal "x-patch-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PUT').must_equal "x-put-bar"
-    body('/bar', 'REQUEST_METHOD'=>'TRACE').must_equal "x-trace-bar"
+    body('/bar', 'REQUEST_METHOD' => 'POST').must_equal "x-post-bar"
+    body('/bar', 'REQUEST_METHOD' => 'DELETE').must_equal "x-delete-bar"
+    body('/bar', 'REQUEST_METHOD' => 'HEAD').must_equal "x-head-bar"
+    body('/bar', 'REQUEST_METHOD' => 'OPTIONS').must_equal "x-options-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PATCH').must_equal "x-patch-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PUT').must_equal "x-put-bar"
+    body('/bar', 'REQUEST_METHOD' => 'TRACE').must_equal "x-trace-bar"
 
     status.must_equal 200
     status("/asdfa/asdf").must_equal 404
@@ -142,18 +144,18 @@ describe "class_level_routing plugin" do
     body('/foo').must_equal 'foo'
     body('/foo/bar').must_equal 'foobar'
     body('/d/go').must_equal 'bazgetgo'
-    body('/d/go', 'REQUEST_METHOD'=>'POST').must_equal 'bazpostgo'
+    body('/d/go', 'REQUEST_METHOD' => 'POST').must_equal 'bazpostgo'
     body('/bar').must_equal "x-get-bar"
-    body('/bar', 'REQUEST_METHOD'=>'POST').must_equal "x-post-bar"
-    body('/bar', 'REQUEST_METHOD'=>'DELETE').must_equal "x-delete-bar"
-    body('/bar', 'REQUEST_METHOD'=>'HEAD').must_equal "x-head-bar"
-    body('/bar', 'REQUEST_METHOD'=>'OPTIONS').must_equal "x-options-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PATCH').must_equal "x-patch-bar"
-    body('/bar', 'REQUEST_METHOD'=>'PUT').must_equal "x-put-bar"
-    body('/bar', 'REQUEST_METHOD'=>'TRACE').must_equal "x-trace-bar"
+    body('/bar', 'REQUEST_METHOD' => 'POST').must_equal "x-post-bar"
+    body('/bar', 'REQUEST_METHOD' => 'DELETE').must_equal "x-delete-bar"
+    body('/bar', 'REQUEST_METHOD' => 'HEAD').must_equal "x-head-bar"
+    body('/bar', 'REQUEST_METHOD' => 'OPTIONS').must_equal "x-options-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PATCH').must_equal "x-patch-bar"
+    body('/bar', 'REQUEST_METHOD' => 'PUT').must_equal "x-put-bar"
+    body('/bar', 'REQUEST_METHOD' => 'TRACE').must_equal "x-trace-bar"
     if ::Rack::Request.method_defined?("link?")
-      body('/bar', 'REQUEST_METHOD'=>'LINK').must_equal "x-link-bar"
-      body('/bar', 'REQUEST_METHOD'=>'UNLINK').must_equal "x-unlink-bar"
+      body('/bar', 'REQUEST_METHOD' => 'LINK').must_equal "x-link-bar"
+      body('/bar', 'REQUEST_METHOD' => 'UNLINK').must_equal "x-unlink-bar"
     end
 
     status.must_equal 200

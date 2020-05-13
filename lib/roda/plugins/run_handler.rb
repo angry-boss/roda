@@ -3,7 +3,7 @@
 #
 class Roda
   module RodaPlugins
-    # The run_handler plugin allows r.run to take a block, which is yielded 
+    # The run_handler plugin allows r.run to take a block, which is yielded
     # the rack response array, before it returns it as a response.
     #
     # Additionally, r.run also takes a options hash, and you can provide a
@@ -28,11 +28,11 @@ class Roda
       module RequestMethods
         # If a block is given, yield the rack response array to it.  The response can
         # be modified before it is returned by the current app.
-        # 
+        #
         # If the <tt>not_found: :pass</tt> option is given, and the rack response
         # returned by the app is a 404 response, do not return the response, continue
         # routing normally.
-        def run(app, opts=OPTS)
+        def run(app, opts = OPTS)
           res = catch(:halt){super(app)}
           yield res if block_given?
           throw(:halt, res) unless opts[:not_found] == :pass && res[0] == 404

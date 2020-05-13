@@ -56,7 +56,7 @@ describe "type_routing plugin" do
     app.route do |r|
       r.run(sup_app)
     end
-    
+
     body('/a', 'HTTP_ACCEPT' => 'text/html').must_equal 'HTML: html'
     body('/a.json', 'HTTP_ACCEPT' => 'text/html').must_equal 'JSON: json'
     body('/a.xml', 'HTTP_ACCEPT' => 'application/json').must_equal 'XML: xml'
@@ -104,7 +104,7 @@ end
 describe "type_routing plugin" do
   it "does not use the file extension if its disabled" do
     app(:bare) do
-      plugin :type_routing, :use_extension => false
+      plugin :type_routing, use_extension: false
 
       route do |r|
         r.is 'a' do
@@ -122,7 +122,7 @@ describe "type_routing plugin" do
 
   it "does not use the Accept header if its disabled" do
     app(:bare) do
-      plugin :type_routing, :use_header => false
+      plugin :type_routing, use_header: false
 
       route do |r|
         r.is 'a' do
@@ -164,7 +164,7 @@ describe "type_routing plugin" do
 
   it "uses custom data types" do
     app(:bare) do
-      plugin :type_routing, :types => { :yaml => 'application/x-yaml' }
+      plugin :type_routing, types: { yaml: 'application/x-yaml' }
 
       route do |r|
         r.is 'a' do
@@ -182,7 +182,7 @@ describe "type_routing plugin" do
 
   it "handles response-specific type information when using custom types" do
     app(:bare) do
-      plugin :type_routing, :exclude=>:html, :default_type=>:json, :types => { :html => 'text/html; charset=utf-8' }
+      plugin :type_routing, exclude: :html, default_type: :json, types: { html: 'text/html; charset=utf-8' }
 
       route do |r|
         r.is 'a' do
@@ -201,7 +201,7 @@ describe "type_routing plugin" do
 
   it "Handle nil content type when using custom types" do
     app(:bare) do
-      plugin :type_routing, :exclude=>:html, :default_type=>:json, :types => { :html => nil}
+      plugin :type_routing, exclude: :html, default_type: :json, types: { html: nil }
 
       route do |r|
         r.is 'a' do
@@ -220,7 +220,7 @@ describe "type_routing plugin" do
 
   it "uses custom default type" do
     app(:bare) do
-      plugin :type_routing, :default_type => :json
+      plugin :type_routing, default_type: :json
 
       route do |r|
         r.is 'a' do
@@ -238,7 +238,7 @@ describe "type_routing plugin" do
 
   it "supports nil default type" do
     app(:bare) do
-      plugin :type_routing, :default_type => nil
+      plugin :type_routing, default_type: nil
 
       route do |r|
         r.is 'a' do
@@ -256,7 +256,7 @@ describe "type_routing plugin" do
 
   it "excludes given types" do
     app(:bare) do
-      plugin :type_routing, :exclude => [ :xml ]
+      plugin :type_routing, exclude: [ :xml ]
 
       route do |r|
         r.is 'a' do
@@ -280,7 +280,7 @@ describe "type_routing plugin" do
 
   it "handles loading the plugin multiple times correctly" do
     app(:bare) do
-      plugin :type_routing, :default_type => :json
+      plugin :type_routing, default_type: :json
       plugin :type_routing
 
       route do |r|
@@ -327,9 +327,9 @@ describe "type_routing plugin" do
 
   it "takes the longest file extension first, when ambiguous" do
     app(:bare) do
-      plugin :type_routing, :types => {
-        :gz => 'application/octet-stream',
-        :'tar.gz' => 'application/octet-stream',
+      plugin :type_routing, types: {
+        gz: 'application/octet-stream',
+        'tar.gz': 'application/octet-stream',
       }
 
       route do |r|

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "shared_vars plugin" do 
+describe "shared_vars plugin" do
   it "adds shared method for sharing variables across multiple apps" do
     app(:shared_vars) {|r| shared[:c]}
     old_app = app
@@ -14,7 +16,7 @@ describe "shared_vars plugin" do
 
   it "adds shared with hash merges the hash into the shared vars" do
     app(:shared_vars) do |r|
-      shared(:c=>'c')
+      shared(c: 'c')
       shared[:c]
     end
 
@@ -26,7 +28,7 @@ describe "shared_vars plugin" do
       c = nil
       d = nil
       shared[:c] = 'b'
-      shared(:c=>'c', :d=>'d') do
+      shared(c: 'c', d: 'd') do
         c = shared[:c]
         d = shared[:d]
       end

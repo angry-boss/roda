@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "middleware plugin" do 
+describe "middleware plugin" do
   [false, true].each do |def_call|
     meth = def_call ? :deprecated : :it
     send meth, "turns Roda app into middlware" do
@@ -52,10 +54,10 @@ describe "middleware plugin" do
 
       body('/a').must_equal 'a3'
       body('/b').must_equal 'b3'
-      body('/a', 'REQUEST_METHOD'=>'POST').must_equal 'a2'
-      body('/b', 'REQUEST_METHOD'=>'POST').must_equal 'b2'
-      body('/a', 'REQUEST_METHOD'=>'PATCH').must_equal 'a2'
-      body('/b', 'REQUEST_METHOD'=>'PATCH').must_equal 'b1'
+      body('/a', 'REQUEST_METHOD' => 'POST').must_equal 'a2'
+      body('/b', 'REQUEST_METHOD' => 'POST').must_equal 'b2'
+      body('/a', 'REQUEST_METHOD' => 'PATCH').must_equal 'a2'
+      body('/b', 'REQUEST_METHOD' => 'PATCH').must_equal 'b1'
     end
   end
 
@@ -115,7 +117,7 @@ describe "middleware plugin" do
     end
 
     body('/a').must_equal 'a1'
-    
+
     app(:bare) do
       use a1, :foo, :bar do |baz|
         [baz, :a1]
@@ -160,7 +162,7 @@ describe "middleware plugin" do
       end
     end
     app(:bare) do
-      plugin :middleware, :include_middleware=>true
+      plugin :middleware, include_middleware: true
       use mid
       route{}
     end
@@ -174,7 +176,7 @@ describe "middleware plugin" do
 
   it "calls :handle_result option with env and response" do
     app(:bare) do
-      plugin :middleware, :handle_result=>(proc do |env, res|
+      plugin :middleware, handle_result: (proc do |env, res|
         res[2] << env['foo']
       end)
       route{}

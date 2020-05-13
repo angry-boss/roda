@@ -13,7 +13,7 @@ class Roda
     #   plugin :not_found do
     #     "Where did it go?"
     #   end
-    #   
+    #
     # Or later via a separate call to +not_found+:
     #
     #   plugin :not_found

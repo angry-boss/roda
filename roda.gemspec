@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path("../lib/roda/version", __FILE__)
 
 Gem::Specification.new do |s|
@@ -9,12 +11,12 @@ Gem::Specification.new do |s|
   s.homepage          = "http://roda.jeremyevans.net"
   s.license           = "MIT"
   s.required_ruby_version = ">= 1.9.2"
-  s.metadata          = { 
+  s.metadata = {
     'bug_tracker_uri'   => 'https://github.com/jeremyevans/roda/issues',
     'changelog_uri'     => 'http://roda.jeremyevans.net/rdoc/files/CHANGELOG.html',
     'documentation_uri' => 'http://roda.jeremyevans.net/documentation.html',
     'mailing_list_uri'  => 'https://groups.google.com/forum/#!forum/ruby-roda',
-    "source_code_uri"   => "https://github.com/jeremyevans/roda" 
+    "source_code_uri"   => "https://github.com/jeremyevans/roda"
   }
 
   s.files = %w'README.rdoc MIT-LICENSE CHANGELOG' + Dir['doc/*.rdoc'] + Dir['doc/release_notes/3.*.txt'] + Dir['lib/**/*.rb']

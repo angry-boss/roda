@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "exception_page plugin" do 
+describe "exception_page plugin" do
   def ep_app(&block)
     app(:exception_page) do |r|
       raise "foo" rescue block ? instance_exec($!, &block) : exception_page($!)
     end
   end
 
-  def req(path = '/', headers={})
+  def req(path = '/', headers = {})
     if path.is_a?(Hash)
-      super({'rack.input'=>StringIO.new}.merge(path))
+      super({ 'rack.input' => StringIO.new }.merge(path))
     else
-      super(path, {'rack.input'=>StringIO.new}.merge(headers))
+      super(path, { 'rack.input' => StringIO.new }.merge(headers))
     end
   end
 
   it "returns HTML page with exception information if text/html is accepted" do
     ep_app
-    s, h, body = req('HTTP_ACCEPT'=>'text/html')
+    s, h, body = req('HTTP_ACCEPT' => 'text/html')
 
     s.must_equal 200
     h['Content-Type'].must_equal 'text/html'
@@ -37,69 +39,69 @@ describe "exception_page plugin" do
     body.wont_include "\"/exception_page.css\""
     body.wont_include "\"/exception_page.js\""
 
-    s, h, body = req('HTTP_ACCEPT'=>'text/html', 'REQUEST_METHOD'=>'POST', 'rack.input'=>StringIO.new('(%bad-params%)'))
+    s, h, body = req('HTTP_ACCEPT' => 'text/html', 'REQUEST_METHOD' => 'POST', 'rack.input' => StringIO.new('(%bad-params%)'))
     s.must_equal 200
     h['Content-Type'].must_equal 'text/html'
     body.join.must_include "Invalid POST data"
 
     size = body.size
-    ep_app{|e| exception_page(e, :context=>10)}
-    body('HTTP_ACCEPT'=>'text/html').size.must_be :>, size
+    ep_app{|e| exception_page(e, context: 10)}
+    body('HTTP_ACCEPT' => 'text/html').size.must_be :>, size
 
-    ep_app{|e| exception_page(e, :assets=>true, :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, assets: true, context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.wont_include "table td.code"
     body.wont_include "function toggle()"
     body.must_include "\"/exception_page.css\""
     body.must_include "\"/exception_page.js\""
 
-    ep_app{|e| exception_page(e, :assets=>"/static", :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, assets: "/static", context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.wont_include "table td.code"
     body.wont_include "function toggle()"
     body.must_include "\"/static/exception_page.css\""
     body.must_include "\"/static/exception_page.js\""
 
-    ep_app{|e| exception_page(e, :css_file=>"/foo.css", :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, css_file: "/foo.css", context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.wont_include "table td.code"
     body.must_include "function toggle()"
     body.must_include "\"/foo.css\""
 
-    ep_app{|e| exception_page(e, :js_file=>"/foo.js", :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, js_file: "/foo.js", context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.must_include "table td.code"
     body.wont_include "function toggle()"
     body.must_include "\"/foo.js\""
 
-    ep_app{|e| exception_page(e, :assets=>false, :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, assets: false, context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.wont_include "table td.code"
     body.wont_include "function toggle()"
     body.wont_include "\"/exception_page.css\""
     body.wont_include "\"/exception_page.js\""
 
-    ep_app{|e| exception_page(e, :assets=>false, :css_file=>"/foo.css", :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, assets: false, css_file: "/foo.css", context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.wont_include "table td.code"
     body.wont_include "function toggle()"
     body.must_include "\"/foo.css\""
 
-    ep_app{|e| exception_page(e, :assets=>false, :js_file=>"/foo.js", :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, assets: false, js_file: "/foo.js", context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.wont_include "table td.code"
     body.wont_include "function toggle()"
     body.must_include "\"/foo.js\""
 
-    ep_app{|e| exception_page(e, :css_file=>false, :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, css_file: false, context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.wont_include "table td.code"
     body.must_include "function toggle()"
     body.wont_include "\"/exception_page.css\""
     body.wont_include "\"/exception_page.js\""
 
-    ep_app{|e| exception_page(e, :js_file=>false, :context=>0)}
-    body = body('HTTP_ACCEPT'=>'text/html')
+    ep_app{|e| exception_page(e, js_file: false, context: 0)}
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.must_include "table td.code"
     body.wont_include "function toggle()"
     body.wont_include "\"/exception_page.css\""
@@ -119,7 +121,7 @@ describe "exception_page plugin" do
   end
 
   it "returns JSON with exception information if :json information is used" do
-    ep_app{|e| exception_page(e, :json=>true)}
+    ep_app{|e| exception_page(e, json: true)}
     @app.plugin :json
     s, h, body = req
 
@@ -127,7 +129,7 @@ describe "exception_page plugin" do
     h['Content-Type'].must_equal 'application/json'
     hash = JSON.parse(body.join)
     bt = hash["exception"].delete("backtrace")
-    hash.must_equal("exception"=>{"class"=>"RuntimeError", "message"=>"foo"})
+    hash.must_equal("exception" => { "class" => "RuntimeError", "message" => "foo" })
     bt.must_be_kind_of Array
     bt.each{|line| line.must_be_kind_of String}
   end
@@ -138,7 +140,7 @@ describe "exception_page plugin" do
       e.backtrace[0] = ''
       exception_page(e)
     end
-    body = body('HTTP_ACCEPT'=>'text/html')
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.must_include "RuntimeError: foo"
     body.must_include __FILE__
     body.wont_include 'id="c0"'
@@ -147,11 +149,11 @@ describe "exception_page plugin" do
 
   it "should still show line numbers if the line content cannot be displayed" do
     app(:exception_page) do |r|
-      instance_eval('raise "foo"', 'foo-bar.rb', 4200+42) rescue exception_page($!)
+      instance_eval('raise "foo"', 'foo-bar.rb', 4200 + 42) rescue exception_page($!)
     end
-    body = body('HTTP_ACCEPT'=>'text/html')
+    body = body('HTTP_ACCEPT' => 'text/html')
     body.must_include "RuntimeError: foo"
-    body.must_include "foo-bar.rb:#{4200+42}"
+    body.must_include "foo-bar.rb:#{4200 + 42}"
     body.must_include __FILE__
     body.wont_include 'id="c0"'
     # On JRuby, instance_eval uses two frames, and the second one is an internal

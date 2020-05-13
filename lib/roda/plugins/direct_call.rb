@@ -22,7 +22,7 @@ class Roda
 
         # If new_api is true, use the receiver as the base rack app for better
         # performance.
-        def base_rack_app_callable(new_api=true)
+        def base_rack_app_callable(new_api = true)
           if new_api
             self
           else

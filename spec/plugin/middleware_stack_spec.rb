@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "middleware_stack plugin" do 
+describe "middleware_stack plugin" do
   it "adds middleware_stack method for removing and inserting into middleware stack" do
     make_middleware = lambda do |name|
       Class.new do
@@ -26,7 +28,7 @@ describe "middleware_stack plugin" do
 
     app(:middleware_stack) do |r|
       recorded = env[:record]
-      nil 
+      nil
     end
 
     status.must_equal 404

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "heartbeat plugin" do 
+describe "heartbeat plugin" do
   it "should return heartbeat response for heartbeat paths only" do
     app(:bare) do
       plugin :heartbeat
@@ -19,7 +21,7 @@ describe "heartbeat plugin" do
 
   it "should support custom heartbeat paths" do
     app(:bare) do
-      plugin :heartbeat, :path=>'/heartbeat2'
+      plugin :heartbeat, path: '/heartbeat2'
       route do |r|
         r.on 'a' do
           "a"

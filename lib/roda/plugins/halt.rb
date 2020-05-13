@@ -11,7 +11,7 @@ class Roda
     #   plugin :halt
     #
     # You can call the halt method with an integer to set the response status and return:
-    #   
+    #
     #   route do |r|
     #     r.halt(403)
     #   end
@@ -63,8 +63,8 @@ class Roda
     #   end
     #
     # Note that when using the +json+ plugin with the +halt+ plugin, you cannot return a
-    # array as a single argument and have it be converted to json, since it would be interpreted 
-    # as a rack response.  You must use call +r.halt+ with either two or three argument forms 
+    # array as a single argument and have it be converted to json, since it would be interpreted
+    # as a rack response.  You must use call +r.halt+ with either two or three argument forms
     # in that case.
     module Halt
       module RequestMethods

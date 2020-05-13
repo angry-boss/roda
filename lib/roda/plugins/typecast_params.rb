@@ -27,7 +27,7 @@ class Roda
     # errors are raised as a specific exception class
     # (+Roda::RodaPlugins::TypecastParams::Error+).  This allows you to handle
     # this specific exception class globally and return an appropriate 4xx
-    # response to the client.  You can use the Error#param_name and Error#reason 
+    # response to the client.  You can use the Error#param_name and Error#reason
     # methods to get more information about the error.
     #
     # typecast_params offers support for default values:
@@ -190,7 +190,7 @@ class Roda
     #
     # +convert!+ and +convert_each!+ only return values you explicitly specify for conversion
     # inside the passed block.
-    # 
+    #
     # You can specify the +:symbolize+ option to +convert!+ or +convert_each!+, which will
     # symbolize the resulting hash keys:
     #
@@ -227,7 +227,7 @@ class Roda
     # data (string keys), to trusted data that can be used internally (trusted in the sense that
     # the expected types are used).
     #
-    # Note that if there are multiple conversion Error raised inside a +convert!+ or +convert_each!+ 
+    # Note that if there are multiple conversion Error raised inside a +convert!+ or +convert_each!+
     # block, they are recorded and a single TypecastParams::Error instance is raised after
     # processing the block.  TypecastParams::Error#params_names can be called on the exception to
     # get an array of all parameter names with conversion issues, and TypecastParams::Error#all_errors
@@ -298,7 +298,7 @@ class Roda
         # An array of all other errors that were raised with this error.  If the error
         # was not raised inside Params#convert! or Params#convert_each!, this will just be
         # an array containing the current receiver.
-        # 
+        #
         # This allows you to use Params#convert! to process a form input, and if any
         # conversion errors occur inside the block, it can provide an array of all parameter
         # names and reasons for parameters with problems.
@@ -320,15 +320,15 @@ class Roda
         # and assumes the typical rack parsing of these content types into
         # parameters.  # If the parameters were submitted via JSON, #keys should be
         # used directly.
-        # 
+        #
         # Example:
-        # 
+        #
         #   # keys: ['page']
         #   param_name => 'page'
-        # 
+        #
         #   # keys: ['artist', 'name']
         #   param_name => 'artist[name]'
-        # 
+        #
         #   # keys: ['album', 'artist', 'name']
         #   param_name => 'album[artist][name]'
         def param_name
@@ -396,7 +396,7 @@ class Roda
 
           private convert_meth, convert_array_meth
 
-          define_method(type) do |key, default=nil|
+          define_method(type) do |key, default = nil|
             process_arg(convert_meth, key, default) if require_hash!
           end
 
@@ -577,7 +577,7 @@ class Roda
         #                  present in the params.
         # :symbolize :: Convert any string keys in the resulting hash and for any
         #               conversions below
-        def convert!(keys=nil, opts=OPTS)
+        def convert!(keys = nil, opts = OPTS)
           if keys.is_a?(Hash)
             opts = keys
             keys = nil
@@ -601,7 +601,7 @@ class Roda
         # :keys :: The keys to extract from the object. If a proc or method,
         #          calls the value with the current object, which should return the array of keys
         #          to use.
-        def convert_each!(opts=OPTS, &block)
+        def convert_each!(opts = OPTS, &block)
           np = !@capture
 
           _capture!(nil, opts) do
@@ -619,7 +619,7 @@ class Roda
 
               unless valid
                 handle_error(nil, :invalid_type, "convert_each! called on object not an array or hash with keys '0'..'N'")
-                next 
+                next
               end
             when Array
               # nothing to do
@@ -633,7 +633,7 @@ class Roda
               begin
                 if v = subkey([i], opts.fetch(:raise, true))
                   yield v
-                  v.nested_params if np 
+                  v.nested_params if np
                 end
               rescue => e
                 handle_error(i, :invalid_type, e)
@@ -669,7 +669,7 @@ class Roda
         # given, any +nil+ values in the array are replaced with +default+.  If +key+ is an array
         # then this returns an array of arrays, one for each respective value of +key+. If there is
         # no value for +key+, nil is returned instead of an array.
-        def array(type, key, default=nil)
+        def array(type, key, default = nil)
           meth = :"_convert_array_#{type}"
           raise ProgrammerError, "no typecast_params type registered for #{type.inspect}" unless respond_to?(meth, true)
           process_arg(meth, key, default) if require_hash!
@@ -677,7 +677,7 @@ class Roda
 
         # Call +array+ with the +type+, +key+, and +default+, but if the return value is nil or any value in
         # the returned array is +nil+, raise an Error.
-        def array!(type, key, default=nil)
+        def array!(type, key, default = nil)
           v = array(type, key, default)
 
           if key.is_a?(Array)
@@ -707,7 +707,7 @@ class Roda
               params[key] = v.nested_params
             end
           end
-          
+
           params
         end
 
@@ -757,7 +757,7 @@ class Roda
             @params = @obj.class.new
           end
         end
-        
+
         private
 
         # Whether to symbolize keys when capturing.  Note that the method
@@ -812,7 +812,7 @@ class Roda
             @capture = nil
           else
             # If capturing was already started, update cached nested params
-            # before resetting symbolize setting. 
+            # before resetting symbolize setting.
             @nested_params = nested_params
           end
 
@@ -875,10 +875,10 @@ class Roda
 
         # Handle any conversion errors.  By default, reraises Error instances with the keys set,
         # converts ::ArgumentError instances to Error instances, and reraises other exceptions.
-        def handle_error(key, reason, e, do_raise=false)
+        def handle_error(key, reason, e, do_raise = false)
           case e
           when String
-            handle_error(key, reason, Error.new(e), do_raise=false)
+            handle_error(key, reason, Error.new(e), do_raise = false)
           when Error, ArgumentError
             if @capture && (le = @capture.last) && le == e
               raise e if do_raise
@@ -989,7 +989,7 @@ class Roda
       # and if a block is passed, eval it in the context of the subclass.
       # Respect the <tt>strip: :all</tt> to strip all parameter strings
       # before processing them.
-      def self.configure(app, opts=OPTS, &block)
+      def self.configure(app, opts = OPTS, &block)
         app.const_set(:TypecastParams, Class.new(RodaPlugins::TypecastParams::Params)) unless app.const_defined?(:TypecastParams)
         app::TypecastParams.class_eval(&block) if block
         if opts[:strip] == :all

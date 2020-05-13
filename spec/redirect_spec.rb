@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 describe "redirects" do
@@ -32,9 +34,9 @@ describe "redirects" do
     header('Location', "/about").must_equal '/hello'
     body("/about").must_equal ''
 
-    status("/foo", 'REQUEST_METHOD'=>'POST').must_equal 302
-    header('Location', "/foo", 'REQUEST_METHOD'=>'POST').must_equal '/foo'
-    body("/foo", 'REQUEST_METHOD'=>'POST').must_equal ''
+    status("/foo", 'REQUEST_METHOD' => 'POST').must_equal 302
+    header('Location', "/foo", 'REQUEST_METHOD' => 'POST').must_equal '/foo'
+    body("/foo", 'REQUEST_METHOD' => 'POST').must_equal ''
 
     proc{req('/foo')}.must_raise(Roda::RodaError)
   end

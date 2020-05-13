@@ -17,7 +17,7 @@ class Roda
     # uses a separate option for it.
     #
     # Users of this plugin may want to consider using the public plugin instead.
-    # 
+    #
     # Examples:
     #
     #   opts[:root] = '/path/to/app'
@@ -27,10 +27,10 @@ class Roda
     module Static
       # Load the Rack::Static middleware.  Use the paths given as the :urls option,
       # and set the :root option to be relative to the application's :root option.
-      def self.configure(app, paths, opts={})
+      def self.configure(app, paths, opts = {})
         opts = opts.dup
         opts[:urls] = paths
-        opts[:root] =  app.expand_path(opts[:root]||"public")
+        opts[:root] =  app.expand_path(opts[:root] || "public")
         app.use ::Rack::Static, opts
       end
     end

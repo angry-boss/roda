@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "slash_path_empty" do 
+describe "slash_path_empty" do
   it "considers a / path as empty" do
     app(:slash_path_empty) do |r|
       r.is{"1"}

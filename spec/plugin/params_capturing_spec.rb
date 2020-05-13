@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "params_capturing plugin" do 
+describe "params_capturing plugin" do
   it "should add captures to r.params for symbol matchers" do
     app(:params_capturing) do |r|
       r.on('foo', :y, :z, :w) do |y, z, w|
@@ -24,10 +26,10 @@ describe "params_capturing plugin" do
       end
     end
 
-    body('/blarg', 'rack.input'=>StringIO.new).must_equal 'x-blarg-blarg-1'
-    body('/foo/1/2/3', 'rack.input'=>StringIO.new).must_equal '1-2-3-1-2-3-3'
-    body('/quux/foobar', 'rack.input'=>StringIO.new).must_equal 'y-quuxfoobar-quux-foo-bar'
-    body('/quux/asdf', 'rack.input'=>StringIO.new).must_equal 'y--quux-asdf-2'
-    body('/quux/asdf/890', 'rack.input'=>StringIO.new).must_equal 'y--890-quux-asdf-890-3'
+    body('/blarg', 'rack.input' => StringIO.new).must_equal 'x-blarg-blarg-1'
+    body('/foo/1/2/3', 'rack.input' => StringIO.new).must_equal '1-2-3-1-2-3-3'
+    body('/quux/foobar', 'rack.input' => StringIO.new).must_equal 'y-quuxfoobar-quux-foo-bar'
+    body('/quux/asdf', 'rack.input' => StringIO.new).must_equal 'y--quux-asdf-2'
+    body('/quux/asdf/890', 'rack.input' => StringIO.new).must_equal 'y--890-quux-asdf-890-3'
   end
 end

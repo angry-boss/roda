@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'mail'
 rescue LoadError
-  warn "mail not installed, skipping mail plugin test"  
+  warn "mail not installed, skipping mail plugin test"
 else
 Mail.defaults do
   delivery_method :test
 end
 
-describe "mailer plugin" do 
+describe "mailer plugin" do
   def deliveries
     Mail::TestMailer.deliveries
   end
@@ -18,7 +20,7 @@ describe "mailer plugin" do
     deliveries.clear
   end
 
-  setup_email = lambda do 
+  setup_email = lambda do
     from "f@example.com"
     to "t@example.com"
     subject 's'
@@ -127,7 +129,7 @@ describe "mailer plugin" do
     app(:mailer) do |r|
       r.mail do
         instance_exec(&setup_email)
-        add_file :filename=>'a.txt', :content=>'b'
+        add_file filename: 'a.txt', content: 'b'
         'c'
       end
     end
@@ -154,7 +156,7 @@ describe "mailer plugin" do
       end
     end
 
-    body("/foo/baz", 'rack.input'=>StringIO.new).must_equal 'foobaz'
+    body("/foo/baz", 'rack.input' => StringIO.new).must_equal 'foobaz'
     app.mail('/bar').body.must_be :==, 'b'
   end
 
@@ -177,8 +179,8 @@ describe "mailer plugin" do
     app(:mailer) do |r|
       r.mail do
         instance_exec(&setup_email)
-        text_part "t", "X-Text"=>'T'
-        html_part "h", "X-HTML"=>'H'
+        text_part "t", "X-Text" => 'T'
+        html_part "h", "X-HTML" => 'H'
       end
     end
 
@@ -202,7 +204,7 @@ describe "mailer plugin" do
 
   it "supports setting the default content-type for emails when loading the plugin" do
     app(:bare) do
-      plugin :mailer, :content_type=>'text/html'
+      plugin :mailer, content_type: 'text/html'
       route{""}
     end
     app.mail('/').content_type.must_match(/\Atext\/html/)
@@ -210,7 +212,7 @@ describe "mailer plugin" do
 
   it "supports loading the plugin multiple times" do
     app(:bare) do
-      plugin :mailer, :content_type=>'text/html'
+      plugin :mailer, content_type: 'text/html'
       plugin :mailer
       route{""}
     end
@@ -219,7 +221,7 @@ describe "mailer plugin" do
 
   it "supports manually overridding the default content-type for emails" do
     app(:bare) do
-      plugin :mailer, :content_type=>'text/html'
+      plugin :mailer, content_type: 'text/html'
       route do
         response['Content-Type'] = 'text/foo'
         ""
@@ -230,7 +232,7 @@ describe "mailer plugin" do
 
   it "supports setting the default content type when attachments are used" do
     app(:bare) do
-      plugin :mailer, :content_type=>'text/html'
+      plugin :mailer, content_type: 'text/html'
       route do
         add_file 'spec/assets/css/raw.css'
         "a"
@@ -264,7 +266,7 @@ describe "mailer plugin" do
     app(:bare) do
       plugin :mailer
       plugin :hooks
-      before do 
+      before do
         x << 1
       end
       after do

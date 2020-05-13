@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 require 'uri'
 
-describe "sinatra_helpers plugin" do 
+describe "sinatra_helpers plugin" do
   def sin_app(&block)
     app(:sinatra_helpers, &block)
   end
@@ -118,30 +120,30 @@ describe "sinatra_helpers plugin" do
 
     it 'adds script_name if given a path' do
       sin_app{redirect "/foo"}
-      header('Location', '/bar', 'SCRIPT_NAME'=>'/foo').must_equal '/foo'
+      header('Location', '/bar', 'SCRIPT_NAME' => '/foo').must_equal '/foo'
     end
 
     it 'does not adds script_name if not given a path' do
       sin_app{redirect}
-      header('Location', '/bar', 'SCRIPT_NAME'=>'/foo', 'REQUEST_METHOD'=>'POST').must_equal '/foo/bar'
+      header('Location', '/bar', 'SCRIPT_NAME' => '/foo', 'REQUEST_METHOD' => 'POST').must_equal '/foo/bar'
     end
 
     it 'respects :absolute_redirects option' do
       sin_app{redirect}
       app.opts[:absolute_redirects] = true
-      header('Location', '/bar', 'HTTP_HOST'=>'example.org', 'SCRIPT_NAME'=>'/foo', 'REQUEST_METHOD'=>'POST').must_equal 'http://example.org/foo/bar'
+      header('Location', '/bar', 'HTTP_HOST' => 'example.org', 'SCRIPT_NAME' => '/foo', 'REQUEST_METHOD' => 'POST').must_equal 'http://example.org/foo/bar'
     end
 
     it 'respects :prefixed_redirects option' do
       sin_app{redirect "/bar"}
       app.opts[:prefixed_redirects] = true
-      header('Location', 'SCRIPT_NAME'=>'/foo').must_equal '/foo/bar'
+      header('Location', 'SCRIPT_NAME' => '/foo').must_equal '/foo/bar'
     end
 
     it 'ignores :prefix_redirects option if not given a path' do
       sin_app{redirect}
       app.opts[:prefix_redirects] = true
-      header('Location', "/bar", 'SCRIPT_NAME'=>'/foo', 'REQUEST_METHOD'=>'POST').must_equal '/foo/bar'
+      header('Location', "/bar", 'SCRIPT_NAME' => '/foo', 'REQUEST_METHOD' => 'POST').must_equal '/foo/bar'
     end
 
     it 'uses the code given when specified' do
@@ -156,8 +158,8 @@ describe "sinatra_helpers plugin" do
 
     it 'uses 303 for post requests if request is HTTP 1.1, 302 for 1.0' do
       sin_app{redirect '/foo'}
-      status('HTTP_VERSION' => 'HTTP/1.1', 'REQUEST_METHOD'=>'POST').must_equal 303
-      status('HTTP_VERSION' => 'HTTP/1.0', 'REQUEST_METHOD'=>'POST').must_equal 302
+      status('HTTP_VERSION' => 'HTTP/1.1', 'REQUEST_METHOD' => 'POST').must_equal 303
+      status('HTTP_VERSION' => 'HTTP/1.0', 'REQUEST_METHOD' => 'POST').must_equal 302
     end
   end
 
@@ -238,7 +240,7 @@ describe "sinatra_helpers plugin" do
     end
 
     it 'returns nil when given nil' do
-      body('PATH_INFO'=>'').must_equal ''
+      body('PATH_INFO' => '').must_equal ''
     end
 
     it 'returns nil when media type not registered' do
@@ -267,7 +269,7 @@ describe "sinatra_helpers plugin" do
     end
 
     it 'takes media type parameters (like charset=)' do
-      sin_app{content_type 'text/html', :charset => 'latin1'}
+      sin_app{content_type 'text/html', charset: 'latin1'}
       header('Content-Type').must_equal 'text/html;charset=latin1'
     end
 
@@ -283,17 +285,17 @@ describe "sinatra_helpers plugin" do
     end
 
     it 'handles already present params' do
-      sin_app{content_type 'foo/bar;level=1', :charset => 'utf-8'}
+      sin_app{content_type 'foo/bar;level=1', charset: 'utf-8'}
       header('Content-Type').must_equal 'foo/bar;level=1, charset=utf-8'
     end
 
     it 'does not add charset if present' do
-      sin_app{content_type 'text/plain;charset=utf-16', :charset => 'utf-8'}
+      sin_app{content_type 'text/plain;charset=utf-16', charset: 'utf-8'}
       header('Content-Type').must_equal 'text/plain;charset=utf-16'
     end
 
     it 'properly encodes parameters with delimiter characters' do
-      sin_app{|r| content_type 'image/png', :comment => r.path }
+      sin_app{|r| content_type 'image/png', comment: r.path }
       header('Content-Type', 'Hello, world!').must_equal 'image/png;comment="Hello, world!"'
       header('Content-Type', 'semi;colon').must_equal 'image/png;comment="semi;colon"'
       header('Content-Type', '"Whatever."').must_equal 'image/png;comment="\"Whatever.\""'
@@ -350,11 +352,11 @@ describe "sinatra_helpers plugin" do
     end
 
     it 'sets the Content-Type response header if type option is set to a file extension' do
-      header('Content-Type', 'OPTS'=>{:type => 'html'}).must_equal 'text/html'
+      header('Content-Type', 'OPTS' => { type: 'html' }).must_equal 'text/html'
     end
 
     it 'sets the Content-Type response header if type option is set to a mime type' do
-      header('Content-Type', 'OPTS'=>{:type => 'application/octet-stream'}).must_equal 'application/octet-stream'
+      header('Content-Type', 'OPTS' => { type: 'application/octet-stream' }).must_equal 'application/octet-stream'
     end
 
     it 'sets the Content-Length response header' do
@@ -368,7 +370,7 @@ describe "sinatra_helpers plugin" do
     it 'allows passing in a different Last-Modified response header with :last_modified' do
       time = Time.now
       @app.plugin :caching
-      header('Last-Modified', 'OPTS'=>{:last_modified => time}).must_equal time.httpdate
+      header('Last-Modified', 'OPTS' => { last_modified: time }).must_equal time.httpdate
     end
 
     it "returns a 404 when not found" do
@@ -381,27 +383,27 @@ describe "sinatra_helpers plugin" do
     end
 
     it "sets the Content-Disposition header when :disposition set to 'attachment'" do
-      header('Content-Disposition', 'OPTS'=>{:disposition => 'attachment'}).must_equal 'attachment; filename="raw.css"'
+      header('Content-Disposition', 'OPTS' => { disposition: 'attachment' }).must_equal 'attachment; filename="raw.css"'
     end
 
     it "does not set add a file name if filename is false" do
-      header('Content-Disposition', 'OPTS'=>{:disposition => 'inline', :filename=>false}).must_equal 'inline'
+      header('Content-Disposition', 'OPTS' => { disposition: 'inline', filename: false }).must_equal 'inline'
     end
 
     it "sets the Content-Disposition header when :disposition set to 'inline'" do
-      header('Content-Disposition', 'OPTS'=>{:disposition => 'inline'}).must_equal 'inline; filename="raw.css"'
+      header('Content-Disposition', 'OPTS' => { disposition: 'inline' }).must_equal 'inline; filename="raw.css"'
     end
 
     it "sets the Content-Disposition header when :filename provided" do
-      header('Content-Disposition', 'OPTS'=>{:filename => 'foo.txt'}).must_equal 'attachment; filename="foo.txt"'
+      header('Content-Disposition', 'OPTS' => { filename: 'foo.txt' }).must_equal 'attachment; filename="foo.txt"'
     end
 
     it 'allows setting a custom status code' do
-      status('OPTS'=>{:status=>201}).must_equal 201
+      status('OPTS' => { status: 201 }).must_equal 201
     end
 
     it "is able to send files with unknown mime type" do
-      header('Content-Type', 'OPTS'=>{:type => '.foobar'}).must_equal 'application/octet-stream'
+      header('Content-Type', 'OPTS' => { type: '.foobar' }).must_equal 'application/octet-stream'
     end
 
     it "does not override Content-Type if already set and no explicit type is given" do
@@ -417,7 +419,7 @@ describe "sinatra_helpers plugin" do
       file = @file
       sin_app do
         content_type :png
-        send_file file, :type => :gif
+        send_file file, type: :gif
       end
       header('Content-Type').must_equal 'image/gif'
     end
@@ -430,73 +432,73 @@ describe "sinatra_helpers plugin" do
       end
 
       it 'generates absolute urls' do
-        body('HTTP_HOST'=>'example.org').must_equal 'http://example.org/'
+        body('HTTP_HOST' => 'example.org').must_equal 'http://example.org/'
       end
 
       it 'includes path_info' do
-        body('/foo', 'HTTP_HOST'=>'example.org').must_equal 'http://example.org/foo'
+        body('/foo', 'HTTP_HOST' => 'example.org').must_equal 'http://example.org/foo'
       end
 
       it 'includes script_name' do
-        body('/bar', 'HTTP_HOST'=>'example.org', "SCRIPT_NAME" => '/foo').must_equal 'http://example.org/foo/bar'
+        body('/bar', 'HTTP_HOST' => 'example.org', "SCRIPT_NAME" => '/foo').must_equal 'http://example.org/foo/bar'
       end
 
       it 'handles standard HTTP and HTTPS ports' do
-        body('SERVER_NAME'=>'example.org', 'SERVER_PORT' => '80').must_equal 'http://example.org/'
-        body('SERVER_NAME'=>'example.org', 'SERVER_PORT' => '443', 'HTTPS'=>'on').must_equal 'https://example.org/'
+        body('SERVER_NAME' => 'example.org', 'SERVER_PORT' => '80').must_equal 'http://example.org/'
+        body('SERVER_NAME' => 'example.org', 'SERVER_PORT' => '443', 'HTTPS' => 'on').must_equal 'https://example.org/'
       end
 
       it 'handles non-standard HTTP port' do
-        body('SERVER_NAME'=>'example.org', 'SERVER_PORT' => '81').must_equal 'http://example.org:81/'
-        body('SERVER_NAME'=>'example.org', 'SERVER_PORT' => '443').must_equal 'http://example.org:443/'
+        body('SERVER_NAME' => 'example.org', 'SERVER_PORT' => '81').must_equal 'http://example.org:81/'
+        body('SERVER_NAME' => 'example.org', 'SERVER_PORT' => '443').must_equal 'http://example.org:443/'
       end
 
       it 'handles non-standard HTTPS port' do
-        body('SERVER_NAME'=>'example.org', 'SERVER_PORT' => '444', 'HTTPS'=>'on').must_equal 'https://example.org:444/'
-        body('SERVER_NAME'=>'example.org', 'SERVER_PORT' => '80', 'HTTPS'=>'on').must_equal 'https://example.org:80/'
+        body('SERVER_NAME' => 'example.org', 'SERVER_PORT' => '444', 'HTTPS' => 'on').must_equal 'https://example.org:444/'
+        body('SERVER_NAME' => 'example.org', 'SERVER_PORT' => '80', 'HTTPS' => 'on').must_equal 'https://example.org:80/'
       end
 
       it 'handles reverse proxy' do
-        body('SERVER_NAME'=>'example.org', 'HTTP_X_FORWARDED_HOST' => 'example.com', 'SERVER_PORT' => '8080').must_equal 'http://example.com/'
+        body('SERVER_NAME' => 'example.org', 'HTTP_X_FORWARDED_HOST' => 'example.com', 'SERVER_PORT' => '8080').must_equal 'http://example.com/'
       end
     end
 
     it 'allows passing an alternative to path_info' do
       sin_app{uri '/bar'}
-      body('HTTP_HOST'=>'example.org').must_equal 'http://example.org/bar'
-      body('HTTP_HOST'=>'example.org', "SCRIPT_NAME" => '/foo').must_equal 'http://example.org/foo/bar'
+      body('HTTP_HOST' => 'example.org').must_equal 'http://example.org/bar'
+      body('HTTP_HOST' => 'example.org', "SCRIPT_NAME" => '/foo').must_equal 'http://example.org/foo/bar'
     end
 
     it 'handles absolute URIs' do
       sin_app{uri 'http://google.com'}
-      body('HTTP_HOST'=>'example.org').must_equal 'http://google.com'
+      body('HTTP_HOST' => 'example.org').must_equal 'http://google.com'
     end
 
     it 'handles different protocols' do
       sin_app{uri 'mailto:jsmith@example.com'}
-      body('HTTP_HOST'=>'example.org').must_equal 'mailto:jsmith@example.com'
+      body('HTTP_HOST' => 'example.org').must_equal 'mailto:jsmith@example.com'
     end
 
     it 'allows turning off host' do
       sin_app{uri '/foo', false}
-      body('HTTP_HOST'=>'example.org').must_equal '/foo'
-      body('HTTP_HOST'=>'example.org', "SCRIPT_NAME" => '/bar').must_equal '/bar/foo'
+      body('HTTP_HOST' => 'example.org').must_equal '/foo'
+      body('HTTP_HOST' => 'example.org', "SCRIPT_NAME" => '/bar').must_equal '/bar/foo'
     end
 
     it 'allows turning off script_name' do
       sin_app{uri '/foo', true, false}
-      body('HTTP_HOST'=>'example.org').must_equal 'http://example.org/foo'
-      body('HTTP_HOST'=>'example.org', "SCRIPT_NAME" => '/bar').must_equal 'http://example.org/foo'
+      body('HTTP_HOST' => 'example.org').must_equal 'http://example.org/foo'
+      body('HTTP_HOST' => 'example.org', "SCRIPT_NAME" => '/bar').must_equal 'http://example.org/foo'
     end
 
     it 'is aliased to #url' do
       sin_app{url}
-      body('HTTP_HOST'=>'example.org').must_equal 'http://example.org/'
+      body('HTTP_HOST' => 'example.org').must_equal 'http://example.org/'
     end
 
     it 'is aliased to #to' do
       sin_app{to}
-      body('HTTP_HOST'=>'example.org').must_equal 'http://example.org/'
+      body('HTTP_HOST' => 'example.org').must_equal 'http://example.org/'
     end
 
     it 'accepts a URI object instead of a String' do
@@ -515,13 +517,13 @@ describe "sinatra_helpers plugin" do
       @a
     end
 
-    status('rack.logger'=>o).must_equal 404
+    status('rack.logger' => o).must_equal 404
     o.logs.must_equal [[:info, 'foo']]
   end
 
   it 'supports disabling delegation if :delegate=>false option is provided' do
     app(:bare) do
-      plugin :sinatra_helpers, :delegate=>false
+      plugin :sinatra_helpers, delegate: false
       route do |r|
         r.root{content_type}
         r.is("req"){r.ssl?.to_s}

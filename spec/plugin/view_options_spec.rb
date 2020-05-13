@@ -1,22 +1,24 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'tilt/erb'
 rescue LoadError
-  warn "tilt not installed, skipping view_options plugin test"  
+  warn "tilt not installed, skipping view_options plugin test"
 else
 describe "view_options plugin view subdirs" do
   before do
     app(:bare) do
-      plugin :render, :views=>"."
+      plugin :render, views: "."
       plugin :view_options
 
       route do |r|
-        append_view_subdir 'spec' 
+        append_view_subdir 'spec'
 
         r.on "home" do
           set_view_subdir 'spec/views'
-          view("home", :locals=>{:name => "Agent Smith", :title => "Home"}, :layout_opts=>{:locals=>{:title=>"Home"}})
+          view("home", locals: { name: "Agent Smith", title: "Home" }, layout_opts: { locals: { title: "Home" } })
         end
 
         r.on "about" do
@@ -26,11 +28,11 @@ describe "view_options plugin view subdirs" do
             r.is('view'){view("comp_test")}
             r.is{render("comp_test")}
           end
-          render("about", :locals=>{:title => "About Roda"})
+          render("about", locals: { title: "About Roda" })
         end
 
         r.on "path" do
-          render('spec/views/about', :locals=>{:title => "Path"}, :layout_opts=>{:locals=>{:title=>"Home"}})
+          render('spec/views/about', locals: { title: "Path" }, layout_opts: { locals: { title: "Home" } })
         end
 
         r.on 'test' do
@@ -55,7 +57,7 @@ describe "view_options plugin view subdirs" do
   end
 
   it "should handle template compilation correctly" do
-    @app.plugin :render, :layout=>'./spec/views/comp_layout'
+    @app.plugin :render, layout: './spec/views/comp_layout'
     3.times do
       body("/test").strip.must_equal "ct"
       body("/about/test").strip.must_equal "about-ct"
@@ -74,13 +76,13 @@ end
 describe "view_options plugin" do
   it "should not use :views view option for layout" do
     app(:bare) do
-      plugin :render, :views=>'spec/views', :allowed_paths=>['spec/views']
+      plugin :render, views: 'spec/views', allowed_paths: ['spec/views']
       plugin :view_options
 
       route do
-        set_view_options :views=>'spec/views/about'
-        set_layout_options :template=>'layout-alternative'
-        view('_test', :locals=>{:title=>'About Roda'}, :layout_opts=>{:locals=>{:title=>'Home'}})
+        set_view_options views: 'spec/views/about'
+        set_layout_options template: 'layout-alternative'
+        view('_test', locals: { title: 'About Roda' }, layout_opts: { locals: { title: 'Home' } })
       end
     end
 
@@ -89,13 +91,13 @@ describe "view_options plugin" do
 
   it "should allow overriding :layout plugin option with set_layout_options :template" do
     app(:bare) do
-      plugin :render, :views=>'spec/views', :allowed_paths=>['spec/views']
+      plugin :render, views: 'spec/views', allowed_paths: ['spec/views']
       plugin :view_options
 
       route do
-        set_view_options :views=>'spec/views/about'
-        set_layout_options :template=>'layout-alternative'
-        view('_test', :locals=>{:title=>'About Roda'}, :layout_opts=>{:locals=>{:title=>'Home'}})
+        set_view_options views: 'spec/views/about'
+        set_layout_options template: 'layout-alternative'
+        view('_test', locals: { title: 'About Roda' }, layout_opts: { locals: { title: 'Home' } })
       end
     end
 
@@ -104,13 +106,13 @@ describe "view_options plugin" do
 
   it "should allow overriding :layout_opts :template plugin option with set_layout_options :template" do
     app(:bare) do
-      plugin :render, :views=>'spec/views', :allowed_paths=>['spec/views'], :layout_opts=>{:template=>'layout'}
+      plugin :render, views: 'spec/views', allowed_paths: ['spec/views'], layout_opts: { template: 'layout' }
       plugin :view_options
 
       route do
-        set_view_options :views=>'spec/views/about', :layout=>'layout-alternative'
-        set_layout_options :template=>'layout-alternative'
-        view('_test', :locals=>{:title=>'About Roda'}, :layout_opts=>{:locals=>{:title=>'Home'}})
+        set_view_options views: 'spec/views/about', layout: 'layout-alternative'
+        set_layout_options template: 'layout-alternative'
+        view('_test', locals: { title: 'About Roda' }, layout_opts: { locals: { title: 'Home' } })
       end
     end
 
@@ -119,12 +121,12 @@ describe "view_options plugin" do
 
   it "should allow overriding :layout plugin option with set_view_options :layout" do
     app(:bare) do
-      plugin :render, :views=>'spec/views', :allowed_paths=>['spec/views'], :layout=>'layout'
+      plugin :render, views: 'spec/views', allowed_paths: ['spec/views'], layout: 'layout'
       plugin :view_options
 
       route do
-        set_view_options :views=>'spec/views/about', :layout=>'layout-alternative'
-        view('_test', :locals=>{:title=>'About Roda'}, :layout_opts=>{:locals=>{:title=>'Home'}})
+        set_view_options views: 'spec/views/about', layout: 'layout-alternative'
+        view('_test', locals: { title: 'About Roda' }, layout_opts: { locals: { title: 'Home' } })
       end
     end
 
@@ -133,13 +135,13 @@ describe "view_options plugin" do
 
   it "should set view and layout options to use" do
     app(:bare) do
-      plugin :render, :allowed_paths=>['spec/views']
+      plugin :render, allowed_paths: ['spec/views']
       plugin :view_options
-      plugin :render_locals, :render=>{:title=>'About Roda'}, :layout=>{:title=>'Home'}
+      plugin :render_locals, render: { title: 'About Roda' }, layout: { title: 'Home' }
 
       route do
-        set_view_options :views=>'spec/views'
-        set_layout_options :views=>'spec/views', :template=>'layout-alternative'
+        set_view_options views: 'spec/views'
+        set_layout_options views: 'spec/views', template: 'layout-alternative'
         view('about')
       end
     end
@@ -149,16 +151,16 @@ describe "view_options plugin" do
 
   it "should merge multiple calls to set view and layout options" do
     app(:bare) do
-      plugin :render, :allowed_paths=>['spec/views']
+      plugin :render, allowed_paths: ['spec/views']
       plugin :view_options
-      plugin :render_locals, :render=>{:title=>'Home', :b=>'B'}, :layout=>{:title=>'About Roda', :a=>'A'}
+      plugin :render_locals, render: { title: 'Home', b: 'B' }, layout: { title: 'About Roda', a: 'A' }
 
       route do
-        set_layout_options :views=>'spec/views', :template=>'multiple-layout', :engine=>'str'
-        set_view_options :views=>'spec/views', :engine=>'str'
+        set_layout_options views: 'spec/views', template: 'multiple-layout', engine: 'str'
+        set_view_options views: 'spec/views', engine: 'str'
 
-        set_layout_options :engine=>'erb'
-        set_view_options :engine=>'erb'
+        set_layout_options engine: 'erb'
+        set_view_options engine: 'erb'
 
         view('multiple')
       end

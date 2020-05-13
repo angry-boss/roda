@@ -136,7 +136,7 @@ class Roda
     # the match block is called with the matching string argument.  If a regexp is given,
     # the match block is called with the regexp captures.  This is the same behavior for Roda's
     # general string, array, and regexp matchers.
-    # 
+    #
     # = Recipient-Specific Routing
     #
     # To allow splitting up the mail processor routing tree based on recipients, you can use
@@ -201,7 +201,7 @@ class Roda
     #     m.add_file(filename: 'message.eml', :content=>mail.encoded)
     #     m.deliver
     #   end
-    #   
+    #
     # Finally, for all processed mail, regardless of whether it was handled or not,
     # there is an after_mail hook, which can be used to archive all processed mail:
     #
@@ -231,7 +231,7 @@ class Roda
     # but it includes the ability to configure how to do that via the +mail_text+ class method.
     # This method affects the +r.text+ match method, as well as +mail_text+ instance method.
     # By default, the decoded body of the mail is used as the mail text.
-    # 
+    #
     #   MailProcessor.mail_text do
     #     # mail.body.decoded by default
     #
@@ -246,7 +246,7 @@ class Roda
     #
     # Note that due to the way mail delivery works via SMTP, the actual sender and recipient of
     # the mail (the SMTP envelope MAIL FROM and RCPT TO addresses) may not match the sender and
-    # receiver embedded in the message.  Because mail_processor routing relies on parsing the mail, 
+    # receiver embedded in the message.  Because mail_processor routing relies on parsing the mail,
     # it does not have access to the actual sender and recipient used at the SMTP level, unless
     # a mail server adds that information as a header to the mail (and clears any existing header
     # to prevent spoofing).  Keep that in mind when you are setting up your mail routes.  If you
@@ -297,7 +297,7 @@ class Roda
         # Process the given Mail instance, calling the appropriate hooks depending on
         # whether the mail was handled during processing.
         def process_mail(mail)
-          scope = new("PATH_INFO"=>'', 'SCRIPT_NAME'=>'', "REQUEST_METHOD"=>"PROCESSMAIL", 'rack.input'=>StringIO.new, 'roda.mail'=>mail)
+          scope = new("PATH_INFO" => '', 'SCRIPT_NAME' => '', "REQUEST_METHOD" => "PROCESSMAIL", 'rack.input' => StringIO.new, 'roda.mail' => mail)
 
           begin
             begin
@@ -311,14 +311,14 @@ class Roda
             scope.after_mail_hook
           end
         end
-        
+
         # Process all mail in the given mailbox.  If the +:retriever+ option is
         # given, should be an object supporting the Mail retriever API, otherwise
         # uses the default Mail retriever_method.  This deletes retrieved mail from the
         # mailbox after processing, so that when called multiple times it does
         # not reprocess the same mail.  If mail should be archived and not deleted,
         # the +after_mail+ method should be used to perform the archiving of the mail.
-        def process_mailbox(opts=OPTS)
+        def process_mailbox(opts = OPTS)
           (opts[:retriever] || Mail).find_and_delete(opts.dup){|m| process_mail(m)}
           nil
         end
@@ -337,7 +337,7 @@ class Roda
               unless string_meth
                 string_meth = define_roda_method("mail_processor_string_route_#{address}", 1, &convert_route_block(block))
               end
-              opts[:mail_processor_string_routes][address] = string_meth 
+              opts[:mail_processor_string_routes][address] = string_meth
             when Regexp
               unless regexp_meth
                 regexp_meth = define_roda_method("mail_processor_regexp_route_#{address}", :any, &convert_route_block(block))
@@ -351,7 +351,7 @@ class Roda
         end
 
         %w'after_mail handled_mail unhandled_mail'.each do |meth|
-          class_eval(<<-END, __FILE__, __LINE__+1)
+          class_eval(<<-END, __FILE__, __LINE__ + 1)
             def #{meth}(&block)
               define_method(:#{meth}_hook, &block)
               nil
@@ -360,7 +360,7 @@ class Roda
         end
 
         %w'mail_recipients mail_text'.each do |meth|
-          class_eval(<<-END, __FILE__, __LINE__+1)
+          class_eval(<<-END, __FILE__, __LINE__ + 1)
             def #{meth}(&block)
               define_method(:#{meth}, &block)
               nil
@@ -371,7 +371,7 @@ class Roda
 
       module InstanceMethods
         [:to, :from, :cc, :body, :subject, :header].each do |field|
-          class_eval(<<-END, __FILE__, __LINE__+1)
+          class_eval(<<-END, __FILE__, __LINE__ + 1)
             def #{field}
               mail.#{field}
             end
@@ -396,7 +396,7 @@ class Roda
               addresses.each do |address|
                 if md = regexp.match(address)
                   _roda_handle_route{send(meth, @_request, *md.captures)}
-                  return 
+                  return
                 end
               end
             end
@@ -453,7 +453,7 @@ class Roda
 
       module RequestMethods
         [:to, :from, :cc, :body, :subject, :rcpt, :text].each do |field|
-          class_eval(<<-END, __FILE__, __LINE__+1)
+          class_eval(<<-END, __FILE__, __LINE__ + 1)
             def handle_#{field}(val)
               #{field}(val) do |*args|
                 handle do
@@ -478,7 +478,7 @@ class Roda
         undef_method :match_text
 
         # Same as +header+, but also mark the message as being handled.
-        def handle_header(key, value=nil)
+        def handle_header(key, value = nil)
           header(key, value) do |*args|
             handle do
               yield(*args)
@@ -487,8 +487,8 @@ class Roda
         end
 
         # Match based on a mail header value.
-        def header(key, value=nil, &block)
-          on(:header=>[key, value], &block)
+        def header(key, value = nil, &block)
+          on(header: [key, value], &block)
         end
 
         # Mark the mail as having been handled, so routing will not call
@@ -526,7 +526,7 @@ class Roda
             addresses.each do |a|
               val.each do |v|
                 if address_match?(a, v)
-                  overlap << a 
+                  overlap << a
                 end
               end
             end
@@ -544,7 +544,7 @@ class Roda
             end
             matched
           else
-            unsupported_matcher(:field=>val)
+            unsupported_matcher(field: val)
           end
         end
 
@@ -568,7 +568,7 @@ class Roda
               @captures.concat(md.captures)
             end
           else
-            unsupported_matcher(field=>val)
+            unsupported_matcher(field => val)
           end
         end
 

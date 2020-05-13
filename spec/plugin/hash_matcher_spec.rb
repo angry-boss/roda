@@ -1,18 +1,20 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "hash_matcher plugin" do 
+describe "hash_matcher plugin" do
   it "should enable the handling of arbitrary hash keys" do
-    app(:bare) do 
+    app(:bare) do
       plugin :hash_matcher
       hash_matcher(:foos){|v| consume(self.class.cached_matcher(:"foos-#{v}"){/((?:foo){#{v}})/})}
       route do |r|
-        r.is :foos=>1 do |f|
+        r.is foos: 1 do |f|
           "1#{f}"
         end
-        r.is :foos=>2 do |f|
+        r.is foos: 2 do |f|
           "2#{f}"
         end
-        r.is :foos=>3 do |f|
+        r.is foos: 3 do |f|
           "3#{f}"
         end
       end

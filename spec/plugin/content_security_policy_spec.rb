@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "content_security_policy plugin" do 
+describe "content_security_policy plugin" do
   it "does not add header if no options are set" do
     app(:content_security_policy){'a'}
     header('Content-Security-Policy', "/a").must_be_nil

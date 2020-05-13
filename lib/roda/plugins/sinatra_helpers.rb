@@ -28,7 +28,7 @@ class Roda
     #   Roda.mime_type 'csv' # => 'text/csv'
     #   Roda.mime_type 'foobar', 'application/foobar' # set
     #
-    # == Request Methods Added 
+    # == Request Methods Added
     #
     # In addition to adding the following methods, this changes
     # +redirect+ to use a 303 response status code by default for
@@ -40,7 +40,7 @@ class Roda
     #
     # When adding delegate methods, a logger method is added to
     # the route block scope that calls the logger method on the request.
-    # 
+    #
     # === back
     #
     # +back+ is an alias to referrer, so you can do:
@@ -189,7 +189,7 @@ class Roda
     #
     # Copyright (c) 2007, 2008, 2009 Blake Mizerany
     # Copyright (c) 2010, 2011, 2012, 2013, 2014 Konstantin Haase
-    # 
+    #
     # Permission is hereby granted, free of charge, to any person
     # obtaining a copy of this software and associated documentation
     # files (the "Software"), to deal in the Software without
@@ -198,10 +198,10 @@ class Roda
     # copies of the Software, and to permit persons to whom the
     # Software is furnished to do so, subject to the following
     # conditions:
-    # 
+    #
     # The above copyright notice and this permission notice shall be
     # included in all copies or substantial portions of the Software.
-    # 
+    #
     # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
     # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
     # OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -219,7 +219,7 @@ class Roda
       # Add delegate methods to the route block scope
       # calling request or response methods, unless the
       # :delegate option is false.
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         app.send(:include, DelegateMethods) unless opts[:delegate] == false
       end
 
@@ -283,7 +283,7 @@ class Roda
         # optional body.
         # If a single argument is given and it is not an integer, consider it the body
         # and use a 500 status code.
-        def error(code=500, body = nil)
+        def error(code = 500, body = nil)
           unless code.is_a?(Integer)
             body = code
             code = 500
@@ -301,7 +301,7 @@ class Roda
 
         # If the absolute_redirects or :prefixed_redirects roda class options has been set, respect those
         # and update the path.
-        def redirect(path=(no_add_script_name = true; default_redirect_path), status=default_redirect_status)
+        def redirect(path = (no_add_script_name = true; default_redirect_path), status = default_redirect_status)
           opts = roda_class.opts
           absolute_redirects = opts[:absolute_redirects]
           prefixed_redirects = no_add_script_name ? false : opts[:prefixed_redirects]
@@ -314,7 +314,7 @@ class Roda
           res = response
           headers = res.headers
           if opts[:type] || !headers["Content-Type"]
-            res.content_type(opts[:type] || ::File.extname(path), :default => 'application/octet-stream')
+            res.content_type(opts[:type] || ::File.extname(path), default: 'application/octet-stream')
           end
 
           disposition = opts[:disposition]
@@ -430,7 +430,7 @@ class Roda
 
         # Set the Content-Disposition to "attachment" with the specified filename,
         # instructing the user agents to prompt to save.
-        def attachment(filename = nil, disposition='attachment')
+        def attachment(filename = nil, disposition = 'attachment')
           if filename
             params = "; filename=#{File.basename(filename).inspect}"
             unless @headers["Content-Type"]
@@ -478,7 +478,7 @@ class Roda
         # If a type and value are given, set the value in Rack's MIME registry.
         # If only a type is given, lookup the type in Rack's MIME registry and
         # return it.
-        def mime_type(type=(return; nil), value = nil)
+        def mime_type(type = (return; nil), value = nil)
           return type.to_s if type.to_s.include?('/')
           type = ".#{type}" unless type.to_s[0] == ?.
           if value

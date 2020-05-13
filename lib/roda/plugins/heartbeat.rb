@@ -14,10 +14,10 @@ class Roda
     #
     #   plugin :heartbeat, path: '/status'
     module Heartbeat
-      HEARTBEAT_RESPONSE = [200, {'Content-Type'=>'text/plain'}.freeze, ['OK'.freeze].freeze].freeze
+      HEARTBEAT_RESPONSE = [200, { 'Content-Type' => 'text/plain' }.freeze, ['OK'.freeze].freeze].freeze
 
       # Set the heartbeat path to the given path.
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         app.opts[:heartbeat_path] = (opts[:path] || app.opts[:heartbeat_path] || "/heartbeat").dup.freeze
       end
 

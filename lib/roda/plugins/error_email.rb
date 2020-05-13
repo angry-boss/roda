@@ -38,20 +38,20 @@ class Roda
     # use an error reporting service instead of this plugin.
     module ErrorEmail
       DEFAULTS = {
-        :headers=>OPTS,
-        :host=>'localhost',
+        headers: OPTS,
+        host: 'localhost',
         # :nocov:
-        :emailer=>lambda{|h| Net::SMTP.start(h[:host]){|s| s.send_message(h[:message], h[:from], h[:to])}},
+        emailer: lambda{|h| Net::SMTP.start(h[:host]){|s| s.send_message(h[:message], h[:from], h[:to])}},
         # :nocov:
-        :default_headers=>lambda do |h, e|
+        default_headers: lambda do |h, e|
           subject = if e.respond_to?(:message)
             "#{e.class}: #{e.message}"
           else
             e.to_s
           end
-          {'From'=>h[:from], 'To'=>h[:to], 'Subject'=>"#{h[:prefix]}#{subject}"}
+          { 'From' => h[:from], 'To' => h[:to], 'Subject' => "#{h[:prefix]}#{subject}" }
         end,
-        :body=>lambda do |s, e|
+        body: lambda do |s, e|
           format = lambda{|h| h.map{|k, v| "#{k.inspect} => #{v.inspect}"}.sort.join("\n")}
 
           message = String.new
@@ -96,7 +96,7 @@ END
       }.freeze
 
       # Set default opts for plugin.  See ErrorEmail module RDoc for options.
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         email_opts = app.opts[:error_email] ||= DEFAULTS
         email_opts = email_opts.merge(opts)
         email_opts[:headers] = email_opts[:headers].dup
@@ -124,7 +124,7 @@ END
           email_opts = self.class.opts[:error_email]
           headers = email_opts[:default_headers].call(email_opts, exception)
           headers = headers.merge(email_opts[:headers])
-          headers = headers.map{|k,v| "#{k}: #{v.gsub(/\r?\n/m, "\r\n ")}"}.sort.join("\r\n")
+          headers = headers.map{|k, v| "#{k}: #{v.gsub(/\r?\n/m, "\r\n ")}"}.sort.join("\r\n")
           body = email_opts[:body].call(self, exception)
           "#{headers}\r\n\r\n#{body}"
         end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe "default_status plugin" do
@@ -66,7 +68,7 @@ describe "default_status plugin" do
   [true, false].each do |warn_arity|
     send(warn_arity ? :deprecated : :it, "works with blocks with invalid arity") do
       app(:bare) do
-        opts[:check_arity]  = :warn if warn_arity
+        opts[:check_arity] = :warn if warn_arity
         plugin :default_status do |r|
           201
         end

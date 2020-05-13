@@ -93,17 +93,17 @@ class Roda
     # If while preparing the email you figure out you don't want to send an
     # email, call +no_mail!+:
     #
-    #  r.mail 'welcome', Integer do |id| 
+    #  r.mail 'welcome', Integer do |id|
     #    no_mail! unless user = User[id]
     #    # ...
     #  end
     #
     # You can pass arguments when calling +mail+ or +sendmail+, and they
     # will be yielded as additional arguments to the appropriate +r.mail+ block:
-    # 
+    #
     #  Mailer.sendmail('/welcome/1', 'foo@example.com')
     #
-    #  r.mail 'welcome' do |user_id, mail_from| 
+    #  r.mail 'welcome' do |user_id, mail_from|
     #    from mail_from
     #    to User[user_id].email
     #    # ...
@@ -123,24 +123,24 @@ class Roda
     # available in your email views.
     module Mailer
       # Error raised when the using the mail class method, but the routing
-      # tree doesn't return the mail object. 
+      # tree doesn't return the mail object.
       class Error < ::Roda::RodaError; end
 
       # Set the options for the mailer.  Options:
       # :content_type :: The default content type for emails (default: text/plain)
-      def self.configure(app, opts=OPTS)
-        app.opts[:mailer] = (app.opts[:mailer]||OPTS).merge(opts).freeze
+      def self.configure(app, opts = OPTS)
+        app.opts[:mailer] = (app.opts[:mailer] || OPTS).merge(opts).freeze
       end
 
       module ClassMethods
         # Return a Mail::Message instance for the email for the given request path
         # and arguments.   Any arguments given are yielded to the appropriate +r.mail+
         # block after any usual match block arguments. You can further manipulate the
-        #returned mail object before calling +deliver+ to send the mail.
+        # returned mail object before calling +deliver+ to send the mail.
         def mail(path, *args)
           mail = ::Mail.new
           catch(:no_mail) do
-            unless mail.equal?(new("PATH_INFO"=>path, 'SCRIPT_NAME'=>'', "REQUEST_METHOD"=>"MAIL", 'rack.input'=>StringIO.new, 'roda.mail'=>mail, 'roda.mail_args'=>args)._roda_handle_main_route)
+            unless mail.equal?(new("PATH_INFO" => path, 'SCRIPT_NAME' => '', "REQUEST_METHOD" => "MAIL", 'rack.input' => StringIO.new, 'roda.mail' => mail, 'roda.mail_args' => args)._roda_handle_main_route)
               raise Error, "route did not return mail instance for #{path.inspect}, #{args.inspect}"
             end
             mail
@@ -256,7 +256,7 @@ class Roda
 
         # Set the text_part or html_part (depending on the method) in the related email,
         # using the given body and optional headers.
-        def _mail_part(meth, body, headers=nil)
+        def _mail_part(meth, body, headers = nil)
           env['roda.mail'].public_send(meth) do
             body(body)
             headers(headers) if headers

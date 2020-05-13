@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "head plugin" do 
+describe "head plugin" do
   it "considers HEAD requests as GET requests which return no body" do
     app(:head) do |r|
       r.root do
@@ -11,7 +13,7 @@ describe "head plugin" do
         'a'
       end
 
-      r.is 'b', :method=>[:get, :post] do
+      r.is 'b', method: [:get, :post] do
         'b'
       end
     end

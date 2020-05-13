@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 if RUBY_VERSION >= '2'
 require 'roda/session_middleware'
 
-describe "RodaSessionMiddleware" do 
+describe "RodaSessionMiddleware" do
   include CookieJar
 
   it "operates like a session middleware" do
@@ -11,7 +13,7 @@ describe "RodaSessionMiddleware" do
     env = nil
 
     app(:bare) do
-      use RodaSessionMiddleware, :secret=>'1'*64
+      use RodaSessionMiddleware, secret: '1' * 64
 
       route do |r|
         r.get('s', String, String){|k, v| session[k.to_sym] = v}
@@ -47,14 +49,14 @@ describe "RodaSessionMiddleware" do
     sess.must_be_kind_of RodaSessionMiddleware::SessionHash
     sess.req.must_be_kind_of Roda::RodaRequest
     sess.data.must_be_nil
-    sess.options[:secret].must_equal('1'*64)
+    sess.options[:secret].must_equal('1' * 64)
     sess.inspect.must_include "not yet loaded"
     sess.loaded?.must_equal false
 
     a = []
     sess.each{|k, v| a << k << v}
     a.must_equal %w'foo bar'
-    sess.data.must_equal("foo"=>"bar")
+    sess.data.must_equal("foo" => "bar")
     sess.inspect.must_equal '{"foo"=>"bar"}'
     sess.loaded?.must_equal true
 
@@ -75,7 +77,7 @@ describe "RodaSessionMiddleware" do
     sess.key?("bar").must_equal false
     sess.include?("foo").must_equal true
     sess.include?("bar").must_equal false
-    
+
     sess[:foo2] = "bar2"
     sess['foo2'].must_equal "bar2"
     sess.store('foo3', "bar3").must_equal "bar3"
@@ -97,18 +99,18 @@ describe "RodaSessionMiddleware" do
     env['roda.session.updated_at'].must_be_nil
 
     sess[:foo] = "bar"
-    sess.to_hash.must_equal("foo"=>"bar")
+    sess.to_hash.must_equal("foo" => "bar")
     sess.to_hash.wont_be_same_as(sess.data)
 
-    sess.update("foo2"=>"bar2", :foo=>"bar3").must_equal("foo"=>"bar3", "foo2"=>"bar2")
-    sess.data.must_equal("foo"=>"bar3", "foo2"=>"bar2")
-    sess.merge!("foo2"=>"bar4").must_equal("foo"=>"bar3", "foo2"=>"bar4")
+    sess.update("foo2" => "bar2", :foo => "bar3").must_equal("foo" => "bar3", "foo2" => "bar2")
+    sess.data.must_equal("foo" => "bar3", "foo2" => "bar2")
+    sess.merge!("foo2" => "bar4").must_equal("foo" => "bar3", "foo2" => "bar4")
 
-    sess.replace("foo2"=>"bar5", :foo3=>"bar").must_equal("foo3"=>"bar", "foo2"=>"bar5")
-    sess.data.must_equal("foo3"=>"bar", "foo2"=>"bar5")
+    sess.replace("foo2" => "bar5", :foo3 => "bar").must_equal("foo3" => "bar", "foo2" => "bar5")
+    sess.data.must_equal("foo3" => "bar", "foo2" => "bar5")
 
     sess.delete(:foo3).must_equal("bar")
-    sess.data.must_equal("foo2"=>"bar5")
+    sess.data.must_equal("foo2" => "bar5")
     sess.delete("foo2").must_equal("bar5")
     sess.data.must_equal({})
 
@@ -122,8 +124,8 @@ describe "RodaSessionMiddleware" do
     sess.keys.must_equal ["foo"]
     sess.values.must_equal ["bar"]
 
-    
-    
+
+
   end
 end
 end

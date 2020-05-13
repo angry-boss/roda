@@ -21,7 +21,7 @@ class Roda
       # Exception class used when a multipart file upload is attempted.
       class Error < RodaError; end
 
-      NO_TEMPFILE = lambda{|_,_| raise Error, "Support for uploading files has been disabled"}
+      NO_TEMPFILE = lambda{|_, _| raise Error, "Support for uploading files has been disabled"}
 
       module RequestMethods
         # HTML escape the input and return the escaped version.

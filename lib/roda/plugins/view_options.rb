@@ -39,7 +39,7 @@ class Roda
     #   route do |r|
     #     r.on "users" do
     #       set_view_subdir 'users'
-    #       
+    #
     #       r.get Integer do |id|
     #         append_view_subdir 'profile'
     #         view 'index' # uses ./views/users/profile/index.erb

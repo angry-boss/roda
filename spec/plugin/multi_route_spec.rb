@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "multi_route plugin" do 
+describe "multi_route plugin" do
   before do
     app(:bare) do
       plugin :multi_route
@@ -9,7 +11,7 @@ describe "multi_route plugin" do
         r.is "" do
           "get"
         end
-        
+
         r.is "a" do
           "geta"
         end
@@ -21,7 +23,7 @@ describe "multi_route plugin" do
         r.is "" do
           "post"
         end
-        
+
         r.is "a" do
           "posta"
         end
@@ -67,25 +69,25 @@ describe "multi_route plugin" do
 
   it "adds named routing support" do
     body.must_equal 'get'
-    body('REQUEST_METHOD'=>'POST').must_equal 'post'
+    body('REQUEST_METHOD' => 'POST').must_equal 'post'
     body('/a').must_equal 'geta'
-    body('/a', 'REQUEST_METHOD'=>'POST').must_equal 'posta'
+    body('/a', 'REQUEST_METHOD' => 'POST').must_equal 'posta'
     body('/b').must_equal 'getb'
-    body('/b', 'REQUEST_METHOD'=>'POST').must_equal 'postb'
+    body('/b', 'REQUEST_METHOD' => 'POST').must_equal 'postb'
     status('/c').must_equal 404
-    status('/c', 'REQUEST_METHOD'=>'POST').must_equal 404
+    status('/c', 'REQUEST_METHOD' => 'POST').must_equal 404
   end
 
   it "works when freezing the app" do
     app.freeze
     body.must_equal 'get'
-    body('REQUEST_METHOD'=>'POST').must_equal 'post'
+    body('REQUEST_METHOD' => 'POST').must_equal 'post'
     body('/a').must_equal 'geta'
-    body('/a', 'REQUEST_METHOD'=>'POST').must_equal 'posta'
+    body('/a', 'REQUEST_METHOD' => 'POST').must_equal 'posta'
     body('/b').must_equal 'getb'
-    body('/b', 'REQUEST_METHOD'=>'POST').must_equal 'postb'
+    body('/b', 'REQUEST_METHOD' => 'POST').must_equal 'postb'
     status('/c').must_equal 404
-    status('/c', 'REQUEST_METHOD'=>'POST').must_equal 404
+    status('/c', 'REQUEST_METHOD' => 'POST').must_equal 404
 
     proc{app.route("foo"){}}.must_raise
   end
@@ -125,13 +127,13 @@ describe "multi_route plugin" do
   it "handles loading the plugin multiple times correctly" do
     app.plugin :multi_route
     body.must_equal 'get'
-    body('REQUEST_METHOD'=>'POST').must_equal 'post'
+    body('REQUEST_METHOD' => 'POST').must_equal 'post'
     body('/a').must_equal 'geta'
-    body('/a', 'REQUEST_METHOD'=>'POST').must_equal 'posta'
+    body('/a', 'REQUEST_METHOD' => 'POST').must_equal 'posta'
     body('/b').must_equal 'getb'
-    body('/b', 'REQUEST_METHOD'=>'POST').must_equal 'postb'
+    body('/b', 'REQUEST_METHOD' => 'POST').must_equal 'postb'
     status('/c').must_equal 404
-    status('/c', 'REQUEST_METHOD'=>'POST').must_equal 404
+    status('/c', 'REQUEST_METHOD' => 'POST').must_equal 404
   end
 
   it "handles subclassing correctly" do
@@ -154,13 +156,13 @@ describe "multi_route plugin" do
     end
 
     body.must_equal 'post'
-    body('REQUEST_METHOD'=>'POST').must_equal 'get'
+    body('REQUEST_METHOD' => 'POST').must_equal 'get'
     body('/a').must_equal 'posta'
-    body('/a', 'REQUEST_METHOD'=>'POST').must_equal 'geta'
+    body('/a', 'REQUEST_METHOD' => 'POST').must_equal 'geta'
     body('/b').must_equal '1b'
-    body('/b', 'REQUEST_METHOD'=>'POST').must_equal '2b'
+    body('/b', 'REQUEST_METHOD' => 'POST').must_equal '2b'
     status('/c').must_equal 404
-    status('/c', 'REQUEST_METHOD'=>'POST').must_equal 404
+    status('/c', 'REQUEST_METHOD' => 'POST').must_equal 404
   end
 
   it "uses the named route return value in multi_route if no block is given" do
@@ -194,7 +196,7 @@ describe "multi_route plugin" do
   end
 end
 
-describe "multi_route plugin" do 
+describe "multi_route plugin" do
   before do
     app(:bare) do
       plugin :multi_route
@@ -255,10 +257,10 @@ describe "multi_route plugin" do
     end
     app.route("foo") do |path, r|
       r.multi_route("foo")
-      "f-#{path}" 
+      "f-#{path}"
     end
     app.route("bar", "foo") do |path|
-      "b-#{path}" 
+      "b-#{path}"
     end
 
     body.must_equal '/'

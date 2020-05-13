@@ -35,7 +35,7 @@ class Roda
       module RequestMethods
         %w'delete head options link patch put trace unlink'.each do |verb|
           if ::Rack::Request.method_defined?("#{verb}?")
-            class_eval(<<-END, __FILE__, __LINE__+1)
+            class_eval(<<-END, __FILE__, __LINE__ + 1)
               def #{verb}(*args, &block)
                 _verb(args, &block) if #{verb}?
               end

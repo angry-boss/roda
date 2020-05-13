@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe "status_303 plugin" do
@@ -22,7 +24,7 @@ describe "status_303 plugin" do
     app(:status_303) do
       request.redirect '/foo'
     end
-    status('HTTP_VERSION' => 'HTTP/1.1', 'REQUEST_METHOD'=>'POST').must_equal 303
-    status('HTTP_VERSION' => 'HTTP/1.0', 'REQUEST_METHOD'=>'POST').must_equal 302
+    status('HTTP_VERSION' => 'HTTP/1.1', 'REQUEST_METHOD' => 'POST').must_equal 303
+    status('HTTP_VERSION' => 'HTTP/1.0', 'REQUEST_METHOD' => 'POST').must_equal 302
   end
 end

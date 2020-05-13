@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "path plugin" do 
+describe "path plugin" do
   def path_app(*args, &block)
     app(:bare) do
       plugin :path
@@ -54,83 +56,83 @@ describe "path plugin" do
 
   it "raises if two options hashes are given" do
     app.plugin :path
-    proc{app.path(:foo, {:name=>'a'}, :add_script_name=>true)}.must_raise(Roda::RodaError)
+    proc{app.path(:foo, { name: 'a' }, add_script_name: true)}.must_raise(Roda::RodaError)
   end
 
   it "supports :name option for naming the method" do
-    path_app(:foo, :name=>'foobar_route'){"/bar/foo"}
+    path_app(:foo, name: 'foobar_route'){"/bar/foo"}
     body("foobar_route").must_equal "/bar/foo"
   end
 
   it "supports :add_script_name option for automatically adding the script name" do
-    path_app(:foo, :add_script_name=>true){"/bar/foo"}
-    body("foo_path", 'SCRIPT_NAME'=>'/baz').must_equal "/baz/bar/foo"
+    path_app(:foo, add_script_name: true){"/bar/foo"}
+    body("foo_path", 'SCRIPT_NAME' => '/baz').must_equal "/baz/bar/foo"
   end
 
   it "respects :add_script_name app option for automatically adding the script name" do
     path_script_name_app(:foo){"/bar/foo"}
-    body("foo_path", 'SCRIPT_NAME'=>'/baz').must_equal "/baz/bar/foo"
+    body("foo_path", 'SCRIPT_NAME' => '/baz').must_equal "/baz/bar/foo"
   end
 
   it "supports :add_script_name=>false option for not automatically adding the script name" do
-    path_script_name_app(:foo, :add_script_name=>false){"/bar/foo"}
-    body("foo_path", 'SCRIPT_NAME'=>'/baz').must_equal "/bar/foo"
+    path_script_name_app(:foo, add_script_name: false){"/bar/foo"}
+    body("foo_path", 'SCRIPT_NAME' => '/baz').must_equal "/bar/foo"
   end
 
   it "supports path method accepting a block when using :add_script_name" do
-    path_block_app(lambda{"c"}, :foo, :add_script_name=>true){|&block| "/bar/foo/#{block.call}"}
-    body("foo_path", 'SCRIPT_NAME'=>'/baz').must_equal "/baz/bar/foo/c"
+    path_block_app(lambda{"c"}, :foo, add_script_name: true){|&block| "/bar/foo/#{block.call}"}
+    body("foo_path", 'SCRIPT_NAME' => '/baz').must_equal "/baz/bar/foo/c"
   end
 
   it "supports :relative option for returning paths relative to the current request" do
     app(:bare) do
       plugin :path
-      path("bar", :relative=>true){"/bar/foo"}
+      path("bar", relative: true){"/bar/foo"}
       route{|r| bar_path}
     end
     body.must_equal "./bar/foo"
     body('/a').must_equal "./bar/foo"
     body('/a/').must_equal "../bar/foo"
     body('/a/b/c/d').must_equal "../../../bar/foo"
-    body('/a/b/c/d', "SCRIPT_NAME"=>"/e").must_equal "../../../../e/bar/foo"
+    body('/a/b/c/d', "SCRIPT_NAME" => "/e").must_equal "../../../../e/bar/foo"
   end
 
   it "raises Error if :relative option to be used with :url or :url_only options" do
     app.plugin :path
-    proc{app.path("bar", :relative=>true, :url=>true){"/bar/foo"}}.must_raise Roda::RodaError
-    proc{app.path("bar", :relative=>true, :url_only=>true){"/bar/foo"}}.must_raise Roda::RodaError
+    proc{app.path("bar", relative: true, url: true){"/bar/foo"}}.must_raise Roda::RodaError
+    proc{app.path("bar", relative: true, url_only: true){"/bar/foo"}}.must_raise Roda::RodaError
   end
 
   it "supports :url option for also creating a *_url method" do
-    path_app(:foo, :url=>true){"/bar/foo"}
-    body("foo_path", 'HTTP_HOST'=>'example.org', "rack.url_scheme"=>'http', 'SERVER_PORT'=>80).must_equal "/bar/foo"
-    body("foo_url", 'HTTP_HOST'=>'example.org', "rack.url_scheme"=>'http', 'SERVER_PORT'=>80).must_equal "http://example.org/bar/foo"
+    path_app(:foo, url: true){"/bar/foo"}
+    body("foo_path", 'HTTP_HOST' => 'example.org', "rack.url_scheme" => 'http', 'SERVER_PORT' => 80).must_equal "/bar/foo"
+    body("foo_url", 'HTTP_HOST' => 'example.org', "rack.url_scheme" => 'http', 'SERVER_PORT' => 80).must_equal "http://example.org/bar/foo"
   end
 
   it "supports url method accepting a block when using :url" do
-    path_block_app(lambda{"c"}, :foo, :url=>true){|&block| "/bar/foo/#{block.call}"}
-    body("foo_url", 'HTTP_HOST'=>'example.org', "rack.url_scheme"=>'http', 'SERVER_PORT'=>80).must_equal "http://example.org/bar/foo/c"
+    path_block_app(lambda{"c"}, :foo, url: true){|&block| "/bar/foo/#{block.call}"}
+    body("foo_url", 'HTTP_HOST' => 'example.org', "rack.url_scheme" => 'http', 'SERVER_PORT' => 80).must_equal "http://example.org/bar/foo/c"
   end
 
   it "supports url method name specified in :url option" do
-    path_app(:foo, :url=>:foobar_uri){"/bar/foo"}
-    body("foo_path", 'HTTP_HOST'=>'example.org', "rack.url_scheme"=>'http', 'SERVER_PORT'=>80).must_equal "/bar/foo"
-    body("foobar_uri", 'HTTP_HOST'=>'example.org', "rack.url_scheme"=>'http', 'SERVER_PORT'=>80).must_equal "http://example.org/bar/foo"
+    path_app(:foo, url: :foobar_uri){"/bar/foo"}
+    body("foo_path", 'HTTP_HOST' => 'example.org', "rack.url_scheme" => 'http', 'SERVER_PORT' => 80).must_equal "/bar/foo"
+    body("foobar_uri", 'HTTP_HOST' => 'example.org', "rack.url_scheme" => 'http', 'SERVER_PORT' => 80).must_equal "http://example.org/bar/foo"
   end
 
   it "supports :url_only option for not creating a path method" do
-    path_app(:foo, :url_only=>true){"/bar/foo"}
+    path_app(:foo, url_only: true){"/bar/foo"}
     proc{body("foo_path")}.must_raise(NoMethodError)
-    body("foo_url", 'HTTP_HOST'=>'example.org', "rack.url_scheme"=>'http', 'SERVER_PORT'=>80).must_equal "http://example.org/bar/foo"
+    body("foo_url", 'HTTP_HOST' => 'example.org', "rack.url_scheme" => 'http', 'SERVER_PORT' => 80).must_equal "http://example.org/bar/foo"
   end
 
   it "handles non-default ports in url methods" do
-    path_app(:foo, :url=>true){"/bar/foo"}
-    body("foo_url", 'HTTP_HOST'=>'example.org:81', "rack.url_scheme"=>'http', 'SERVER_PORT'=>81).must_equal "http://example.org:81/bar/foo"
+    path_app(:foo, url: true){"/bar/foo"}
+    body("foo_url", 'HTTP_HOST' => 'example.org:81', "rack.url_scheme" => 'http', 'SERVER_PORT' => 81).must_equal "http://example.org:81/bar/foo"
   end
 end
 
-describe "path plugin" do 
+describe "path plugin" do
   before do
     app(:bare) do
       plugin :path
@@ -146,29 +148,29 @@ describe "path plugin" do
 
   it "Roda#path respects classes and symbols registered via Roda.path" do
     # Strings
-    body('path'=>'/foo/bar').must_equal '/foo/bar'
+    body('path' => '/foo/bar').must_equal '/foo/bar'
 
     # Classes
-    body('path'=>@obj).must_equal '/d/1/'
-    body('path'=>[@obj, 'foo']).must_equal '/d/1/foo'
-    body('path'=>[@obj, 'foo', 'bar']).must_equal '/d/1/foo/bar'
+    body('path' => @obj).must_equal '/d/1/'
+    body('path' => [@obj, 'foo']).must_equal '/d/1/foo'
+    body('path' => [@obj, 'foo', 'bar']).must_equal '/d/1/foo/bar'
   end
 
   it "Roda#path raises an error for an unrecognized class" do
     # Strings
-    proc{body('path'=>:foo)}.must_raise(Roda::RodaError)
+    proc{body('path' => :foo)}.must_raise(Roda::RodaError)
   end
 
   it "Roda#path respects :add_script_name app option" do
     app.opts[:add_script_name] = true
 
     # Strings
-    body('path'=>'/foo/bar', 'SCRIPT_NAME'=>'/baz').must_equal '/baz/foo/bar'
+    body('path' => '/foo/bar', 'SCRIPT_NAME' => '/baz').must_equal '/baz/foo/bar'
 
     # Classes
-    body('path'=>@obj, 'SCRIPT_NAME'=>'/baz').must_equal '/baz/d/1/'
-    body('path'=>[@obj, 'foo'], 'SCRIPT_NAME'=>'/baz').must_equal '/baz/d/1/foo'
-    body('path'=>[@obj, 'foo', 'bar'], 'SCRIPT_NAME'=>'/baz').must_equal '/baz/d/1/foo/bar'
+    body('path' => @obj, 'SCRIPT_NAME' => '/baz').must_equal '/baz/d/1/'
+    body('path' => [@obj, 'foo'], 'SCRIPT_NAME' => '/baz').must_equal '/baz/d/1/foo'
+    body('path' => [@obj, 'foo', 'bar'], 'SCRIPT_NAME' => '/baz').must_equal '/baz/d/1/foo/bar'
   end
 
   it "Roda#path works in subclasses" do
@@ -181,7 +183,7 @@ describe "path plugin" do
     body.must_equal '/foo/a'
 
     @app = old_app
-    body('path'=>'/a').must_equal '/a'
+    body('path' => '/a').must_equal '/a'
   end
 
   it "registers classes by reference by default" do
@@ -191,8 +193,8 @@ describe "path plugin" do
     def c2.name; 'C'; end
     @app.path(c1){'/c'}
     @app.route{|r| path(r.env['c'])}
-    body('c'=>c1.new).must_equal '/c'
-    proc{body('c'=>c2.new)}.must_raise(Roda::RodaError)
+    body('c' => c1.new).must_equal '/c'
+    proc{body('c' => c2.new)}.must_raise(Roda::RodaError)
   end
 
   it ":by_name => option registers classes by name" do
@@ -200,11 +202,11 @@ describe "path plugin" do
     def c1.name; 'C'; end
     c2 = Class.new
     def c2.name; 'C'; end
-    @app.plugin :path, :by_name=>true
+    @app.plugin :path, by_name: true
     @app.path(c1){'/c'}
     @app.route{|r| path(r.env['c'])}
-    body('c'=>c1.new).must_equal '/c'
-    body('c'=>c2.new).must_equal '/c'
+    body('c' => c1.new).must_equal '/c'
+    body('c' => c2.new).must_equal '/c'
   end
 
   it ":by_name defaults to true in development" do
@@ -230,7 +232,7 @@ describe "path plugin" do
 
   it "Roda.path doesn't work with classes with paths or options" do
     proc{app.path(Class.new, '/a'){}}.must_raise(Roda::RodaError)
-    proc{app.path(Class.new, nil, :a=>1){}}.must_raise(Roda::RodaError)
+    proc{app.path(Class.new, nil, a: 1){}}.must_raise(Roda::RodaError)
   end
 
   it "Roda.path doesn't work after freezing the app" do

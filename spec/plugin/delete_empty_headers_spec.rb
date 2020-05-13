@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "delete_empty_headers plugin" do 
+describe "delete_empty_headers plugin" do
   it "automatically deletes headers that are empty" do
     app(:delete_empty_headers) do |r|
       response['Foo'] = ''
@@ -10,7 +12,7 @@ describe "delete_empty_headers plugin" do
       'a'
     end
 
-    req[1].must_equal('Bar'=>'1')
+    req[1].must_equal('Bar' => '1')
   end
 
   it "is called when finishing with a body" do
@@ -22,6 +24,6 @@ describe "delete_empty_headers plugin" do
       r.halt response.finish_with_body(['a'])
     end
 
-    req[1].must_equal('Bar'=>'1')
+    req[1].must_equal('Bar' => '1')
   end
 end

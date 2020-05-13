@@ -26,7 +26,7 @@ class Roda
     #
     #   # Assuming public is the location of files, and static is the path prefix
     #   r.route do
-    #     # Make GET /static/1238099123/images/foo.png look for public/images/foo.png 
+    #     # Make GET /static/1238099123/images/foo.png look for public/images/foo.png
     #     r.timestamp_public
     #
     #     r.get "example" do
@@ -41,7 +41,7 @@ class Roda
       # :prefix :: The prefix for paths, before the timestamp segment
       #
       # The options given are also passed to the public plugin.
-      def self.configure(app, opts={})
+      def self.configure(app, opts = {})
         app.plugin :public, opts
         app.opts[:timestamp_public_prefix] = (opts[:prefix] || app.opts[:timestamp_public_prefix] || "static").dup.freeze
       end

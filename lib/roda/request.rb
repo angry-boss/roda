@@ -98,12 +98,12 @@ class Roda
         # is given, uses the current response.
         #
         #   r.halt [200, {'Content-Type'=>'text/html'}, ['Hello World!']]
-        #   
+        #
         #   response.status = 200
         #   response['Content-Type'] = 'text/html'
         #   response.write 'Hello World!'
         #   r.halt
-        def halt(res=response.finish)
+        def halt(res = response.finish)
           throw :halt, res
         end
 
@@ -120,7 +120,7 @@ class Roda
         # have fully matched the path.  If it matches, the match block is
         # executed, and when the match block returns, the rack response is
         # returned.
-        # 
+        #
         #   r.remaining_path
         #   # => "/foo/bar"
         #
@@ -133,7 +133,7 @@ class Roda
         #   end
         #
         # If no arguments are given, matches if the path is already fully matched.
-        # 
+        #
         #   r.on 'foo/bar' do
         #     r.is do
         #       # matches as path is already empty
@@ -149,11 +149,11 @@ class Roda
         #   r.is 'foo/bar' do
         #     # does not match, as path isn't fully matched (/ remaining)
         #   end
-        # 
+        #
         #   r.is 'foo/bar/' do
         #     # matches as path is empty after matching
         #   end
-        # 
+        #
         #   r.on 'foo/bar' do
         #     r.is "" do
         #       # matches as path is empty after matching
@@ -181,7 +181,7 @@ class Roda
         # have matched the path.  Because this doesn't fully match the
         # path, this is usually used to setup branches of the routing tree,
         # not for final handling of the request.
-        # 
+        #
         #   r.remaining_path
         #   # => "/foo/bar"
         #
@@ -251,7 +251,7 @@ class Roda
         #   r.redirect '/page1', 301 if r['param'] == 'value1'
         #   r.redirect '/page2' # uses 302 status code
         #   response.status = 404 # not reached
-        #   
+        #
         # If you do not provide a path, by default it will redirect to the same
         # path if the request is not a +GET+ request.  This is designed to make
         # it easy to use where a +POST+ request to a URL changes state, +GET+
@@ -262,13 +262,13 @@ class Roda
         #     r.get do
         #       # show state
         #     end
-        #   
+        #
         #     r.post do
         #       # change state
         #       r.redirect
         #     end
         #   end
-        def redirect(path=default_redirect_path, status=default_redirect_status)
+        def redirect(path = default_redirect_path, status = default_redirect_status)
           response.redirect(path, status)
           throw :halt, response.finish
         end
@@ -321,7 +321,7 @@ class Roda
         #
         # Use <tt>r.post ""</tt> for +POST+ requests where the current path
         # is +/+.
-        # 
+        #
         # Nor does it match empty paths:
         #
         #   [r.request_method, r.remaining_path]
@@ -409,7 +409,7 @@ class Roda
         # Match the given hash if all hash matchers match.
         def _match_hash(hash)
           # Allow calling private methods, as match methods are generally private
-          hash.all?{|k,v| send("match_#{k}", v)}
+          hash.all?{|k, v| send("match_#{k}", v)}
         end
 
         # Match integer segment, and yield resulting value as an
@@ -444,7 +444,7 @@ class Roda
             length == 0 && rp.getbyte(0) == 47
           end
 
-          if match 
+          if match
             length += 1
             case rp.getbyte(length)
             when 47
@@ -462,16 +462,16 @@ class Roda
         end
 
         # Match the given symbol if any segment matches.
-        def _match_symbol(sym=nil)
+        def _match_symbol(sym = nil)
           rp = @remaining_path
           if rp.getbyte(0) == 47
             if last = rp.index('/', 1)
               if last > 1
-                @captures << rp[1, last-1]
+                @captures << rp[1, last - 1]
                 @remaining_path = rp[last, rp.length]
               end
             elsif rp.length > 1
-              @captures << rp[1,rp.length]
+              @captures << rp[1, rp.length]
               @remaining_path = ""
             end
           end

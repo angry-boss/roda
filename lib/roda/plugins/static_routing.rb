@@ -11,7 +11,7 @@ class Roda
     # for 100-10000 static routes.  Example:
     #
     #   plugin :static_routing
-    #   
+    #
     #   static_route '/foo' do |r|
     #     @var = :foo
     #
@@ -62,7 +62,7 @@ class Roda
         def static_route(path, &block)
           hash_path(:static_routing, path, &block)
         end
-        
+
         [:get, :post, :delete, :head, :options, :link, :patch, :put, :trace, :unlink].each do |meth|
           request_method = meth.to_s.upcase
           define_method("static_#{meth}") do |path, &block|

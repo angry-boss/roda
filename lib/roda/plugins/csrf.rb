@@ -34,7 +34,7 @@ class Roda
       CSRF = ::Rack::Csrf
 
       # Load the Rack::Csrf middleware into the app with the given options.
-      def self.configure(app, opts={})
+      def self.configure(app, opts = {})
         return if opts[:skip_middleware]
         app.instance_exec do
           @middleware.each do |(mid, *rest), _|
@@ -60,7 +60,7 @@ class Roda
         end
 
         # An html meta tag string containing the token.
-        def csrf_metatag(opts={})
+        def csrf_metatag(opts = {})
           CSRF.metatag(env, opts)
         end
 

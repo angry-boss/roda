@@ -41,14 +41,14 @@ class Roda
     #   precompile_templates inline: some_template_string
     module PrecompileTemplates
       # Load the render plugin as precompile_templates depends on it.
-      def self.load_dependencies(app, opts=OPTS)
+      def self.load_dependencies(app, opts = OPTS)
         app.plugin :render
       end
 
       module ClassMethods
         # Precompile the templates using the given options.  See PrecompileTemplates
         # for details.
-        def precompile_templates(pattern, opts=OPTS)
+        def precompile_templates(pattern, opts = OPTS)
           if pattern.is_a?(Hash)
             opts = pattern.merge(opts)
           end
@@ -62,7 +62,7 @@ class Roda
           compile_opts = if pattern.is_a?(Hash)
             [opts]
           else
-            Dir[pattern].map{|file| opts.merge(:path=>File.expand_path(file, nil))}
+            Dir[pattern].map{|file| opts.merge(path: File.expand_path(file, nil))}
           end
 
           instance = allocate

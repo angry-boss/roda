@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Roda
   # The major version of Roda, updated only for major changes that are
   # likely to require modification to Roda apps.
@@ -14,5 +16,5 @@ class Roda
   RodaVersion = "#{RodaMajorVersion}.#{RodaMinorVersion}.#{RodaPatchVersion}".freeze
 
   # The full version of Roda as a number (3.7.0 => 30070)
-  RodaVersionNumber = RodaMajorVersion*10000 + RodaMinorVersion*10 + RodaPatchVersion
+  RodaVersionNumber = RodaMajorVersion * 10000 + RodaMinorVersion * 10 + RodaPatchVersion
 end

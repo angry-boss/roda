@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "hooks plugin" do 
+describe "hooks plugin" do
   before do
     a = @a = []
     app(:bare) do

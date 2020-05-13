@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rake"
 require "rake/clean"
 require "rdoc/task"
@@ -12,7 +14,7 @@ CLEAN.include ["#{NAME}-*.gem", "rdoc", "coverage", "www/public/*.html", "www/pu
 # Gem Packaging and Release
 
 desc "Packages #{NAME}"
-task :package=>[:clean] do |p|
+task package: [:clean] do |p|
   sh %{gem build #{NAME}.gemspec}
 end
 
@@ -49,10 +51,10 @@ task :website_base do
 end
 
 desc "Make local version of website, with rdoc"
-task :website => [:website_base, :website_rdoc]
+task website: [:website_base, :website_rdoc]
 
 desc "Serve local version of website via rackup"
-task :serve => :website do
+task serve: :website do
   sh %{#{FileUtils::RUBY} -C www -S rackup}
 end
 
@@ -60,9 +62,9 @@ end
 ### Specs
 
 spec = proc do |env|
-  env.each{|k,v| ENV[k] = v}
+  env.each{|k, v| ENV[k] = v}
   sh "#{FileUtils::RUBY} spec/all.rb"
-  env.each{|k,v| ENV.delete(k)}
+  env.each{|k, v| ENV.delete(k)}
 end
 
 desc "Run specs"
@@ -70,28 +72,28 @@ task "spec" do
   spec.call({})
 end
 
-task :default=>:spec
+task default: :spec
 
 desc "Run specs with method visibility checking"
 task "spec_vis" do
-  spec.call('CHECK_METHOD_VISIBILITY'=>'1')
+  spec.call('CHECK_METHOD_VISIBILITY' => '1')
 end
-  
+
 desc "Run specs with coverage"
 task "spec_cov" do
-  spec.call('COVERAGE'=>'1')
+  spec.call('COVERAGE' => '1')
 end
-  
+
 desc "Run specs with branch coverage"
 task "spec_branch_cov" do
-  spec.call('COVERAGE'=>'1', 'BRANCH_COVERAGE'=>'1')
+  spec.call('COVERAGE' => '1', 'BRANCH_COVERAGE' => '1')
 end
-  
+
 desc "Run specs with -w, some warnings filtered"
 task "spec_w" do
   rubyopt = ENV['RUBYOPT']
   ENV['RUBYOPT'] = "#{rubyopt} -w"
-  spec.call('WARNING'=>'1')
+  spec.call('WARNING' => '1')
   ENV['RUBYOPT'] = rubyopt
 end
 

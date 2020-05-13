@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "timestamp_public plugin" do 
+describe "timestamp_public plugin" do
   it "adds r.timestamp_public for serving static files from timestamp_public folder" do
     app(:bare) do
-      plugin :timestamp_public, :root=>'spec/views'
+      plugin :timestamp_public, root: 'spec/views'
 
       route do |r|
         r.timestamp_public
@@ -19,7 +21,7 @@ describe "timestamp_public plugin" do
 
   it "adds r.timestamp_public for serving static files from timestamp_public folder" do
     app(:bare) do
-      plugin :timestamp_public, :root=>'spec/views', :prefix=>'foo'
+      plugin :timestamp_public, root: 'spec/views', prefix: 'foo'
 
       route do |r|
         r.timestamp_public
@@ -31,8 +33,8 @@ describe "timestamp_public plugin" do
 
   it "adds r.timestamp_public for serving static files from timestamp_public folder" do
     app(:bare) do
-      plugin :timestamp_public, :root=>'spec/plugin'
-      
+      plugin :timestamp_public, root: 'spec/plugin'
+
       route do |r|
         r.timestamp_public
         timestamp_path('../views/about/_test.erb')
@@ -47,7 +49,7 @@ describe "timestamp_public plugin" do
   it "respects the application's :root option" do
     app(:bare) do
       opts[:root] = File.expand_path('../../', __FILE__)
-      plugin :timestamp_public, :root=>'views'
+      plugin :timestamp_public, root: 'views'
 
       route do |r|
         r.timestamp_public
@@ -59,7 +61,7 @@ describe "timestamp_public plugin" do
 
   it "handles serving gzip files in gzip mode if client supports gzip" do
     app(:bare) do
-      plugin :timestamp_public, :root=>'spec/views', :gzip=>true
+      plugin :timestamp_public, root: 'spec/views', gzip: true
 
       route do |r|
         r.timestamp_public
@@ -72,13 +74,13 @@ describe "timestamp_public plugin" do
     body('/static/1/about.erb').must_equal File.read('spec/views/about.erb')
     header('Content-Encoding', '/about.erb').must_be_nil
 
-    body('/static/1/about/_test.erb', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip').must_equal File.binread('spec/views/about/_test.erb.gz')
-    h = req('/static/1/about/_test.erb', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip')[1]
+    body('/static/1/about/_test.erb', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip').must_equal File.binread('spec/views/about/_test.erb.gz')
+    h = req('/static/1/about/_test.erb', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip')[1]
     h['Content-Encoding'].must_equal 'gzip'
     h['Content-Type'].must_equal 'text/plain'
 
-    body('/static/1/about/_test.css', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip').must_equal File.binread('spec/views/about/_test.css.gz')
-    h = req('/static/1/about/_test.css', 'HTTP_ACCEPT_ENCODING'=>'deflate, gzip')[1]
+    body('/static/1/about/_test.css', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip').must_equal File.binread('spec/views/about/_test.css.gz')
+    h = req('/static/1/about/_test.css', 'HTTP_ACCEPT_ENCODING' => 'deflate, gzip')[1]
     h['Content-Encoding'].must_equal 'gzip'
     h['Content-Type'].must_equal 'text/css'
   end

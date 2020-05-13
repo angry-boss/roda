@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "param_matchers plugin" do 
+describe "param_matchers plugin" do
   it "param! matcher should yield a param only if given and not empty" do
     app(:param_matchers) do |r|
-      r.get "signup", :param! => "email" do |email|
+      r.get "signup", param!: "email" do |email|
         email
       end
 
@@ -18,7 +20,7 @@ describe "param_matchers plugin" do
 
   it "param matcher should yield a param only if given" do
     app(:param_matchers) do |r|
-      r.get "signup", :param=>"email" do |email|
+      r.get "signup", param: "email" do |email|
         email
       end
 
@@ -33,7 +35,7 @@ describe "param_matchers plugin" do
 
   it "params! matcher should yield the params only if all are given and not empty" do
     app(:param_matchers) do |r|
-      r.get "signup", :params! => %w"em ail" do |em, ail|
+      r.get "signup", params!: %w"em ail" do |em, ail|
         em + ail
       end
 
@@ -51,7 +53,7 @@ describe "param_matchers plugin" do
 
   it "params matcher should yield the params only if all are given" do
     app(:param_matchers) do |r|
-      r.get "signup", :params=>%w"em ail" do |em, ail|
+      r.get "signup", params: %w"em ail" do |em, ail|
         em + ail
       end
 

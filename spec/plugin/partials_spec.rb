@@ -1,28 +1,30 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'tilt/erb'
 rescue LoadError
-  warn "tilt not installed, skipping partials plugin test"  
+  warn "tilt not installed, skipping partials plugin test"
 else
   describe "partials plugin" do
     before do
       app(:bare) do
-        plugin :partials, :views=>"./spec/views"
+        plugin :partials, views: "./spec/views"
 
         route do |r|
           r.is "partial" do
-            partial("test", :locals=>{:title => "About Roda"})
+            partial("test", locals: { title: "About Roda" })
           end
 
           r.is "partial/subdir" do
-            partial("about/test", :locals=>{:title => "About Roda"})
+            partial("about/test", locals: { title: "About Roda" })
           end
 
           r.is "partial/inline" do
-            partial(:inline=>"Hello <%= name %>", :locals=>{:name => "Agent Smith"})
+            partial(inline: "Hello <%= name %>", locals: { name: "Agent Smith" })
           end
-        
+
         end
       end
     end
@@ -47,13 +49,13 @@ begin
   require 'tilt/rdoc'
   require_relative '../../lib/roda/plugins/render'
 rescue LoadError
-  warn "tilt not installed, skipping each_partial test"  
+  warn "tilt not installed, skipping each_partial test"
 else
-describe "each_partial method in partials plugin" do 
+describe "each_partial method in partials plugin" do
   [true, false].each do |cache|
     it "calls render with each argument, returning joined string with all results in cache: #{cache} mode" do
       app(:bare) do
-        plugin :render, :views=>'spec/views', :engine=>'str', :cache=>cache
+        plugin :render, views: 'spec/views', engine: 'str', cache: cache
         plugin :partials
 
         o = Object.new
@@ -61,31 +63,31 @@ describe "each_partial method in partials plugin" do
 
         route do |r|
           r.root do
-            each_partial([1,2,3], :each)
+            each_partial([1, 2, 3], :each)
           end
 
           r.is 'a' do
-            each_partial([1,2,3], :each, :local=>:foo, :bar=>4)
+            each_partial([1, 2, 3], :each, local: :foo, bar: 4)
           end
 
           r.is 'b' do
-            each_partial([1,2,3], :each, :local=>nil)
+            each_partial([1, 2, 3], :each, local: nil)
           end
 
           r.is 'c' do
-            each_partial([1,2,3], :each, :locals=>{:foo=>4})
+            each_partial([1, 2, 3], :each, locals: { foo: 4 })
           end
 
           r.is 'e' do
-            each_partial([1,2,3], o)
+            each_partial([1, 2, 3], o)
           end
 
           r.is 'f' do
-            each_partial([1,2,3], "views/each", :views=>'spec')
+            each_partial([1, 2, 3], "views/each", views: 'spec')
           end
 
           r.is 'g' do
-            each_partial([1,2,3], "each.foo")
+            each_partial([1, 2, 3], "each.foo")
           end
         end
       end
@@ -103,12 +105,12 @@ describe "each_partial method in partials plugin" do
 
     it "bases local name on basename of template in cache: #{cache} mode" do
       app(:bare) do
-        plugin :render, :views=>'spec', :engine=>'str', :cache=>cache
+        plugin :render, views: 'spec', engine: 'str', cache: cache
         plugin :partials
 
         route do |r|
           r.root do
-            each_partial([1,2,3], "views/each")
+            each_partial([1, 2, 3], "views/each")
           end
         end
       end

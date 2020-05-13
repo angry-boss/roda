@@ -73,7 +73,7 @@ class Roda
       #                   and rack response for all requests passing through the middleware,
       #                   after either the middleware or next app handles the request
       #                   and returns a response.
-      def self.configure(app, opts={}, &block)
+      def self.configure(app, opts = {}, &block)
         app.opts[:middleware_env_var] = opts[:env_var] if opts.has_key?(:env_var)
         app.opts[:middleware_env_var] ||= 'roda.forward_next'
         app.opts[:middleware_configure] = block if block

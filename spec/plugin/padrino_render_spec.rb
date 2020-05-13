@@ -1,23 +1,25 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'tilt/erb'
 rescue LoadError
-  warn "tilt not installed, skipping padrino_render plugin test"  
+  warn "tilt not installed, skipping padrino_render plugin test"
 else
 describe "padrino_render plugin" do
   before do
     app(:bare) do
-      plugin :padrino_render, :views=>"./spec/views"
+      plugin :padrino_render, views: "./spec/views"
 
       route do |r|
-        
+
         r.is "render" do
-          render(:content=>'bar', :layout_opts=>{:locals=>{:title=>"Home"}})
+          render(content: 'bar', layout_opts: { locals: { title: "Home" } })
         end
 
         r.is "render/nolayout" do
-          render("about", :locals=>{:title => "No Layout"}, :layout=>nil)
+          render("about", locals: { title: "No Layout" }, layout: nil)
         end
       end
     end

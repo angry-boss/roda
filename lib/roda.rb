@@ -173,7 +173,7 @@ class Roda
         end
 
         # Expand the given path, using the root argument as the base directory.
-        def expand_path(path, root=opts[:root])
+        def expand_path(path, root = opts[:root])
           ::File.expand_path(path, root)
         end
 
@@ -240,7 +240,7 @@ class Roda
           subclass.instance_variable_set(:@middleware, @inherit_middleware ? @middleware.dup : [])
           subclass.instance_variable_set(:@opts, opts.dup)
           subclass.opts.delete(:subclassed)
-          subclass.opts.to_a.each do |k,v|
+          subclass.opts.to_a.each do |k, v|
             if (v.is_a?(Array) || v.is_a?(Hash)) && !v.frozen?
               subclass.opts[k] = v.dup
             end
@@ -248,7 +248,7 @@ class Roda
           if block = @raw_route_block
             subclass.route(&block)
           end
-          
+
           request_class = Class.new(self::RodaRequest)
           request_class.roda_class = subclass
           request_class.match_pattern_cache = RodaCache.new
@@ -355,7 +355,7 @@ class Roda
         end
 
         # The base rack app to use, before middleware is added.
-        def base_rack_app_callable(new_api=true)
+        def base_rack_app_callable(new_api = true)
           if new_api
             lambda{|env| new(env)._roda_handle_main_route}
           else

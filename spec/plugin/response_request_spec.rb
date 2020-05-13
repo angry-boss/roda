@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe "response_request plugin" do
@@ -7,7 +9,7 @@ describe "response_request plugin" do
     end
 
     body.must_equal "a"
-    body('REQUEST_METHOD'=>'POST').must_equal "b"
+    body('REQUEST_METHOD' => 'POST').must_equal "b"
   end
 
   it "should work with error_handler plugin" do
@@ -17,27 +19,27 @@ describe "response_request plugin" do
       plugin :error_handler do |_|
         response.request.post? ? "b" : "a"
       end
-      
+
       route{raise}
     end
 
     body.must_equal "a"
-    body('REQUEST_METHOD'=>'POST').must_equal "b"
+    body('REQUEST_METHOD' => 'POST').must_equal "b"
   end
 
   it "should work with class_level_routing plugin" do
     app(:bare) do
       plugin :response_request
       plugin :class_level_routing
-      
+
       is '' do |_|
         response.request.post? ? "b" : "a"
       end
-      
+
       route{}
     end
 
     body.must_equal "a"
-    body('REQUEST_METHOD'=>'POST').must_equal "b"
+    body('REQUEST_METHOD' => 'POST').must_equal "b"
   end
 end

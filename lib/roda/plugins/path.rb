@@ -65,12 +65,12 @@ class Roda
     # Note that if :add_script_name, :url, or :url_only is used, the path method will also create a
     # <tt>_*_path</tt> private method.
     module Path
-      DEFAULT_PORTS = {'http' => 80, 'https' => 443}.freeze
+      DEFAULT_PORTS = { 'http' => 80, 'https' => 443 }.freeze
 
       # Initialize the path classes when loading the plugin. Options:
       # :by_name :: Register classes by name, which is friendlier when reloading code (defaults to
       #             true in development mode)
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         app.instance_eval do
           self.opts[:path_class_by_name] = opts.fetch(:by_name, ENV['RACK_ENV'] == 'development')
           self.opts[:path_classes] ||= {}
@@ -95,7 +95,7 @@ class Roda
         end
 
         # Create a new instance method for the named path.  See plugin module documentation for options.
-        def path(name, path=nil, opts=OPTS, &block)
+        def path(name, path = nil, opts = OPTS, &block)
           if name.is_a?(Class)
             raise RodaError, "can't provide path or options when calling path with a class" unless path.nil? && opts.empty?
             raise RodaError, "must provide a block when calling path with a class" unless block
@@ -180,7 +180,7 @@ class Roda
 
           nil
         end
-        
+
         # Return the block related to the given class, or nil if there is no block.
         def path_block(klass)
           # RODA4: Remove
@@ -198,7 +198,7 @@ class Roda
         def path(obj, *args, &block)
           app = self.class
           opts = app.opts
-          klass =  opts[:path_class_by_name] ? obj.class.name : obj.class
+          klass = opts[:path_class_by_name] ? obj.class.name : obj.class
           unless meth = opts[:path_class_methods][klass]
             raise RodaError, "unrecognized object given to Roda#path: #{obj.inspect}"
           end

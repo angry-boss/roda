@@ -1,25 +1,27 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'tilt/erb'
 rescue LoadError
-  warn "tilt not installed, skipping render_locals plugin test"  
+  warn "tilt not installed, skipping render_locals plugin test"
 else
 describe "render_locals plugin with :merge option" do
   before do
     app(:bare) do
-      plugin :render_locals, :render=>{:a=>1, :b=>2, :c=>3, :d=>4, :e=>5}, :layout=>{:a=>-1, :f=>6}, :merge=>true
-      plugin :render, :views=>"./spec/views", :check_paths=>true, :layout_opts=>{:inline=>'<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>|<%= f %>|<%= yield %>'}
+      plugin :render_locals, render: { a: 1, b: 2, c: 3, d: 4, e: 5 }, layout: { a: -1, f: 6 }, merge: true
+      plugin :render, views: "./spec/views", check_paths: true, layout_opts: { inline: '<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>|<%= f %>|<%= yield %>' }
 
       route do |r|
         r.on "base" do
-          view(:inline=>'(<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>)')
+          view(inline: '(<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>)')
         end
         r.on "override" do
-          view(:inline=>'(<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>)', :locals=>{:b=>-2, :d=>-4, :f=>-6}, :layout_opts=>{:locals=>{:d=>0, :c=>-3, :e=>-5}})
+          view(inline: '(<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>)', locals: { b: -2, d: -4, f: -6 }, layout_opts: { locals: { d: 0, c: -3, e: -5 } })
         end
         r.on "no_merge" do
-          view(:inline=>'(<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>)', :locals=>{:b=>-2, :d=>-4, :f=>-6}, :layout_opts=>{:merge_locals=>false, :locals=>{:d=>0, :c=>-3, :e=>-5}})
+          view(inline: '(<%= a %>|<%= b %>|<%= c %>|<%= d %>|<%= e %>)', locals: { b: -2, d: -4, f: -6 }, layout_opts: { merge_locals: false, locals: { d: 0, c: -3, e: -5 } })
         end
       end
     end
@@ -35,11 +37,11 @@ end
 describe "render_locals plugin" do
   it "locals overrides" do
     app(:bare) do
-      plugin :render, :views=>"./spec/views", :layout_opts=>{:template=>'multiple-layout'}
-      plugin :render_locals, :render=>{:title=>'Home', :b=>'B'}, :layout=>{:title=>'Roda', :a=>'A'}
-      
+      plugin :render, views: "./spec/views", layout_opts: { template: 'multiple-layout' }
+      plugin :render_locals, render: { title: 'Home', b: 'B' }, layout: { title: 'Roda', a: 'A' }
+
       route do |r|
-        view("multiple", :locals=>{:b=>"BB"}, :layout_opts=>{:locals=>{:a=>'AA'}})
+        view("multiple", locals: { b: "BB" }, layout_opts: { locals: { a: 'AA' } })
       end
     end
 
@@ -48,15 +50,15 @@ describe "render_locals plugin" do
 
   it ":layout=>true/false/string/hash/not-present respects plugin layout switch and template" do
     app(:bare) do
-      plugin :render, :views=>"./spec/views", :layout_opts=>{:template=>'layout-yield'}
-      plugin :render_locals, :layout=>{:title=>'a'}
-      
+      plugin :render, views: "./spec/views", layout_opts: { template: 'layout-yield' }
+      plugin :render_locals, layout: { title: 'a' }
+
       route do |r|
-        opts = {:content=>'bar'}
+        opts = { content: 'bar' }
         opts[:layout] = true if r.path == '/'
         opts[:layout] = false if r.path == '/f'
         opts[:layout] = 'layout' if r.path == '/s'
-        opts[:layout] = {:template=>'layout'} if r.path == '/h'
+        opts[:layout] = { template: 'layout' } if r.path == '/h'
         view(opts)
       end
     end
@@ -74,36 +76,36 @@ describe "render_locals plugin" do
     body('/s').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
     body('/h').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
 
-    app.plugin :render, :layout=>true
+    app.plugin :render, layout: true
     body.gsub("\n", '').must_equal "HeaderbarFooter"
     body('/a').gsub("\n", '').must_equal "HeaderbarFooter"
     body('/f').gsub("\n", '').must_equal "bar"
     body('/s').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
     body('/h').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
 
-    app.plugin :render, :layout=>'layout-alternative'
+    app.plugin :render, layout: 'layout-alternative'
     body.gsub("\n", '').must_equal "<title>Alternative Layout: a</title>bar"
     body('/a').gsub("\n", '').must_equal "<title>Alternative Layout: a</title>bar"
     body('/f').gsub("\n", '').must_equal "bar"
     body('/s').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
     body('/h').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
 
-    app.plugin :render, :layout=>nil
+    app.plugin :render, layout: nil
     body.gsub("\n", '').must_equal "HeaderbarFooter"
     body('/a').gsub("\n", '').must_equal "bar"
     body('/f').gsub("\n", '').must_equal "bar"
     body('/s').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
     body('/h').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
 
-    app.plugin :render, :layout=>false
+    app.plugin :render, layout: false
     body.gsub("\n", '').must_equal "HeaderbarFooter"
     body('/a').gsub("\n", '').must_equal "bar"
     body('/f').gsub("\n", '').must_equal "bar"
     body('/s').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
     body('/h').gsub("\n", '').must_equal "<title>Roda: a</title>bar"
 
-    app.plugin :render, :layout_opts=>{:template=>'layout-alternative'}
-    app.plugin :render_locals, :layout=>{:title=>'a'}
+    app.plugin :render, layout_opts: { template: 'layout-alternative' }
+    app.plugin :render_locals, layout: { title: 'a' }
     body.gsub("\n", '').must_equal "<title>Alternative Layout: a</title>bar"
     body('/a').gsub("\n", '').must_equal "bar"
     body('/f').gsub("\n", '').must_equal "bar"

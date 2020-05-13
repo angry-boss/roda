@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "delegate plugin" do 
+describe "delegate plugin" do
   it "adds request_delegate and response_delegate class methods for delegating" do
-    app(:bare) do 
+    app(:bare) do
       plugin :delegate
       request_delegate :root
       response_delegate :headers
@@ -16,7 +18,7 @@ describe "delegate plugin" do
         end
       end
     end
-    
+
     header('Content-Type').must_equal 'foo'
     status('/foo').must_equal 404
   end

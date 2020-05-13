@@ -39,7 +39,7 @@ class Roda
         def request_module(mod = nil, &block)
           module_include(:request, mod, &block)
         end
-    
+
         # Include the given module in the response class. If a block
         # is provided instead of a module, create a module using the
         # the block. Example:

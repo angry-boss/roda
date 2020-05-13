@@ -6,7 +6,7 @@ class Roda
     # The error_handler plugin adds an error handler to the routing,
     # so that if routing the request raises an error, a nice error
     # message page can be returned to the user.
-    # 
+    #
     # You can provide the error handler as a block to the plugin:
     #
     #   plugin :error_handler do |e|
@@ -48,7 +48,7 @@ class Roda
 
       # If a block is given, automatically call the +error+ method on
       # the Roda class with it.
-      def self.configure(app, opts={}, &block)
+      def self.configure(app, opts = {}, &block)
         app.opts[:error_handler_classes] = (opts[:classes] || app.opts[:error_handler_classes] || DEFAULT_ERROR_HANDLER_CLASSES).dup.freeze
 
         if block
@@ -81,7 +81,7 @@ class Roda
         end
 
         # If an error occurs, set the response status to 500 and call
-        # the error handler. 
+        # the error handler.
         def _roda_handle_main_route
           begin
             res = super

@@ -78,7 +78,7 @@ class Roda
         def handle(offset)
           @middleware.each_with_index do |(m, _), i|
             if yield(*m)
-              return StackPosition.new(@app, @middleware, i+offset)
+              return StackPosition.new(@app, @middleware, i + offset)
             end
           end
 

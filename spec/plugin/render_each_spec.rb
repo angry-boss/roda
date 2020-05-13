@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
@@ -6,13 +8,13 @@ begin
   require 'tilt/rdoc'
   require_relative '../../lib/roda/plugins/render'
 rescue LoadError
-  warn "tilt not installed, skipping render_each plugin test"  
+  warn "tilt not installed, skipping render_each plugin test"
 else
-describe "render_each plugin" do 
+describe "render_each plugin" do
   [true, false].each do |cache|
     it "calls render with each argument, returning joined string with all results in cache: #{cache} mode" do
       app(:bare) do
-        plugin :render, :views=>'spec/views', :engine=>'str', :cache=>cache
+        plugin :render, views: 'spec/views', engine: 'str', cache: cache
         plugin :render_each
 
         o = Object.new
@@ -20,35 +22,35 @@ describe "render_each plugin" do
 
         route do |r|
           r.root do
-            render_each([1,2,3], :each)
+            render_each([1, 2, 3], :each)
           end
 
           r.is 'a' do
-            render_each([1,2,3], :each, :local=>:foo, :bar=>4)
+            render_each([1, 2, 3], :each, local: :foo, bar: 4)
           end
 
           r.is 'b' do
-            render_each([1,2,3], :each, :local=>nil)
+            render_each([1, 2, 3], :each, local: nil)
           end
 
           r.is 'c' do
-            render_each([1,2,3], :each, :locals=>{:foo=>4})
+            render_each([1, 2, 3], :each, locals: { foo: 4 })
           end
 
           r.is 'd' do
-            render_each([1,2,3], {:template=>:each}, :local=>:each)
+            render_each([1, 2, 3], { template: :each }, local: :each)
           end
 
           r.is 'e' do
-            render_each([1,2,3], o)
+            render_each([1, 2, 3], o)
           end
 
           r.is 'f' do
-            render_each([1,2,3], "views/each", :views=>'spec')
+            render_each([1, 2, 3], "views/each", views: 'spec')
           end
 
           r.is 'g' do
-            render_each([1,2,3], "each.foo")
+            render_each([1, 2, 3], "each.foo")
           end
         end
       end
@@ -67,12 +69,12 @@ describe "render_each plugin" do
 
     it "bases local name on basename of template in cache: #{cache} mode" do
       app(:bare) do
-        plugin :render, :views=>'spec', :engine=>'str', :cache=>cache
+        plugin :render, views: 'spec', engine: 'str', cache: cache
         plugin :render_each
 
         route do |r|
           r.root do
-            render_each([1,2,3], "views/each")
+            render_each([1, 2, 3], "views/each")
           end
         end
       end
@@ -85,7 +87,7 @@ describe "render_each plugin" do
     if Roda::RodaPlugins::Render::COMPILED_METHOD_SUPPORT
       it "calls render with each argument, handling template engines that don't support compilation in cache: #{cache} mode" do
         app(:bare) do
-          plugin :render, :views=>'spec/views', :engine=>'rdoc', :cache=>cache
+          plugin :render, views: 'spec/views', engine: 'rdoc', cache: cache
           plugin :render_each
 
           route do |r|
@@ -93,7 +95,7 @@ describe "render_each plugin" do
               render_each([1], :a)
             end
             r.is 'a' do
-              render_each([1], :a, :local=>:b)
+              render_each([1], :a, local: :b)
             end
           end
         end

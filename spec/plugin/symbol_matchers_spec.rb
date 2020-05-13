@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "symbol_matchers plugin" do 
+describe "symbol_matchers plugin" do
   it "allows symbol specific regexps for symbol matchers" do
     app(:bare) do
       plugin :symbol_matchers

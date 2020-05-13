@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 run_tests = true
@@ -20,10 +22,10 @@ describe "assets_preloading plugin" do
   before do
     app(:bare) do
       plugin :assets, {
-        :css => ['app.scss'],
-        :js => { :head => ['app.js'] },
-        :path => 'spec/assets',
-        :public => 'spec',
+        css: ['app.scss'],
+        js: { head: ['app.js'] },
+        path: 'spec/assets',
+        public: 'spec',
       }
       plugin :assets_preloading
 

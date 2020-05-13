@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "request_aref plugin" do 
+describe "request_aref plugin" do
   def request_aref_app(value)
     warning = @warning = String.new('')
     app(:bare) do
@@ -17,11 +19,11 @@ describe "request_aref plugin" do
   end
 
   def aref_body
-    body("QUERY_STRING" => 'a=d', 'rack.input'=>StringIO.new)
+    body("QUERY_STRING" => 'a=d', 'rack.input' => StringIO.new)
   end
 
   def aset_body
-    body('/set', "QUERY_STRING" => 'a=d', 'rack.input'=>StringIO.new)
+    body('/set', "QUERY_STRING" => 'a=d', 'rack.input' => StringIO.new)
   end
 
   it "allows if given the :allow option" do

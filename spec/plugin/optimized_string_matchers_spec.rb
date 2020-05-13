@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "optimized_string_matchers plugin" do 
+describe "optimized_string_matchers plugin" do
   it "should support on_branch and is_exactly match methods" do
     app(:optimized_string_matchers) do |r|
       r.on_branch "e" do

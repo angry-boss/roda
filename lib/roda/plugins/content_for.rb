@@ -73,7 +73,7 @@ class Roda
         # under the given key.  If called without a block, retrieve
         # stored content with the given key, or return nil if there
         # is no content stored with that key.
-        def content_for(key, value=nil)
+        def content_for(key, value = nil)
           append = opts[:append_content_for]
 
           if block_given? || value

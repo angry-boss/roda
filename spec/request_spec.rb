@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 describe "request.path, .remaining_path, and .matched_path" do
@@ -8,7 +10,7 @@ describe "request.path, .remaining_path, and .matched_path" do
       end
     end
 
-    body("/foo/bar").must_equal  "/foo/bar:/foo:/bar"
+    body("/foo/bar").must_equal "/foo/bar:/foo:/bar"
   end
 end
 
@@ -30,7 +32,7 @@ describe "request.halt" do
       r.halt [200, {}, ['foo']]
     end
 
-    body.must_equal  "foo"
+    body.must_equal "foo"
   end
 
   it "should use current response if no argument is given" do
@@ -39,7 +41,7 @@ describe "request.halt" do
       r.halt
     end
 
-    body.must_equal  "foo"
+    body.must_equal "foo"
   end
 end
 
@@ -54,7 +56,7 @@ describe "request.scope" do
       end
     end
 
-    body.must_equal  "a"
+    body.must_equal "a"
   end
 end
 
@@ -70,8 +72,8 @@ describe "request.inspect" do
       end
     end
 
-    body('/a/b').must_equal  "#<Foo::RodaRequest GET /a/b>"
-    body('REQUEST_METHOD'=>'POST').must_equal  "#<Foo::RodaRequest POST />"
+    body('/a/b').must_equal "#<Foo::RodaRequest GET /a/b>"
+    body('REQUEST_METHOD' => 'POST').must_equal "#<Foo::RodaRequest POST />"
   end
 end
 
@@ -81,7 +83,7 @@ describe "TERM.inspect" do
       r.class::TERM.inspect
     end
 
-    body.must_equal  "TERM"
+    body.must_equal "TERM"
   end
 end
 
@@ -92,6 +94,6 @@ describe "roda_class" do
       r.class.roda_class.opts[:a] + r.roda_class.opts[:a]
     end
 
-    body.must_equal  "aa"
+    body.must_equal "aa"
   end
 end

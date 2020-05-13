@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "multibyte_string_matcher plugin" do 
+describe "multibyte_string_matcher plugin" do
   it "uses multibyte safe string matching" do
     str = "\xD0\xB8".dup.force_encoding('UTF-8')
     app(:unescape_path) do |r|

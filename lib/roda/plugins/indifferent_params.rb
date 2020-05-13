@@ -39,18 +39,18 @@ class Roda
     # it affects all rack applications instead of just the Roda app that
     # you load the plugin into.
     module IndifferentParams
-      INDIFFERENT_PROC = lambda{|h,k| h[k.to_s] if k.is_a?(Symbol)}
+      INDIFFERENT_PROC = lambda{|h, k| h[k.to_s] if k.is_a?(Symbol)}
 
       if Rack.release > '2'
         require 'rack/query_parser'
 
         class QueryParser < Rack::QueryParser
           # Work around for invalid optimization in rack
-          def parse_nested_query(qs, d=nil)
+          def parse_nested_query(qs, d = nil)
             return make_params.to_params_hash if qs.nil? || qs.empty?
             super
           end
-          
+
           class Params < Rack::QueryParser::Params
             def initialize(limit = Rack::Utils.key_space_limit)
               @limit  = limit
@@ -91,7 +91,7 @@ class Roda
           # hashes to support indifferent access, leaving
           # other values alone.
           def indifferent_params(params)
-            case params 
+            case params
             when Hash
               hash = Hash.new(&INDIFFERENT_PROC)
               params.each{|k, v| hash[k] = indifferent_params(v)}
@@ -104,7 +104,7 @@ class Roda
           end
         end
         # :nocov:
-      end  
+      end
     end
 
     register_plugin(:indifferent_params, IndifferentParams)

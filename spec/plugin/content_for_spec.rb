@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
@@ -8,27 +10,27 @@ else
 describe "content_for plugin with erb" do
   before do
     app(:bare) do
-      plugin :render, :views => './spec/views'
+      plugin :render, views: './spec/views'
       plugin :content_for
 
       route do |r|
         r.root do
-          view(:inline => "<% content_for :foo do %>foo<% end %>bar", :layout => { :inline => '<%= yield %> <%= content_for(:foo) %>' })
+          view(inline: "<% content_for :foo do %>foo<% end %>bar", layout: { inline: '<%= yield %> <%= content_for(:foo) %>' })
         end
         r.get 'a' do
-          view(:inline => "bar", :layout => { :inline => '<%= content_for(:foo) %> <%= yield %>' })
+          view(inline: "bar", layout: { inline: '<%= content_for(:foo) %> <%= yield %>' })
         end
         r.get 'b' do
-          view(:inline => '<% content_for(:foo, "foo") %>bar', :layout => { :inline => '<%= yield %> <%= content_for(:foo) %>' })
+          view(inline: '<% content_for(:foo, "foo") %>bar', layout: { inline: '<%= yield %> <%= content_for(:foo) %>' })
         end
         r.get 'e' do
-          view(:inline => 'a<% content_for :foo do %><% end %>b', :layout => { :inline => 'c<%= yield %>d<%= content_for(:foo) %>e' })
+          view(inline: 'a<% content_for :foo do %><% end %>b', layout: { inline: 'c<%= yield %>d<%= content_for(:foo) %>e' })
         end
         r.get 'f' do
-          view(:inline => 'a<% content_for :foo do "f" end %>b', :layout => { :inline => 'c<%= yield %>d<%= content_for(:foo) %>e' })
+          view(inline: 'a<% content_for :foo do "f" end %>b', layout: { inline: 'c<%= yield %>d<%= content_for(:foo) %>e' })
         end
         r.get 'g' do
-          view(:inline => 'a<% content_for :foo do "<" + "%= 1 %" + ">" end %>b', :layout => { :inline => 'c<%= yield %>d<%= content_for(:foo) %>e' })
+          view(inline: 'a<% content_for :foo do "<" + "%= 1 %" + ">" end %>b', layout: { inline: 'c<%= yield %>d<%= content_for(:foo) %>e' })
         end
       end
     end
@@ -62,19 +64,19 @@ end
 describe "content_for plugin with multiple calls to the same key" do
   before do
     app(:bare) do
-      plugin :render, :views => './spec/views'
+      plugin :render, views: './spec/views'
       plugin :content_for
 
       route do |r|
         r.root do
-          view(:inline => "<% content_for :foo do %>foo<% end %><% content_for :foo do %>baz<% end %>bar", :layout => { :inline => '<%= yield %> <%= content_for(:foo) %>' })
+          view(inline: "<% content_for :foo do %>foo<% end %><% content_for :foo do %>baz<% end %>bar", layout: { inline: '<%= yield %> <%= content_for(:foo) %>' })
         end
       end
     end
   end
 
   it "should replace with multiple calls to the same key if :append=>false plugin option is used" do
-    app.plugin :content_for, :append => false
+    app.plugin :content_for, append: false
     body.strip.must_equal "bar baz"
   end
 
@@ -94,15 +96,15 @@ else
 describe "content_for plugin with haml" do
   before do
     app(:bare) do
-      plugin :render, :engine => 'haml'
+      plugin :render, engine: 'haml'
       plugin :content_for
 
       route do |r|
         r.root do
-          view(:inline => "- content_for :foo do\n  - capture_haml do\n    foo\nbar", :layout => { :inline => "= yield\n=content_for :foo" })
+          view(inline: "- content_for :foo do\n  - capture_haml do\n    foo\nbar", layout: { inline: "= yield\n=content_for :foo" })
         end
         r.get 'a' do
-          view(:inline => "- content_for :foo, 'foo'\nbar", :layout => { :inline => "= yield\n=content_for :foo" })
+          view(inline: "- content_for :foo, 'foo'\nbar", layout: { inline: "= yield\n=content_for :foo" })
         end
       end
     end
@@ -117,15 +119,15 @@ end
 describe "content_for plugin with mixed template engines" do
   before do
     app(:bare) do
-      plugin :render, :layout_opts=>{:engine => 'haml', :inline => "= yield\n=content_for :foo" }
+      plugin :render, layout_opts: { engine: 'haml', inline: "= yield\n=content_for :foo" }
       plugin :content_for
 
       route do |r|
         r.root do
-          view(:inline => "<% content_for :foo do %>foo<% end %>bar")
+          view(inline: "<% content_for :foo do %>foo<% end %>bar")
         end
         r.get 'a' do
-          view(:inline => "<% content_for :foo, 'foo' %>bar")
+          view(inline: "<% content_for :foo, 'foo' %>bar")
         end
       end
     end
@@ -140,15 +142,15 @@ end
 describe "content_for plugin when overriding :engine" do
   before do
     app(:bare) do
-      plugin :render, :engine => 'haml', :layout_opts=>{:inline => "= yield\n=content_for :foo" }
+      plugin :render, engine: 'haml', layout_opts: { inline: "= yield\n=content_for :foo" }
       plugin :content_for
 
       route do |r|
         r.root do
-          view(:inline => "<% content_for :foo do %>foo<% end %>bar", :engine=>:erb)
+          view(inline: "<% content_for :foo do %>foo<% end %>bar", engine: :erb)
         end
         r.get 'a' do
-          view(:inline => "<% content_for :foo, 'foo' %>bar", :engine=>:erb)
+          view(inline: "<% content_for :foo, 'foo' %>bar", engine: :erb)
         end
       end
     end

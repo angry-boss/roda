@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
-describe "integration" do 
+describe "integration" do
   before do
     @c = Class.new do
       def initialize(app, first, second, &block)
@@ -20,7 +22,7 @@ describe "integration" do
 
   it "should setup middleware using use" do
     c = @c
-    app(:bare) do 
+    app(:bare) do
       use c, "First", "Second" do
         "Block"
       end
@@ -37,7 +39,7 @@ describe "integration" do
 
   it "should clear middleware when clear_middleware! is called" do
     c = @c
-    app(:bare) do 
+    app(:bare) do
       use c, "First", "Second" do
         "Block"
       end
@@ -60,7 +62,7 @@ describe "integration" do
       def call(env) @a = 1; @app.call(env) end
     end
 
-    app do 
+    app do
       "D"
     end
 
@@ -77,7 +79,7 @@ describe "integration" do
 
   it "should support adding middleware using use after route block setup" do
     c = @c
-    app(:bare) do 
+    app(:bare) do
       route do |r|
         r.get "hello" do
           "D #{r.env['m.first']} #{r.env['m.second']} #{r.env['m.block']}"
@@ -198,7 +200,7 @@ describe "integration" do
     app(:bare){}.app.must_be_kind_of(Proc)
     app.route{|r|}
     app.app.must_be_kind_of(Proc)
-    c = Class.new{def initialize(app) @app = app end; def call(env) @app.call(env) end} 
+    c = Class.new{def initialize(app) @app = app end; def call(env) @app.call(env) end}
     app.use c
     app.app.must_be_kind_of(c)
   end

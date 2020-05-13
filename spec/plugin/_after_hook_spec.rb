@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "deprecated _after_hook plugin" do 
+describe "deprecated _after_hook plugin" do
   it "shouldn't break things" do
     x = []
     app(:_after_hook) do |r|

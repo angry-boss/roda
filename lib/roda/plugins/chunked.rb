@@ -18,7 +18,7 @@ class Roda
     # database.
     #
     # There are a couple disadvantages of streaming using chunked encoding.
-    # First is that the layout must be rendered before the content, so any state 
+    # First is that the layout must be rendered before the content, so any state
     # changes made in your content template will not affect the layout template.
     # Second, error handling is reduced, since if an error occurs while
     # rendering a template, a successful response code has already been sent.
@@ -146,14 +146,14 @@ class Roda
     # rotated.
     module Chunked
       # Depend on the render plugin
-      def self.load_dependencies(app, opts=OPTS)
+      def self.load_dependencies(app, opts = OPTS)
         app.plugin :render
       end
 
       # Set plugin specific options.  Options:
       # :chunk_by_default :: chunk all calls to view by default
       # :headers :: Set default additional headers to use when calling view
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         app.opts[:chunk_by_default] = opts[:chunk_by_default]
         if opts[:headers]
           app.opts[:chunk_headers] = (app.opts[:chunk_headers] || {}).merge(opts[:headers]).freeze
@@ -203,7 +203,7 @@ class Roda
 
         # Render a response to the user in chunks.  See Chunked for
         # an overview.  If a block is given, it is passed to #delay.
-        def chunked(template, opts=OPTS, &block)
+        def chunked(template, opts = OPTS, &block)
           unless defined?(@_chunked)
             @_chunked = env['HTTP_VERSION'] == "HTTP/1.1"
           end
@@ -225,7 +225,7 @@ class Roda
               opts = Hash[opts].merge!(template)
             end
           end
-          
+
           # Hack so that the arguments don't need to be passed
           # through the response and body objects.
           @_each_chunk_args = [template, opts]
@@ -261,7 +261,7 @@ class Roda
             @_out_buf = String.new
           end
 
-          if layout_opts  = view_layout_opts(opts)
+          if layout_opts = view_layout_opts(opts)
             @_out_buf = render_template(layout_opts) do
               flush
               run_delayed_blocks
@@ -289,7 +289,7 @@ class Roda
         def flush
           @_flusher.call if @_flusher
         end
-        
+
         private
 
         # Run all delayed blocks

@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'mail'
 rescue LoadError
-  warn "mail not installed, skipping mail_processor plugin test"  
+  warn "mail not installed, skipping mail_processor plugin test"
 else
 Mail.defaults do
   retriever_method :test
 end
 
-describe "mail_processor plugin" do 
+describe "mail_processor plugin" do
   def new_mail
-    m = Mail.new(:to=>'a@example.com', :from=>'b@example.com', :cc=>'c@example.com', :bcc=>'d@example.com', :subject=>'Sub', :body=>'Bod')
+    m = Mail.new(to: 'a@example.com', from: 'b@example.com', cc: 'c@example.com', bcc: 'd@example.com', subject: 'Sub', body: 'Bod')
     yield m if block_given?
     m
   end
@@ -80,7 +82,7 @@ describe "mail_processor plugin" do
       end
       r.subject(/S([ao])/) do |sub|
         r.handle do
-          processed << :s3 <<  sub
+          processed << :s3 << sub
         end
       end
     end
@@ -266,17 +268,17 @@ describe "mail_processor plugin" do
     Mail::TestRetriever.emails = [new_mail{|m| m.to 'c@example.com'}]
     check{app.process_mailbox}.must_equal ['c@example.com']
     Mail::TestRetriever.emails = [new_mail] * 10
-    check{app.process_mailbox}.must_equal([:to_a]*10)
+    check{app.process_mailbox}.must_equal([:to_a] * 10)
     Mail::TestRetriever.emails = Array.new(10){new_mail}
-    check{app.process_mailbox(:count=>2)}.must_equal([:to_a]*2)
-    check{app.process_mailbox}.must_equal([:to_a]*8)
+    check{app.process_mailbox(count: 2)}.must_equal([:to_a] * 2)
+    check{app.process_mailbox}.must_equal([:to_a] * 8)
   end
 
   it "supports processing retrieved mail from a mailbox with a custom :retreiver" do
     @processed = processed = []
     emails = []
     retriever = Class.new(Mail::Retriever) do
-      define_method(:find) do |opts={}, &block|
+      define_method(:find) do |opts = {}, &block|
         es = emails.dup
         emails.clear
         es.each(&block) if block
@@ -291,9 +293,9 @@ describe "mail_processor plugin" do
     emails << new_mail
     check{app.process_mailbox}.must_equal []
     emails.wont_be_empty
-    check{app.process_mailbox(:retriever=>retriever)}.must_equal [:to_a]
+    check{app.process_mailbox(retriever: retriever)}.must_equal [:to_a]
     emails.must_be_empty
-    check{app.process_mailbox(:retriever=>retriever)}.must_equal []
+    check{app.process_mailbox(retriever: retriever)}.must_equal []
   end
 
   it "supports rcpt class method to delegate to blocks by recipient address, falling back to main routing block" do
@@ -423,7 +425,7 @@ describe "mail_processor plugin" do
     app(:bare) do
       plugin :mail_processor
       plugin :hooks
-      before do 
+      before do
         processed << 1
       end
       after do

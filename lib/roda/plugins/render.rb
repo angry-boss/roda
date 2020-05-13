@@ -135,7 +135,7 @@ class Roda
       # method binding to work, and Tilt 1.2 for Tilt::Template#compiled_method.
       tilt_compiled_method_support = defined?(Tilt::VERSION) && Tilt::VERSION >= '1.2' &&
         ([1, -2].include?(((compiled_method_arity = Tilt::Template.instance_method(:compiled_method).arity) rescue false)))
-      NO_CACHE = {:cache=>false}.freeze
+      NO_CACHE = { cache: false }.freeze
       COMPILED_METHOD_SUPPORT = RUBY_VERSION >= '2.3' && tilt_compiled_method_support
 
       if compiled_method_arity == -2
@@ -151,7 +151,7 @@ class Roda
       end
 
       # Setup default rendering options.  See Render for details.
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         if app.opts[:render]
           orig_cache = app.opts[:render][:cache]
           orig_method_cache = app.opts[:render][:template_method_cache]
@@ -162,7 +162,7 @@ class Roda
 
         opts = app.opts[:render]
         opts[:engine] = (opts[:engine] || "erb").dup.freeze
-        opts[:views] = app.expand_path(opts[:views]||"views").freeze
+        opts[:views] = app.expand_path(opts[:views] || "views").freeze
         opts[:allowed_paths] ||= [opts[:views]].freeze
         opts[:allowed_paths] = opts[:allowed_paths].map{|f| app.expand_path(f, nil)}.uniq.freeze
         opts[:check_paths] = true unless opts.has_key?(:check_paths)
@@ -214,7 +214,7 @@ class Roda
         end
 
         engine_opts = opts[:engine_opts] = (opts[:engine_opts] || {}).dup
-        engine_opts.to_a.each do |k,v|
+        engine_opts.to_a.each do |k, v|
           engine_opts[k] = v.dup.freeze
         end
 
@@ -224,7 +224,7 @@ class Roda
           case escape
           when String, Array
             Array(escape).each do |engine|
-              engine_opts[engine] = (engine_opts[engine] || {}).merge(:escape => true).freeze
+              engine_opts[engine] = (engine_opts[engine] || {}).merge(escape: true).freeze
             end
           else
             template_opts[:escape] = true
@@ -290,7 +290,7 @@ class Roda
         if COMPILED_METHOD_SUPPORT
           # Compile a method in the given module with the given name that will
           # call the compiled template method, updating the compiled template method
-          def define_compiled_method(roda_class, method_name, locals_keys=EMPTY_ARRAY)
+          def define_compiled_method(roda_class, method_name, locals_keys = EMPTY_ARRAY)
             mod = roda_class::RodaCompiledTemplates
             internal_method_name = :"_#{method_name}"
             begin
@@ -309,14 +309,14 @@ class Roda
           private
 
           # Return the compiled method for the current template object.
-          def compiled_method(locals_keys=EMPTY_ARRAY, roda_class=nil)
+          def compiled_method(locals_keys = EMPTY_ARRAY, roda_class = nil)
             Render.tilt_template_compiled_method(@template, locals_keys, roda_class)
           end
 
           # Return the lambda used to define the compiled template method.  This
           # is separated into its own method so the lambda does not capture any
           # unnecessary local variables
-          def compiled_method_lambda(template, roda_class, method_name, locals_keys=EMPTY_ARRAY)
+          def compiled_method_lambda(template, roda_class, method_name, locals_keys = EMPTY_ARRAY)
             mod = roda_class::RodaCompiledTemplates
             lambda do |locals, &block|
               if template.modified?
@@ -359,7 +359,7 @@ class Roda
             send(optimized_template, locals, &block)
           else
             opts = render_template_opts(template, opts)
-            retrieve_template(opts).render((opts[:scope]||self), (opts[:locals]||OPTS), &block)
+            retrieve_template(opts).render((opts[:scope] || self), (opts[:locals] || OPTS), &block)
           end
         end
 
@@ -379,7 +379,7 @@ class Roda
             if layout_template = render_opts[:optimize_layout]
               method_cache = render_opts[:template_method_cache]
               unless layout_method = method_cache[:_roda_layout]
-                retrieve_template(:template=>layout_template, :cache_key=>nil, :template_method_cache_key => :_roda_layout)
+                retrieve_template(template: layout_template, cache_key: nil, template_method_cache_key: :_roda_layout)
                 layout_method = method_cache[:_roda_layout]
               end
 
@@ -392,7 +392,7 @@ class Roda
             content = opts[:content] || render_template(opts)
           end
 
-          if layout_opts  = view_layout_opts(opts)
+          if layout_opts = view_layout_opts(opts)
             content = render_template(layout_opts){content}
           end
 

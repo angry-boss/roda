@@ -26,7 +26,7 @@ class Roda
     #
     #   # Assuming public is the location of files
     #   r.route do
-    #     # Make GET /images/foo.png look for public/images/foo.png 
+    #     # Make GET /images/foo.png look for public/images/foo.png
     #     r.public
     #
     #     # Make GET /static/images/foo.png look for public/images/foo.png
@@ -44,13 +44,13 @@ class Roda
       #          supporting gzipped transfer encoding.
       # :headers :: A hash of headers to use for statically served files
       # :root :: Use this option for the root of the public directory (default: "public")
-      def self.configure(app, opts={})
+      def self.configure(app, opts = {})
         if opts[:root]
           app.opts[:public_root] = app.expand_path(opts[:root])
         elsif !app.opts[:public_root]
           app.opts[:public_root] = app.expand_path("public")
         end
-        app.opts[:public_server] = ::Rack::File.new(app.opts[:public_root], opts[:headers]||{}, opts[:default_mime] || 'text/plain')
+        app.opts[:public_server] = ::Rack::File.new(app.opts[:public_root], opts[:headers] || {}, opts[:default_mime] || 'text/plain')
         app.opts[:public_gzip] = opts[:gzip]
       end
 
@@ -95,12 +95,12 @@ class Roda
         # and . components
         def public_path_segments(path)
           segments = []
-            
+
           path.split(SPLIT).each do |seg|
             next if seg.empty? || seg == '.'
             seg == '..' ? segments.pop : segments << seg
           end
-            
+
           segments
         end
 

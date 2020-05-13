@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 describe "Roda.define_roda_method" do
   before do
-    @scope = app.new({'PATH_INFO'=>'/'})
+    @scope = app.new({ 'PATH_INFO' => '/' })
   end
 
   it "should define methods using block" do
@@ -31,10 +33,10 @@ describe "Roda.define_roda_method" do
     m2 = app.define_roda_method("x", 0){|*x| [x, 3]}
     @scope.send(m2).must_equal [[], 3]
 
-    m3 = app.define_roda_method("x", 0){|x=5| [x, 4]}
+    m3 = app.define_roda_method("x", 0){|x = 5| [x, 4]}
     @scope.send(m3).must_equal [5, 4]
 
-    m4 = app.define_roda_method("x", 0){|x=6, *y| [x, y, 5]}
+    m4 = app.define_roda_method("x", 0){|x = 6, *y| [x, y, 5]}
     @scope.send(m4).must_equal [6, [], 5]
   end
 
@@ -42,10 +44,10 @@ describe "Roda.define_roda_method" do
     m2 = app.define_roda_method("x", 1){|y, *x| [y, x, 3]}
     @scope.send(m2, :a).must_equal [:a, [], 3]
 
-    m3 = app.define_roda_method("x", 1){|y, x=5| [y, x, 4]}
+    m3 = app.define_roda_method("x", 1){|y, x = 5| [y, x, 4]}
     @scope.send(m3, :b).must_equal [:b, 5, 4]
 
-    m4 = app.define_roda_method("x", 1){|y, x=6, *z| [y, x, z, 5]}
+    m4 = app.define_roda_method("x", 1){|y, x = 6, *z| [y, x, z, 5]}
     @scope.send(m4, :c).must_equal [:c, 6, [], 5]
   end
 
@@ -82,7 +84,7 @@ describe "Roda.define_roda_method" do
     @scope.send(m1, 3).must_equal 2
   end
 
-  [false, true].each do |warn_dynamic_arity| 
+  [false, true].each do |warn_dynamic_arity|
     meth = warn_dynamic_arity ? :deprecated : :it
     send meth, "should handle expected_arity :any and do dynamic arity check/fix" do
       if warn_dynamic_arity
@@ -98,12 +100,12 @@ describe "Roda.define_roda_method" do
       @scope.send(m1, 2).must_equal [2, 1]
       @scope.send(m1, 2, 3).must_equal [2, 1]
 
-      m2 = app.define_roda_method("x", :any){|x=5| [x, 2]}
+      m2 = app.define_roda_method("x", :any){|x = 5| [x, 2]}
       @scope.send(m2).must_equal [5, 2]
       @scope.send(m2, 2).must_equal [2, 2]
       @scope.send(m2, 2, 3).must_equal [2, 2]
 
-      m3 = app.define_roda_method("x", :any){|y, x=5| [x, y, 3]}
+      m3 = app.define_roda_method("x", :any){|y, x = 5| [x, y, 3]}
       @scope.send(m3).must_equal [5, nil, 3]
       @scope.send(m3, 2).must_equal [5, 2, 3]
       @scope.send(m3, 2, 3).must_equal [3, 2, 3]
@@ -118,12 +120,12 @@ describe "Roda.define_roda_method" do
       @scope.send(m5, 2).must_equal [2, [], 1]
       @scope.send(m5, 2, 3).must_equal [2, [3], 1]
 
-      m6 = app.define_roda_method("x", :any){|x=5, *z| [x, z, 2]}
+      m6 = app.define_roda_method("x", :any){|x = 5, *z| [x, z, 2]}
       @scope.send(m6).must_equal [5, [], 2]
       @scope.send(m6, 2).must_equal [2, [], 2]
       @scope.send(m6, 2, 3).must_equal [2, [3], 2]
 
-      m7 = app.define_roda_method("x", :any){|y, x=5, *z| [x, y, z, 3]}
+      m7 = app.define_roda_method("x", :any){|y, x = 5, *z| [x, y, z, 3]}
       @scope.send(m7).must_equal [5, nil, [], 3]
       @scope.send(m7, 2).must_equal [5, 2, [], 3]
       @scope.send(m7, 2, 3).must_equal [3, 2, [], 3]
@@ -143,12 +145,12 @@ describe "Roda.define_roda_method" do
     @scope.send(m1, 2).must_equal [2, 1]
     proc{@scope.send(m1, 2, 3)}.must_raise ArgumentError
 
-    m2 = app.define_roda_method("x", :any){|x=5| [x, 2]}
+    m2 = app.define_roda_method("x", :any){|x = 5| [x, 2]}
     @scope.send(m2).must_equal [5, 2]
     @scope.send(m2, 2).must_equal [2, 2]
     proc{@scope.send(m2, 2, 3)}.must_raise ArgumentError
 
-    m3 = app.define_roda_method("x", :any){|y, x=5| [x, y, 3]}
+    m3 = app.define_roda_method("x", :any){|y, x = 5| [x, y, 3]}
     proc{@scope.send(m3)}.must_raise ArgumentError
     @scope.send(m3, 2).must_equal [5, 2, 3]
     @scope.send(m3, 2, 3).must_equal [3, 2, 3]
@@ -163,12 +165,12 @@ describe "Roda.define_roda_method" do
     @scope.send(m5, 2).must_equal [2, [], 1]
     @scope.send(m5, 2, 3).must_equal [2, [3], 1]
 
-    m6 = app.define_roda_method("x", :any){|x=5, *z| [x, z, 2]}
+    m6 = app.define_roda_method("x", :any){|x = 5, *z| [x, z, 2]}
     @scope.send(m6).must_equal [5, [], 2]
     @scope.send(m6, 2).must_equal [2, [], 2]
     @scope.send(m6, 2, 3).must_equal [2, [3], 2]
 
-    m7 = app.define_roda_method("x", :any){|y, x=5, *z| [x, y, z, 3]}
+    m7 = app.define_roda_method("x", :any){|y, x = 5, *z| [x, y, z, 3]}
     proc{@scope.send(m7)}.must_raise ArgumentError
     @scope.send(m7, 2).must_equal [5, 2, [], 3]
     @scope.send(m7, 2, 3).must_equal [3, 2, [], 3]
@@ -242,7 +244,7 @@ describe "Roda.define_roda_method" do
       suppress.call{@scope.send(m)[1..-1]}.must_equal [9, 1]
       @scope.send(m, 2).must_equal [2, 9, 1]
       @scope.send(m, 2, 3).must_equal [2, 9, 1]
-      eval("@scope.send(m, {b: 4}#{', **{}' if RUBY_VERSION > '2'})").must_equal [{b: 4}, 9, 1]
+      eval("@scope.send(m, {b: 4}#{', **{}' if RUBY_VERSION > '2'})").must_equal [{ b: 4 }, 9, 1]
       @scope.send(m, 2, b: 4).must_equal [2, 4, 1]
       @scope.send(m, 2, 3, b: 4).must_equal [2, 4, 1]
 
@@ -258,9 +260,9 @@ describe "Roda.define_roda_method" do
       suppress.call{@scope.send(m)[1..-1]}.must_equal [{}, 1]
       @scope.send(m, 2).must_equal [2, {}, 1]
       @scope.send(m, 2, 3).must_equal [2, {}, 1]
-      eval("@scope.send(m, {b: 4}#{', **{}' if RUBY_VERSION > '2'})").must_equal [{b: 4}, {}, 1]
-      @scope.send(m, 2, b: 4).must_equal [2, {b: 4}, 1]
-      @scope.send(m, 2, 3, b: 4).must_equal [2, {b: 4}, 1]
+      eval("@scope.send(m, {b: 4}#{', **{}' if RUBY_VERSION > '2'})").must_equal [{ b: 4 }, {}, 1]
+      @scope.send(m, 2, b: 4).must_equal [2, { b: 4 }, 1]
+      @scope.send(m, 2, 3, b: 4).must_equal [2, { b: 4 }, 1]
 
       m = eval('m = app.define_roda_method("x", :any){|x=5, b:9| [x, b, 2]}', binding)
       @scope.send(m).must_equal [5, 9, 2]

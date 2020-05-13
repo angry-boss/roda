@@ -25,7 +25,7 @@ class Roda
 
       # Instance methods for RodaResponse
       module ResponseMethods
-        DEFAULT_HEADERS = {"Content-Type" => "text/html".freeze}.freeze
+        DEFAULT_HEADERS = { "Content-Type" => "text/html".freeze }.freeze
 
         # The body for the current response.
         attr_reader :body
@@ -137,7 +137,7 @@ class Roda
         #   response.redirect('bar')
         def redirect(path, status = 302)
           @headers["Location"] = path
-          @status  = status
+          @status = status
           nil
         end
 
@@ -162,7 +162,7 @@ class Roda
         # response, set the header in the response.
         def set_default_headers
           h = @headers
-          default_headers.each do |k,v|
+          default_headers.each do |k, v|
             h[k] ||= v
           end
         end

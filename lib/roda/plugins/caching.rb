@@ -8,7 +8,7 @@ class Roda
     # The caching plugin adds methods related to HTTP caching.
     #
     # For proper caching, you should use either the +last_modified+ or
-    # +etag+ request methods.  
+    # +etag+ request methods.
     #
     #   r.get 'albums', Integer do |album_id|
     #     @album = Album[album_id]
@@ -35,7 +35,7 @@ class Roda
     #
     #   response.cache_control public: true, max_age: 60
     #   # Cache-Control: public, max-age=60
-    # 
+    #
     # The +expires+ method is similar, but in addition
     # to setting the HTTP 1.1 Cache-Control header, it also sets
     # the HTTP 1.0 Expires header:
@@ -49,7 +49,7 @@ class Roda
     #
     # Copyright (c) 2007, 2008, 2009 Blake Mizerany
     # Copyright (c) 2010, 2011, 2012, 2013, 2014 Konstantin Haase
-    # 
+    #
     # Permission is hereby granted, free of charge, to any person
     # obtaining a copy of this software and associated documentation
     # files (the "Software"), to deal in the Software without
@@ -58,10 +58,10 @@ class Roda
     # copies of the Software, and to permit persons to whom the
     # Software is furnished to do so, subject to the following
     # conditions:
-    # 
+    #
     # The above copyright notice and this permission notice shall be
     # included in all copies or substantial portions of the Software.
-    # 
+    #
     # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
     # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
     # OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -115,7 +115,7 @@ class Roda
         #
         # When the current request includes an If-Match header with a
         # etag that doesn't match, immediately returns a response with a 412 status.
-        def etag(value, opts=OPTS)
+        def etag(value, opts = OPTS)
           # Before touching this code, please double check RFC 2616 14.24 and 14.26.
           weak = opts[:weak]
           new_resource = opts.fetch(:new_resource){post?}
@@ -183,8 +183,8 @@ class Roda
         # be an integer number of seconds that the current request should be
         # cached for.  Also sets the Expires header, useful if you have
         # HTTP 1.0 clients (Cache-Control is an HTTP 1.1 header).
-        def expires(max_age, opts=OPTS)
-          cache_control(Hash[opts].merge!(:max_age=>max_age))
+        def expires(max_age, opts = OPTS)
+          cache_control(Hash[opts].merge!(max_age: max_age))
           self['Expires'] = (Time.now + max_age).httpdate
         end
 

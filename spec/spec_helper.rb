@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
 if ENV['WARNING']
@@ -56,15 +58,15 @@ end
 
 if ENV['RODA_RACK_SESSION_COOKIE'] != '1'
   require_relative '../lib/roda/session_middleware'
-  DEFAULT_SESSION_MIDDLEWARE_ARGS =  [RodaSessionMiddleware, :secret=>'1'*64]
-  DEFAULT_SESSION_ARGS = [:plugin, :sessions, :secret=>'1'*64]
+  DEFAULT_SESSION_MIDDLEWARE_ARGS = [RodaSessionMiddleware, secret: '1' * 64]
+  DEFAULT_SESSION_ARGS = [:plugin, :sessions, secret: '1' * 64]
 else
-  DEFAULT_SESSION_MIDDLEWARE_ARGS = [Rack::Session::Cookie, :secret=>'1']
-  DEFAULT_SESSION_ARGS = [:use, Rack::Session::Cookie, :secret=>'1']
+  DEFAULT_SESSION_MIDDLEWARE_ARGS = [Rack::Session::Cookie, secret: '1']
+  DEFAULT_SESSION_ARGS = [:use, Rack::Session::Cookie, secret: '1']
 end
 
 module CookieJar
-  def req(path='/', env={})
+  def req(path = '/', env = {})
     if path.is_a?(Hash)
       env = path
     else
@@ -92,7 +94,7 @@ class Minitest::Spec
     end
   end
 
-  def app(type=nil, &block)
+  def app(type = nil, &block)
     case type
     when :new
       @app = _app{route(&block) if block}
@@ -119,26 +121,26 @@ class Minitest::Spec
     @app
   end
 
-  def req(path='/', env={})
+  def req(path = '/', env = {})
     if path.is_a?(Hash)
       env = path
     else
       env['PATH_INFO'] = path.dup
     end
 
-    env = {"REQUEST_METHOD" => "GET", "PATH_INFO" => "/", "SCRIPT_NAME" => ""}.merge(env)
+    env = { "REQUEST_METHOD" => "GET", "PATH_INFO" => "/", "SCRIPT_NAME" => "" }.merge(env)
     @app.call(env)
   end
-  
-  def status(path='/', env={})
+
+  def status(path = '/', env = {})
     req(path, env)[0]
   end
 
-  def header(name, path='/', env={})
+  def header(name, path = '/', env = {})
     req(path, env)[1][name]
   end
 
-  def body(path='/', env={})
+  def body(path = '/', env = {})
     s = String.new
     b = req(path, env)[2]
     b.each{|x| s << x}

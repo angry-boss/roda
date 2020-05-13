@@ -58,7 +58,7 @@ class Roda
         # If a block is given, a +vars+ argument must be provided, and it will
         # only make the changes to the shared vars for the duration of the
         # block, restoring the previous shared vars before the block returns.
-        def shared(vars=nil)
+        def shared(vars = nil)
           h = env['roda.shared'] ||= {}
 
           if block_given?

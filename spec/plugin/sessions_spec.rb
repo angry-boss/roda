@@ -1,13 +1,15 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 if RUBY_VERSION >= '2'
 [true, false].each do |per_cookie_cipher_secret|
-  describe "sessions plugin with per_cookie_cipher_secret: #{per_cookie_cipher_secret}" do 
+  describe "sessions plugin with per_cookie_cipher_secret: #{per_cookie_cipher_secret}" do
     include CookieJar
 
-    def req(path, opts={})
+    def req(path, opts = {})
       @errors ||= (errors = []; def errors.puts(s) self << s; end; errors)
-      super(path, opts.merge('rack.errors'=>@errors))
+      super(path, opts.merge('rack.errors' => @errors))
     end
 
     def errors
@@ -18,7 +20,7 @@ if RUBY_VERSION >= '2'
 
     before do
       app(:bare) do
-        plugin :sessions, :secret=>'1'*64, :per_cookie_cipher_secret=>per_cookie_cipher_secret
+        plugin :sessions, secret: '1' * 64, per_cookie_cipher_secret: per_cookie_cipher_secret
         route do |r|
           if r.GET['sut']
             session
@@ -40,12 +42,12 @@ if RUBY_VERSION >= '2'
 
     it "requires appropriate :secret option" do
       proc{app(:bare){plugin :sessions}}.must_raise Roda::RodaError
-      proc{app(:bare){plugin :sessions, :secret=>Object.new}}.must_raise Roda::RodaError
-      proc{app(:bare){plugin :sessions, :secret=>'1'*63}}.must_raise Roda::RodaError
+      proc{app(:bare){plugin :sessions, secret: Object.new}}.must_raise Roda::RodaError
+      proc{app(:bare){plugin :sessions, secret: '1' * 63}}.must_raise Roda::RodaError
     end
 
     it "has session store data between requests" do
-      req('/').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"0"}, [""]]
+      req('/').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "0" }, [""]]
       body('/s/foo/bar').must_equal 'bar'
       body('/g/foo').must_equal 'bar'
 
@@ -59,11 +61,11 @@ if RUBY_VERSION >= '2'
     end
 
     it "supports loading sessions created when per_cookie_cipher_secret: #{!per_cookie_cipher_secret} " do
-      req('/').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"0"}, [""]]
+      req('/').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "0" }, [""]]
       body('/s/foo/bar').must_equal 'bar'
       body('/g/foo').must_equal 'bar'
 
-      app.plugin :sessions, :per_cookie_cipher_secret=>!per_cookie_cipher_secret
+      app.plugin :sessions, per_cookie_cipher_secret: !per_cookie_cipher_secret
 
       body('/s/foo/baz').must_equal 'baz'
       body('/g/foo').must_equal 'baz'
@@ -82,26 +84,26 @@ if RUBY_VERSION >= '2'
     end
 
     it "does not add Set-Cookie header if session does not change, unless outside :skip_within seconds" do
-      req('/').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"0"}, [""]]
+      req('/').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "0" }, [""]]
       _, h, b = req('/s/foo/bar')
       h['Set-Cookie'].must_match(/\Aroda.session/)
       b.must_equal ["bar"]
-      req('/g/foo').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"3"}, ["bar"]]
-      req('/s/foo/bar').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"3"}, ["bar"]]
+      req('/g/foo').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "3" }, ["bar"]]
+      req('/s/foo/bar').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "3" }, ["bar"]]
 
       _, h, b = req('/s/foo/baz')
       h['Set-Cookie'].must_match(/\Aroda.session/)
       b.must_equal ["baz"]
-      req('/g/foo').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"3"}, ["baz"]]
+      req('/g/foo').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "3" }, ["baz"]]
 
-      req('/g/foo', 'QUERY_STRING'=>'sut=3500').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"3"}, ["baz"]]
-      _, h, b = req('/g/foo', 'QUERY_STRING'=>'sut=3700')
+      req('/g/foo', 'QUERY_STRING' => 'sut=3500').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "3" }, ["baz"]]
+      _, h, b = req('/g/foo', 'QUERY_STRING' => 'sut=3700')
       h['Set-Cookie'].must_match(/\Aroda.session/)
       b.must_equal ["baz"]
 
-      @app.plugin(:sessions, :skip_within=>3800)
-      req('/g/foo', 'QUERY_STRING'=>'sut=3700').must_equal [200, {"Content-Type"=>"text/html", "Content-Length"=>"3"}, ["baz"]]
-      _, h, b = req('/g/foo', 'QUERY_STRING'=>'sut=3900')
+      @app.plugin(:sessions, skip_within: 3800)
+      req('/g/foo', 'QUERY_STRING' => 'sut=3700').must_equal [200, { "Content-Type" => "text/html", "Content-Length" => "3" }, ["baz"]]
+      _, h, b = req('/g/foo', 'QUERY_STRING' => 'sut=3900')
       h['Set-Cookie'].must_match(/\Aroda.session/)
       b.must_equal ["baz"]
 
@@ -127,7 +129,7 @@ if RUBY_VERSION >= '2'
     end
 
     it "removes session cookie even when max-age and expires are in cookie options" do
-      app.plugin :sessions, :cookie_options=>{:max_age=>'1000', :expires=>Time.now+1000}
+      app.plugin :sessions, cookie_options: { max_age: '1000', expires: Time.now + 1000 }
       body('/s/foo/bar').must_equal 'bar'
       body('/sct').to_i
       body('/g/foo').must_equal 'bar'
@@ -163,18 +165,18 @@ if RUBY_VERSION >= '2'
       h.must_include('; HttpOnly')
       h.wont_include('; secure')
 
-      h = header('Set-Cookie', '/s/foo/baz', 'HTTPS'=>'on')
+      h = header('Set-Cookie', '/s/foo/baz', 'HTTPS' => 'on')
       h.must_include('; HttpOnly')
       h.must_include('; secure')
 
-      @app.plugin(:sessions, :cookie_options=>{})
+      @app.plugin(:sessions, cookie_options: {})
       h = header('Set-Cookie', '/s/foo/bar')
       h.must_include('; HttpOnly')
       h.wont_include('; secure')
     end
 
     it "should merge :cookie_options options into the default cookie options" do
-      @app.plugin(:sessions, :cookie_options=>{:secure=>true})
+      @app.plugin(:sessions, cookie_options: { secure: true })
       h = header('Set-Cookie', '/s/foo/bar')
       h.must_include('; HttpOnly')
       h.must_include('; path=/')
@@ -186,18 +188,18 @@ if RUBY_VERSION >= '2'
       body('/g/foo').must_equal 'bar'
 
       old_cookie = @cookie
-      @app.plugin(:sessions, :secret=>'2'*64, :old_secret=>'1'*64)
-      body('/g/foo', 'QUERY_STRING'=>'sut=3700').must_equal 'bar'
+      @app.plugin(:sessions, secret: '2' * 64, old_secret: '1' * 64)
+      body('/g/foo', 'QUERY_STRING' => 'sut=3700').must_equal 'bar'
 
-      @app.plugin(:sessions, :secret=>'2'*64, :old_secret=>nil)
-      body('/g/foo', 'QUERY_STRING'=>'sut=3700').must_equal 'bar'
+      @app.plugin(:sessions, secret: '2' * 64, old_secret: nil)
+      body('/g/foo', 'QUERY_STRING' => 'sut=3700').must_equal 'bar'
 
       @cookie = old_cookie
       body('/g/foo').must_equal ''
       errors.must_equal ["Not decoding session: HMAC invalid"]
 
-      proc{app(:bare){plugin :sessions, :old_secret=>'1'*63}}.must_raise Roda::RodaError
-      proc{app(:bare){plugin :sessions, :old_secret=>Object.new}}.must_raise Roda::RodaError
+      proc{app(:bare){plugin :sessions, old_secret: '1' * 63}}.must_raise Roda::RodaError
+      proc{app(:bare){plugin :sessions, old_secret: Object.new}}.must_raise Roda::RodaError
     end
 
     it "handles secret rotation using :old_secret option when also changing :per_cookie_cipher_secret option" do
@@ -205,27 +207,27 @@ if RUBY_VERSION >= '2'
       body('/g/foo').must_equal 'bar'
 
       old_cookie = @cookie
-      @app.plugin(:sessions, :secret=>'2'*64, :old_secret=>'1'*64, :per_cookie_cipher_secret=>!per_cookie_cipher_secret)
+      @app.plugin(:sessions, secret: '2' * 64, old_secret: '1' * 64, per_cookie_cipher_secret: !per_cookie_cipher_secret)
 
-      body('/g/foo', 'QUERY_STRING'=>'sut=3700').must_equal 'bar'
+      body('/g/foo', 'QUERY_STRING' => 'sut=3700').must_equal 'bar'
 
-      @app.plugin(:sessions, :secret=>'2'*64, :old_secret=>nil)
-      body('/g/foo', 'QUERY_STRING'=>'sut=3700').must_equal 'bar'
+      @app.plugin(:sessions, secret: '2' * 64, old_secret: nil)
+      body('/g/foo', 'QUERY_STRING' => 'sut=3700').must_equal 'bar'
 
       @cookie = old_cookie
       body('/g/foo').must_equal ''
       errors.must_equal ["Not decoding session: HMAC invalid"]
 
-      proc{app(:bare){plugin :sessions, :old_secret=>'1'*63}}.must_raise Roda::RodaError
-      proc{app(:bare){plugin :sessions, :old_secret=>Object.new}}.must_raise Roda::RodaError
+      proc{app(:bare){plugin :sessions, old_secret: '1' * 63}}.must_raise Roda::RodaError
+      proc{app(:bare){plugin :sessions, old_secret: Object.new}}.must_raise Roda::RodaError
     end
 
     it "pads data by default to make it more difficult to guess session contents based on size" do
-      long = "bar"*35
+      long = "bar" * 35
 
       _, h1, b = req('/s/foo/bar')
       b.must_equal ['bar']
-      _, h2, b = req('/s/foo/bar', 'QUERY_STRING'=>'sut=3700')
+      _, h2, b = req('/s/foo/bar', 'QUERY_STRING' => 'sut=3700')
       b.must_equal ['bar']
       _, h3, b = req('/s/foo/bar2')
       b.must_equal ['bar2']
@@ -237,11 +239,11 @@ if RUBY_VERSION >= '2'
       h1['Set-Cookie'].wont_equal h3['Set-Cookie']
       h1['Set-Cookie'].length.wont_equal h4['Set-Cookie'].length
 
-      @app.plugin(:sessions, :pad_size=>256)
+      @app.plugin(:sessions, pad_size: 256)
 
       _, h1, b = req('/s/foo/bar')
       b.must_equal ['bar']
-      _, h2, b = req('/s/foo/bar', 'QUERY_STRING'=>'sut=3700')
+      _, h2, b = req('/s/foo/bar', 'QUERY_STRING' => 'sut=3700')
       b.must_equal ['bar']
       _, h3, b = req('/s/foo/bar2')
       b.must_equal ['bar2']
@@ -254,11 +256,11 @@ if RUBY_VERSION >= '2'
       h1['Set-Cookie'].length.must_equal h4['Set-Cookie'].length
       h1['Set-Cookie'].wont_equal h3['Set-Cookie']
 
-      @app.plugin(:sessions, :pad_size=>nil)
+      @app.plugin(:sessions, pad_size: nil)
 
       _, h1, b = req('/s/foo/bar')
       b.must_equal ['bar']
-      _, h2, b = req('/s/foo/bar', 'QUERY_STRING'=>'sut=3700')
+      _, h2, b = req('/s/foo/bar', 'QUERY_STRING' => 'sut=3700')
       b.must_equal ['bar']
       _, h3, b = req('/s/foo/bar2')
       b.must_equal ['bar2']
@@ -268,40 +270,40 @@ if RUBY_VERSION >= '2'
         h1['Set-Cookie'].length.wont_equal h3['Set-Cookie'].length
       end
 
-      proc{@app.plugin(:sessions, :pad_size=>0)}.must_raise Roda::RodaError
-      proc{@app.plugin(:sessions, :pad_size=>1)}.must_raise Roda::RodaError
-      proc{@app.plugin(:sessions, :pad_size=>Object.new)}.must_raise Roda::RodaError
+      proc{@app.plugin(:sessions, pad_size: 0)}.must_raise Roda::RodaError
+      proc{@app.plugin(:sessions, pad_size: 1)}.must_raise Roda::RodaError
+      proc{@app.plugin(:sessions, pad_size: Object.new)}.must_raise Roda::RodaError
 
       errors.must_equal []
     end
 
     it "compresses data over a certain size by default" do
-      long = 'b'*8192
+      long = 'b' * 8192
       proc{body("/s/foo/#{long}")}.must_raise Roda::RodaPlugins::Sessions::CookieTooLarge
 
-      @app.plugin(:sessions, :gzip_over=>8000)
+      @app.plugin(:sessions, gzip_over: 8000)
       body("/s/foo/#{long}").must_equal long
-      body("/g/foo", 'QUERY_STRING'=>'sut=3700').must_equal long
+      body("/g/foo", 'QUERY_STRING' => 'sut=3700').must_equal long
 
-      @app.plugin(:sessions, :gzip_over=>15000)
-      proc{body("/g/foo", 'QUERY_STRING'=>'sut=3700')}.must_raise Roda::RodaPlugins::Sessions::CookieTooLarge
+      @app.plugin(:sessions, gzip_over: 15000)
+      proc{body("/g/foo", 'QUERY_STRING' => 'sut=3700')}.must_raise Roda::RodaPlugins::Sessions::CookieTooLarge
 
       errors.must_equal []
     end
 
     it "raises CookieTooLarge if cookie is too large" do
-      proc{req('/s/foo/'+Base64.urlsafe_encode64(SecureRandom.random_bytes(8192)))}.must_raise Roda::RodaPlugins::Sessions::CookieTooLarge
+      proc{req('/s/foo/' + Base64.urlsafe_encode64(SecureRandom.random_bytes(8192)))}.must_raise Roda::RodaPlugins::Sessions::CookieTooLarge
     end
 
     it "ignores session cookies if session exceeds max time since create" do
       body("/s/foo/bar").must_equal 'bar'
       body("/g/foo").must_equal 'bar'
 
-      @app.plugin(:sessions, :max_seconds=>-1)
+      @app.plugin(:sessions, max_seconds: -1)
       body("/g/foo").must_equal ''
       errors.must_equal ["Not returning session: maximum session time expired"]
 
-      @app.plugin(:sessions, :max_seconds=>10)
+      @app.plugin(:sessions, max_seconds: 10)
       body("/s/foo/bar").must_equal 'bar'
       body("/g/foo").must_equal 'bar'
 
@@ -312,11 +314,11 @@ if RUBY_VERSION >= '2'
       body("/s/foo/bar").must_equal 'bar'
       body("/g/foo").must_equal 'bar'
 
-      @app.plugin(:sessions, :max_idle_seconds=>-1)
+      @app.plugin(:sessions, max_idle_seconds: -1)
       body("/g/foo").must_equal ''
       errors.must_equal ["Not returning session: maximum session idle time expired"]
 
-      @app.plugin(:sessions, :max_idle_seconds=>10)
+      @app.plugin(:sessions, max_idle_seconds: 10)
       body("/s/foo/bar").must_equal 'bar'
       body("/g/foo").must_equal 'bar'
 
@@ -326,10 +328,10 @@ if RUBY_VERSION >= '2'
     it "supports :serializer and :parser options to override serializer/deserializer" do
       body('/s/foo/bar').must_equal 'bar'
 
-      @app.plugin(:sessions, :parser=>proc{|s| JSON.parse("{#{s[1...-1].reverse}}")})
+      @app.plugin(:sessions, parser: proc{|s| JSON.parse("{#{s[1...-1].reverse}}")})
       body('/g/rab').must_equal 'oof'
 
-      @app.plugin(:sessions, :serializer=>proc{|s| s.to_json.upcase})
+      @app.plugin(:sessions, serializer: proc{|s| s.to_json.upcase})
 
       body('/s/foo/baz').must_equal 'baz'
       body('/g/ZAB').must_equal 'OOF'
@@ -346,34 +348,34 @@ if RUBY_VERSION >= '2'
       body('/g/foo').must_equal ''
       errors.must_equal ["Unable to decode session: invalid base64"]
 
-      @cookie = k+Base64.urlsafe_encode64('')
+      @cookie = k + Base64.urlsafe_encode64('')
       body('/g/foo').must_equal ''
       errors.must_equal ["Unable to decode session: no data"]
 
-      @cookie = k+Base64.urlsafe_encode64("\0" * 60)
+      @cookie = k + Base64.urlsafe_encode64("\0" * 60)
       body('/g/foo').must_equal ''
       errors.must_equal ["Unable to decode session: data too short"]
 
-      @cookie = k+Base64.urlsafe_encode64("\1" * 92)
+      @cookie = k + Base64.urlsafe_encode64("\1" * 92)
       body('/g/foo').must_equal ''
       errors.must_equal ["Unable to decode session: data too short"]
 
-      @cookie = k+Base64.urlsafe_encode64('1'*75)
+      @cookie = k + Base64.urlsafe_encode64('1' * 75)
       body('/g/foo').must_equal ''
       errors.must_equal ["Unable to decode session: version marker unsupported"]
 
-      @cookie = k+Base64.urlsafe_encode64("\0"*75)
+      @cookie = k + Base64.urlsafe_encode64("\0" * 75)
       body('/g/foo').must_equal ''
       errors.must_equal ["Not decoding session: HMAC invalid"]
     end
   end
 
-  describe "sessions plugin" do 
+  describe "sessions plugin" do
     include CookieJar
 
-    def req(path, opts={})
+    def req(path, opts = {})
       @errors ||= (errors = []; def errors.puts(s) self << s; end; errors)
-      super(path, opts.merge('rack.errors'=>@errors))
+      super(path, opts.merge('rack.errors' => @errors))
     end
 
     def errors
@@ -384,10 +386,10 @@ if RUBY_VERSION >= '2'
 
     it "supports transparent upgrade from Rack::Session::Cookie with default HMAC and coder" do
       app(:bare) do
-        use Rack::Session::Cookie, :secret=>'1'
+        use Rack::Session::Cookie, secret: '1'
         plugin :middleware_stack
         route do |r|
-          r.get('s', String, String){|k, v| session[k] = {:a=>v}; v}
+          r.get('s', String, String){|k, v| session[k] = { a: v }; v}
           r.get('g',  String){|k| session[k].inspect}
           ''
         end
@@ -401,8 +403,8 @@ if RUBY_VERSION >= '2'
       h['Set-Cookie'].must_be_nil
       b.must_equal ['{:a=>"bar"}']
 
-      @app.plugin :sessions, :secret=>'1'*64,
-                  :upgrade_from_rack_session_cookie_secret=>'1'
+      @app.plugin :sessions, secret: '1' * 64,
+                  upgrade_from_rack_session_cookie_secret: '1'
       @app.middleware_stack.remove{|m, *| m == Rack::Session::Cookie}
 
       @cookie = c.dup
@@ -429,19 +431,19 @@ if RUBY_VERSION >= '2'
       h['Set-Cookie'].must_match(/\Aroda\.session=(.*); path=\/; HttpOnly(; SameSite=Lax)?\nrack\.session=; path=\/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00/m)
       b.must_equal ['{"a"=>"bar"}']
 
-      @app.plugin :sessions, :cookie_options=>{:path=>'/foo'}, :upgrade_from_rack_session_cookie_options=>{}
+      @app.plugin :sessions, cookie_options: { path: '/foo' }, upgrade_from_rack_session_cookie_options: {}
       @cookie = c
       _, h, b = req('/g/foo')
       h['Set-Cookie'].must_match(/\Aroda\.session=(.*); path=\/foo; HttpOnly(; SameSite=Lax)?\nrack\.session=; path=\/foo; max-age=0; expires=Thu, 01 Jan 1970 00:00:00/m)
       b.must_equal ['{"a"=>"bar"}']
 
-      @app.plugin :sessions, :upgrade_from_rack_session_cookie_options=>{:path=>'/baz'}
+      @app.plugin :sessions, upgrade_from_rack_session_cookie_options: { path: '/baz' }
       @cookie = c
       _, h, b = req('/g/foo')
       h['Set-Cookie'].must_match(/\Aroda\.session=(.*); path=\/foo; HttpOnly(; SameSite=Lax)?\nrack\.session=; path=\/baz; max-age=0; expires=Thu, 01 Jan 1970 00:00:00/m)
       b.must_equal ['{"a"=>"bar"}']
 
-      @app.plugin :sessions, :upgrade_from_rack_session_cookie_key=>'quux.session'
+      @app.plugin :sessions, upgrade_from_rack_session_cookie_key: 'quux.session'
       @cookie = c.sub(/\Arack/, 'quux')
       _, h, b = req('/g/foo')
       h['Set-Cookie'].must_match(/\Aroda\.session=(.*); path=\/foo; HttpOnly(; SameSite=Lax)?\nquux\.session=; path=\/baz; max-age=0; expires=Thu, 01 Jan 1970 00:00:00/m)

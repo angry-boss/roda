@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "error_handler plugin" do 
+describe "error_handler plugin" do
   it "executes only if error raised" do
     app(:bare) do
       plugin :error_handler
@@ -76,7 +78,7 @@ describe "error_handler plugin" do
 
   it "executes on custom exception classes" do
     app(:bare) do
-      plugin :error_handler, :classes=>[StandardError]
+      plugin :error_handler, classes: [StandardError]
 
       error do |e|
         e.message
@@ -188,7 +190,7 @@ describe "error_handler plugin" do
     end
 
     errors = StringIO.new
-    body('rack.errors'=>errors).must_equal 'foofoo'
+    body('rack.errors' => errors).must_equal 'foofoo'
     errors.rewind
     errors.read.split("\n").first.must_equal "Error in after hook processing of error handler: RuntimeError: foo"
   end

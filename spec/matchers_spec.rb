@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 describe "capturing" do
@@ -108,7 +110,7 @@ describe "capturing" do
   end
 end
 
-describe "r.is" do 
+describe "r.is" do
   it "ensures the patch is matched fully" do
     app do |r|
       r.is "" do
@@ -321,7 +323,7 @@ describe "matchers" do
   end
 end
 
-describe "r.on" do 
+describe "r.on" do
   it "executes on no arguments" do
     app do |r|
       r.on do
@@ -363,7 +365,7 @@ describe "r.on" do
   end
 
   it "raises on arbitrary object" do
-    app(:bare) do 
+    app(:bare) do
       route do |r|
         r.on Object.new do
           "+1"
@@ -399,13 +401,13 @@ describe "r.on" do
     end
 
     body.must_equal '|/'
-    body('SCRIPT_NAME'=>'/a').must_equal '/a|/'
+    body('SCRIPT_NAME' => '/a').must_equal '/a|/'
     body('/foo').must_equal 'foo||/foo'
-    body('/foo', 'SCRIPT_NAME'=>'/a').must_equal 'foo|/a|/foo'
+    body('/foo', 'SCRIPT_NAME' => '/a').must_equal 'foo|/a|/foo'
     body('/foo/bar').must_equal 'bar||/foo/bar'
-    body('/foo/bar', 'SCRIPT_NAME'=>'/a').must_equal 'bar|/a|/foo/bar'
+    body('/foo/bar', 'SCRIPT_NAME' => '/a').must_equal 'bar|/a|/foo/bar'
     body('/foo/baz').must_equal 'foo||/foo/baz'
-    body('/foo/baz', 'SCRIPT_NAME'=>'/a').must_equal 'foo|/a|/foo/baz'
+    body('/foo/baz', 'SCRIPT_NAME' => '/a').must_equal 'foo|/a|/foo/baz'
   end
 
   it "should have path/matched_path/remaining_path work correctly" do
@@ -415,7 +417,7 @@ describe "r.on" do
       end
     end
 
-    body("/foo/bar").must_equal  "/foo/bar:/foo:/bar"
+    body("/foo/bar").must_equal "/foo/bar:/foo:/bar"
   end
 
   it "ensures remaining_path is reverted if modified in failing matcher" do
@@ -423,7 +425,7 @@ describe "r.on" do
       r.on lambda { @remaining_path = "/blah"; false } do
         "Unreachable"
       end
-      
+
       r.on do
         r.matched_path + ':' + r.remaining_path
       end
@@ -434,10 +436,10 @@ describe "r.on" do
 
   it "modifies matched_path/remaining_path during routing" do
     app do |r|
-      r.on 'login', 'foo' do 
+      r.on 'login', 'foo' do
         "Unreachable"
       end
-      
+
       r.on 'hello' do
         r.matched_path + ':' + r.remaining_path
       end
@@ -448,10 +450,10 @@ describe "r.on" do
 
   it "doesn't modify SCRIPT_NAME/PATH_INFO during routing" do
     app do |r|
-      r.on 'login', 'foo' do 
+      r.on 'login', 'foo' do
         "Unreachable"
       end
-      
+
       r.on 'hello' do
         r.env["SCRIPT_NAME"] + ':' + r.env["PATH_INFO"]
       end
@@ -462,19 +464,19 @@ describe "r.on" do
 
   it "doesn't mutate SCRIPT_NAME or PATH_INFO after request is returned" do
     app do |r|
-      r.on 'login', 'foo' do 
+      r.on 'login', 'foo' do
         "Unreachable"
       end
-      
+
       r.on do
         r.env["SCRIPT_NAME"] + ':' + r.env["PATH_INFO"]
       end
     end
 
     pi, sn = '/login', ''
-    env = {"REQUEST_METHOD" => "GET", "PATH_INFO" => pi, "SCRIPT_NAME" => sn}
+    env = { "REQUEST_METHOD" => "GET", "PATH_INFO" => pi, "SCRIPT_NAME" => sn }
     app.call(env)[2].join.must_equal ":/login"
-    env["PATH_INFO"].must_equal pi 
+    env["PATH_INFO"].must_equal pi
     env["SCRIPT_NAME"].must_equal sn
   end
 
@@ -532,7 +534,7 @@ describe "r.on" do
   end
 end
 
-describe "path matchers" do 
+describe "path matchers" do
   it "one level path" do
     app do |r|
       r.on "about" do
@@ -604,7 +606,7 @@ describe "path matchers" do
     end
 
     body.must_equal 'Home'
-    status('REQUEST_METHOD'=>'POST').must_equal 404
+    status('REQUEST_METHOD' => 'POST').must_equal 404
     status("//").must_equal 404
     status("/foo").must_equal 404
   end
@@ -689,7 +691,7 @@ describe "segment handling" do
   end
 end
 
-describe "request verb methods" do 
+describe "request verb methods" do
   it "executes if verb matches" do
     app do |r|
       r.get do
@@ -701,7 +703,7 @@ describe "request verb methods" do
     end
 
     body.must_equal 'g'
-    body('REQUEST_METHOD'=>'POST').must_equal 'p'
+    body('REQUEST_METHOD' => 'POST').must_equal 'p'
   end
 
   it "requires exact match if given arguments" do
@@ -715,9 +717,9 @@ describe "request verb methods" do
     end
 
     body.must_equal 'g'
-    body('REQUEST_METHOD'=>'POST').must_equal 'p'
+    body('REQUEST_METHOD' => 'POST').must_equal 'p'
     status("/a").must_equal 404
-    status("/a", 'REQUEST_METHOD'=>'POST').must_equal 404
+    status("/a", 'REQUEST_METHOD' => 'POST').must_equal 404
   end
 
   it "does not require exact match if given arguments" do
@@ -739,16 +741,16 @@ describe "request verb methods" do
     end
 
     body.must_equal 'g'
-    body('REQUEST_METHOD'=>'POST').must_equal 'p'
+    body('REQUEST_METHOD' => 'POST').must_equal 'p'
     body("/a").must_equal 'get'
-    body("/a", 'REQUEST_METHOD'=>'POST').must_equal 'post'
+    body("/a", 'REQUEST_METHOD' => 'POST').must_equal 'post'
   end
 end
 
 describe "all matcher" do
   it "should match only all all arguments match" do
     app do |r|
-      r.is :all=>['foo', :y] do |file|
+      r.is all: ['foo', :y] do |file|
         file
       end
     end
@@ -764,18 +766,18 @@ end
 describe "method matcher" do
   it "should match given request types" do
     app do |r|
-      r.is "", :method=>:get do
+      r.is "", method: :get do
         "foo"
       end
-      r.is "", :method=>[:patch, :post] do
+      r.is "", method: [:patch, :post] do
         "bar"
       end
     end
 
-    body("REQUEST_METHOD"=>"GET").must_equal 'foo'
-    body("REQUEST_METHOD"=>"PATCH").must_equal 'bar'
-    body("REQUEST_METHOD"=>"POST").must_equal 'bar'
-    status("REQUEST_METHOD"=>"DELETE").must_equal 404
+    body("REQUEST_METHOD" => "GET").must_equal 'foo'
+    body("REQUEST_METHOD" => "PATCH").must_equal 'bar'
+    body("REQUEST_METHOD" => "POST").must_equal 'bar'
+    status("REQUEST_METHOD" => "DELETE").must_equal 404
   end
 end
 

@@ -29,7 +29,7 @@ class Roda
     # In particular, note that Symbol does not round trip via JSON, so symbols should not be
     # used in sessions when this plugin is used.  This plugin sets the
     # +:sessions_convert_symbols+ application option to +true+ if it hasn't been set yet,
-    # for better integration with plugins that can use either symbol or string session or 
+    # for better integration with plugins that can use either symbol or string session or
     # flash keys.  Unlike Rack::Session::Cookie, the session is stored as a plain ruby hash,
     # and does not convert all keys to strings.
     #
@@ -100,7 +100,7 @@ class Roda
     #                                              cookies used by this plugin.
     #
     # = Not a Rack Middleware
-    # 
+    #
     # Unlike some other approaches to sessions, the sessions plugin does not use
     # a rack middleware, so session information is not available to other rack middleware,
     # only to the application itself, with the session not being loaded from the cookie
@@ -128,13 +128,13 @@ class Roda
     # encrypted session data :: >=12 bytes of data encrypted with AES-256-CTR cipher, see below.
     # HMAC :: 32 bytes, HMAC-SHA-256 of all preceding data plus cookie key (so that a cookie value
     #         for a different key cannot be used even if the secret is the same).
-    #  
+    #
     # The encrypted session data uses the following format:
     #
     #   bitmap + creation time + update time + padding + serialized data
     #
     # where:
-    # 
+    #
     # bitmap :: 2 bytes in little endian format, lower 12 bits storing number of padding
     #           bytes, 13th bit storing whether serialized data is compressed with deflate.
     #           Bits 14-16 reserved for future expansion.
@@ -146,8 +146,8 @@ class Roda
     # serialized data :: >=2 bytes of serialized data in JSON format.  If the bitmap indicates
     #                    deflate compression, this contains the deflate compressed data.
     module Sessions
-      DEFAULT_COOKIE_OPTIONS = {:httponly=>true, :path=>'/'.freeze, :same_site=>:lax}.freeze
-      DEFAULT_OPTIONS = {:key => 'roda.session'.freeze, :max_seconds=>86400*30, :max_idle_seconds=>86400*7, :pad_size=>32, :gzip_over=>nil, :skip_within=>3600}.freeze
+      DEFAULT_COOKIE_OPTIONS = { httponly: true, path: '/'.freeze, same_site: :lax }.freeze
+      DEFAULT_OPTIONS = { key: 'roda.session'.freeze, max_seconds: 86400 * 30, max_idle_seconds: 86400 * 7, pad_size: 32, gzip_over: nil, skip_within: 3600 }.freeze
       DEFLATE_BIT  = 0x1000
       PADDING_MASK = 0x0fff
       SESSION_CREATED_AT = 'roda.session.created_at'.freeze
@@ -171,10 +171,10 @@ class Roda
       end
 
       # Configure the plugin, see Sessions for details on options.
-      def self.configure(app, opts=OPTS)
+      def self.configure(app, opts = OPTS)
         opts = (app.opts[:sessions] || DEFAULT_OPTIONS).merge(opts)
         co = opts[:cookie_options] = DEFAULT_COOKIE_OPTIONS.merge(opts[:cookie_options] || OPTS).freeze
-        opts[:remove_cookie_options] = co.merge(:max_age=>'0', :expires=>Time.at(0))
+        opts[:remove_cookie_options] = co.merge(max_age: '0', expires: Time.at(0))
         opts[:parser] ||= app.opts[:json_parser] || JSON.method(:parse)
         opts[:serializer] ||= app.opts[:json_serializer] || :to_json.to_proc
 
@@ -199,7 +199,7 @@ class Roda
         else
           raise RodaError, "invalid :pad_size option: #{opts[:pad_size].inspect}, must be Integer or nil"
         end
-        
+
         app.opts[:sessions] = opts.freeze
         app.opts[:sessions_convert_symbols] = true unless app.opts.has_key?(:sessions_convert_symbols)
       end
@@ -270,7 +270,7 @@ class Roda
             cookie[:secure] = true if !cookie.has_key?(:secure) && ssl?
             Rack::Utils.set_cookie_header!(headers, opts[:key], cookie)
           end
-          
+
           if env[SESSION_DELETE_RACK_COOKIE]
             Rack::Utils.delete_cookie_header!(headers, opts[:upgrade_from_rack_session_cookie_key], opts[:upgrade_from_rack_session_cookie_options])
           end
@@ -377,9 +377,9 @@ class Roda
             return _session_serialization_error("Unable to decode session: data too short")
           end
 
-          encrypted_data = data.slice!(0, length-32)
-          unless Rack::Utils.secure_compare(data, OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, opts[:hmac_secret], encrypted_data+opts[:key]))
-            if opts[:old_hmac_secret] && Rack::Utils.secure_compare(data, OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, opts[:old_hmac_secret], encrypted_data+opts[:key]))
+          encrypted_data = data.slice!(0, length - 32)
+          unless Rack::Utils.secure_compare(data, OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, opts[:hmac_secret], encrypted_data + opts[:key]))
+            if opts[:old_hmac_secret] && Rack::Utils.secure_compare(data, OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, opts[:old_hmac_secret], encrypted_data + opts[:key]))
               use_old_cipher_secret = true
             else
               return _session_serialization_error("Not decoding session: HMAC invalid")
@@ -416,7 +416,7 @@ class Roda
             return _session_serialization_error("Not returning session: maximum session idle time expired")
           end
 
-          data = data.slice(10+padding_bytes, data.bytesize)
+          data = data.slice(10 + padding_bytes, data.bytesize)
 
           if bitmap & DEFLATE_BIT > 0
             data = Zlib::Inflate.inflate(data)
@@ -458,14 +458,14 @@ class Roda
           # When calculating padding bytes to use, include 10 bytes for bitmap and
           # session create/update times, so total size of encrypted data is a
           # multiple of pad_size.
-          if (pad_size = opts[:pad_size]) && (padding_bytes = (json_length+10) % pad_size) != 0
+          if (pad_size = opts[:pad_size]) && (padding_bytes = (json_length + 10) % pad_size) != 0
             padding_bytes = pad_size - padding_bytes
             bitmap |= padding_bytes
             padding_data = SecureRandom.random_bytes(padding_bytes)
           end
 
           session_create_time = env[SESSION_CREATED_AT]
-          serialized_data = [bitmap, session_create_time||now, now].pack('vVV')
+          serialized_data = [bitmap, session_create_time || now, now].pack('vVV')
 
           serialized_data << padding_data if padding_data
           serialized_data << json_data
@@ -490,7 +490,7 @@ class Roda
           data << per_cookie_secret_base if per_cookie_secret_base
           data << cipher_iv
           data << encrypted_data
-          data << OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, opts[:hmac_secret], data+opts[:key])
+          data << OpenSSL::HMAC.digest(OpenSSL::Digest::SHA256.new, opts[:hmac_secret], data + opts[:key])
 
           data = Base64.urlsafe_encode64(data)
 

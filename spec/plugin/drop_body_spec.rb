@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "drop_body plugin" do 
+describe "drop_body plugin" do
   it "automatically drops body and Content-Type/Content-Length headers for responses without a body" do
     app(:drop_body) do |r|
       response.status = r.path.to_i

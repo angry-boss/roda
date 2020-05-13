@@ -20,7 +20,7 @@ class Roda
     # to use separate string class or symbol matchers instead:
     #
     #   r.is "foo", String
-    #   r.is "foo", :bar 
+    #   r.is "foo", :bar
     module PlaceholderStringMatchers
       def self.load_dependencies(app)
         app.plugin :_symbol_regexp_matchers

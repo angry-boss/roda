@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "strip_path_prefix plugin" do 
+describe "strip_path_prefix plugin" do
   it "strips path prefix when expanding paths" do
     app(:bare){}
     abs_dir = app.expand_path('spec')

@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "match_affix plugin" do 
+describe "match_affix plugin" do
   it "allows changing the match prefix/suffix" do
     app(:bare) do
       plugin :match_affix, "", /(\/|\z)/

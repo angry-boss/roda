@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe "run_append_slash plugin" do
@@ -63,7 +65,7 @@ describe "run_append_slash plugin" do
   end
 
   it "redirects #run sub apps when trailing slash is missing" do
-    app.plugin :run_append_slash, :use_redirects => true
+    app.plugin :run_append_slash, use_redirects: true
     status('/sub').must_equal 302
     header('Location', '/sub').must_equal '/sub/'
     body('/sub/').must_equal 'sub-root'

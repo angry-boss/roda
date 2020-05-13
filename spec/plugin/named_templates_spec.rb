@@ -1,11 +1,13 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'tilt/erb'
 rescue LoadError
-  warn "tilt not installed, skipping named_templates plugin test"  
+  warn "tilt not installed, skipping named_templates plugin test"
 else
-describe "named_templates plugin" do 
+describe "named_templates plugin" do
   it "adds template method method for naming templates, and have render recognize it" do
     app(:bare) do
       plugin :named_templates
@@ -14,7 +16,7 @@ describe "named_templates plugin" do
         @b = 2
         "foo<%= @a %><%= @b %>"
       end
-      template :layout, :engine=>:str do
+      template :layout, engine: :str do
         @c = 3
         'bar#{@a}#{@c}-#{yield}-baz'
       end
@@ -38,7 +40,7 @@ describe "named_templates plugin" do
         @b = 2
         "foo<%= @a %><%= @b %>"
       end
-      template :layout, :engine=>:str do
+      template :layout, engine: :str do
         @c = 3
         'bar#{@a}#{@c}-#{yield}-baz'
       end
@@ -65,11 +67,11 @@ describe "named_templates plugin" do
         @b = 2
         "foobar<%= @a %><%= @b %>"
       end
-      template "foo/layout", :engine=>:str do
+      template "foo/layout", engine: :str do
         @c = 3
         'foo#{@a}#{@c}-#{yield}-baz'
       end
-      template "bar/layout", :engine=>:str do
+      template "bar/layout", engine: :str do
         @c = 3
         'bar#{@a}#{@c}-#{yield}-baz'
       end
@@ -84,7 +86,7 @@ describe "named_templates plugin" do
           set_view_subdir :bar
           @a = 4
           @b = 2
-          view(:inline=>"barfoo<%= @a %><%= @b %>")
+          view(inline: "barfoo<%= @a %><%= @b %>")
         end
       end
     end

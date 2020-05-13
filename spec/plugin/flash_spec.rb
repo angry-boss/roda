@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "flash plugin" do 
+describe "flash plugin" do
   include CookieJar
 
   [lambda{send(*DEFAULT_SESSION_ARGS); plugin :flash},
@@ -49,7 +51,7 @@ describe "flash plugin" do
   end
 end
 
-describe "FlashHash" do 
+describe "FlashHash" do
   before do
     require 'roda/plugins/flash'
     @h = Roda::RodaPlugins::Flash::FlashHash.new
@@ -62,23 +64,23 @@ describe "FlashHash" do
   end
 
   it ".new should accept a hash" do
-    @h = Roda::RodaPlugins::Flash::FlashHash.new(1=>2)
-    @h.now.must_equal(1=>2)
+    @h = Roda::RodaPlugins::Flash::FlashHash.new(1 => 2)
+    @h.now.must_equal(1 => 2)
     @h.next.must_equal({})
   end
 
   it "#[]= assigns to next flash" do
     @h[1] = 2
     @h.now.must_equal({})
-    @h.next.must_equal(1=>2)
+    @h.next.must_equal(1 => 2)
   end
 
   it "#discard removes given key from next hash" do
     @h[1] = 2
     @h[nil] = 3
-    @h.next.must_equal(1=>2, nil=>3)
+    @h.next.must_equal(1 => 2, nil => 3)
     @h.discard(nil)
-    @h.next.must_equal(1=>2)
+    @h.next.must_equal(1 => 2)
     @h.discard(1)
     @h.next.must_equal({})
   end
@@ -86,7 +88,7 @@ describe "FlashHash" do
   it "#discard removes all entries from next hash with no arguments" do
     @h[1] = 2
     @h[nil] = 3
-    @h.next.must_equal(1=>2, nil=>3)
+    @h.next.must_equal(1 => 2, nil => 3)
     @h.discard
     @h.next.must_equal({})
   end
@@ -96,9 +98,9 @@ describe "FlashHash" do
     @h.now[nil] = 3
     @h.next.must_equal({})
     @h.keep(nil)
-    @h.next.must_equal(nil=>3)
+    @h.next.must_equal(nil => 3)
     @h.keep(1)
-    @h.next.must_equal(1=>2, nil=>3)
+    @h.next.must_equal(1 => 2, nil => 3)
   end
 
   it "#keep copies all entries from current hash to next hash" do
@@ -106,16 +108,16 @@ describe "FlashHash" do
     @h.now[nil] = 3
     @h.next.must_equal({})
     @h.keep
-    @h.next.must_equal(1=>2, nil=>3)
+    @h.next.must_equal(1 => 2, nil => 3)
   end
 
   it "#sweep replaces current hash with next hash" do
     @h[1] = 2
     @h[nil] = 3
-    @h.next.must_equal(1=>2, nil=>3)
+    @h.next.must_equal(1 => 2, nil => 3)
     @h.now.must_equal({})
-    @h.sweep.must_equal(1=>2, nil=>3)
+    @h.sweep.must_equal(1 => 2, nil => 3)
     @h.next.must_equal({})
-    @h.now.must_equal(1=>2, nil=>3)
+    @h.now.must_equal(1 => 2, nil => 3)
   end
 end

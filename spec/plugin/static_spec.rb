@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "static plugin" do 
+describe "static plugin" do
   it "adds support for serving static files" do
     app(:bare) do
-      plugin :static, ['/about'], :root=>'spec/views'
+      plugin :static, ['/about'], root: 'spec/views'
 
       route do
         'a'
@@ -17,7 +19,7 @@ describe "static plugin" do
   it "respects the application's :root option" do
     app(:bare) do
       opts[:root] = File.expand_path('../../', __FILE__)
-      plugin :static, ['/about'], :root=>'views'
+      plugin :static, ['/about'], root: 'views'
 
       route do
         'a'

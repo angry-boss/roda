@@ -42,7 +42,7 @@ class Roda
     #     end
     #
     #     hash_path("/a/b") do |r|
-    #       # /a/b path 
+    #       # /a/b path
     #     end
     #
     #     route do |r|
@@ -72,7 +72,7 @@ class Roda
     #     end
     #
     #     hash_path("/a/b") do |r|
-    #       # /a/b path 
+    #       # /a/b path
     #     end
     #
     #     route do |r|
@@ -110,7 +110,7 @@ class Roda
     #     end
     #
     #     hash_path("/a", "/c") do |r|
-    #       # /a/c path 
+    #       # /a/c path
     #     end
     #
     #     hash_path(:b, "/b") do |r|
@@ -118,7 +118,7 @@ class Roda
     #     end
     #
     #     hash_path(:b, "/c") do |r|
-    #       # /b/c path 
+    #       # /b/c path
     #     end
     #
     #     route do |r|
@@ -142,7 +142,7 @@ class Roda
     #   class App < Roda
     #     plugin :hash_routes
     #
-    #     # No block argument is used, DSL evaluates block using instance_exec 
+    #     # No block argument is used, DSL evaluates block using instance_exec
     #     hash_routes "" do
     #       # on method is used for routing to next segment,
     #       # for similarity to standard Roda
@@ -164,7 +164,7 @@ class Roda
     #       end
     #
     #       hr.is "c" do |r|
-    #         # /a/c path 
+    #         # /a/c path
     #       end
     #     end
     #
@@ -174,7 +174,7 @@ class Roda
     #       end
     #
     #       is "c" do |r|
-    #         # /b/c path 
+    #         # /b/c path
     #       end
     #     end
     #
@@ -217,7 +217,7 @@ class Roda
     #
     #       # Handle /a/c path, returning 404 for non-POST requests
     #       post "c" do
-    #         # POST /a/c path 
+    #         # POST /a/c path
     #       end
     #     end
     #
@@ -237,7 +237,7 @@ class Roda
     #     end
     #
     #     bhr.is "" do |r|
-    #       # /b/ path 
+    #       # /b/ path
     #     end
     #
     #     # GET /b/d path, render 'd2' template, returning 404 for non-GET requests
@@ -280,7 +280,7 @@ class Roda
         # Setup the given branch in the given namespace to dispatch to routes in this
         # namespace.  If a block is given, call the block with the request before
         # dispatching to routes in this namespace.
-        def dispatch_from(namespace='', branch, &block)
+        def dispatch_from(namespace = '', branch, &block)
           ns = @namespace
           if block
             meth_hash = @roda.opts[:hash_routes_methods]
@@ -340,7 +340,7 @@ class Roda
         end
 
         private
-        
+
         # Setup a path in the current namespace for the given request method verb.
         # Returns 404 for requests for the path with a different request method.
         def verb(verb, path, &block)
@@ -381,7 +381,7 @@ class Roda
         # block.  If the block accepts an argument, yield the DSL instance.  If the
         # block does not accept an argument, instance_exec the block in the context
         # of the DSL instance.
-        def hash_routes(namespace='', &block)
+        def hash_routes(namespace = '', &block)
           dsl = DSL.new(self, namespace)
           if block
             if block.arity == 1
@@ -395,7 +395,7 @@ class Roda
         end
 
         # Add branch handler for the given namespace and segment.
-        def hash_branch(namespace='', segment, &block)
+        def hash_branch(namespace = '', segment, &block)
           segment = "/#{segment}"
           routes = opts[:hash_branches][namespace] ||= {}
           routes[segment] = define_roda_method(routes[segment] || "hash_branch_#{namespace}_#{segment}", 1, &convert_route_block(block))
@@ -405,7 +405,7 @@ class Roda
         # r.hash_paths method is called, checks the matching namespace
         # for the full remaining path, and dispatch to that block if
         # there is one.
-        def hash_path(namespace='', path, &block)
+        def hash_path(namespace = '', path, &block)
           routes = opts[:hash_paths][namespace] ||= {}
           routes[path] = define_roda_method(routes[path] || "hash_path_#{namespace}_#{path}", 1, &convert_route_block(block))
         end
@@ -414,7 +414,7 @@ class Roda
       module RequestMethods
         # Checks the matching hash_branch namespace for a branch matching the next
         # segment in the remaining path, and dispatch to that block if there is one.
-        def hash_branches(namespace=matched_path)
+        def hash_branches(namespace = matched_path)
           rp = @remaining_path
 
           return unless rp.getbyte(0) == 47 # "/"
@@ -432,9 +432,9 @@ class Roda
           end
         end
 
-        # Checks the matching hash_path namespace for a branch matching the 
+        # Checks the matching hash_path namespace for a branch matching the
         # remaining path, and dispatch to that block if there is one.
-        def hash_paths(namespace=matched_path)
+        def hash_paths(namespace = matched_path)
           if (routes = roda_class.opts[:hash_paths][namespace]) && (meth = routes[@remaining_path])
             @remaining_path = ''
             always{scope.send(meth, self)}
@@ -443,7 +443,7 @@ class Roda
 
         # Check for matches in both the hash_path and hash_branch namespaces for
         # a matching remaining path or next segment in the remaining path, respectively.
-        def hash_routes(namespace=matched_path)
+        def hash_routes(namespace = matched_path)
           hash_paths(namespace)
           hash_branches(namespace)
         end

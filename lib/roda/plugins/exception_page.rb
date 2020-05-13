@@ -40,7 +40,7 @@ class Roda
     #     # serve GET /exception_page.{css,js} requests
     #     # Use with assets: true +exception_page+ option
     #     r.exception_page_assets
-    #     
+    #
     #     r.on "static" do
     #       # serve GET /static/exception_page.{css,js} requests
     #       # Use with assets: '/static' +exception_page+ option
@@ -176,7 +176,7 @@ END
         # class, message, and backtrace.
         #
         # Options:
-        # 
+        #
         # :assets :: If +true+, sets :css_file to +/exception_page.css+ and :js_file to
         #            +/exception_page.js+, assuming that +r.exception_page_assets+ is called
         #            in the route block to serve the exception page assets.  If a String,
@@ -195,14 +195,14 @@ END
         #          contain information derived from the given exception.
         #          Designed to be used with the +json+ exception, which will
         #          automatically convert the hash to JSON format.
-        def exception_page(exception, opts=OPTS)
+        def exception_page(exception, opts = OPTS)
           if opts[:json]
             @_response['Content-Type'] = "application/json"
             {
-              "exception"=>{
-                "class"=>exception.class.to_s,
-                "message"=>exception.message.to_s,
-                "backtrace"=>exception.backtrace.map(&:to_s)
+              "exception" => {
+                "class" => exception.class.to_s,
+                "message" => exception.message.to_s,
+                "backtrace" => exception.backtrace.map(&:to_s)
               }
             }
           elsif env['HTTP_ACCEPT'] =~ /text\/html/
@@ -243,7 +243,7 @@ END
             end
 
             frames = exception.backtrace.map.with_index do |line, i|
-              frame = {:id=>i}
+              frame = { id: i }
               if line =~ /\A(.*?):(\d+)(?::in `(.*)')?\Z/
                 filename = frame[:filename] = $1
                 lineno = frame[:lineno] = $2.to_i
@@ -252,11 +252,11 @@ END
                 begin
                   lineno -= 1
                   lines = ::File.readlines(filename)
-                  pre_lineno = frame[:pre_context_lineno] = [lineno-context, 0].max
+                  pre_lineno = frame[:pre_context_lineno] = [lineno - context, 0].max
                   frame[:pre_context] = lines[pre_lineno...lineno]
                   frame[:context_line] = lines[lineno].chomp
-                  post_lineno = frame[:post_context_lineno] = [lineno+context, lines.size].min
-                  frame[:post_context] = lines[lineno+1..post_lineno]
+                  post_lineno = frame[:post_context_lineno] = [lineno + context, lines.size].min
+                  frame[:post_context] = lines[lineno + 1..post_lineno]
                 rescue
                 end
 
@@ -265,7 +265,7 @@ END
             end.compact
 
             r = @_request
-            begin 
+            begin
               post_data = r.POST
               missing_post = "No POST data"
             rescue
@@ -339,7 +339,7 @@ END
           #{frame[:context_line] ? (<<END2) : '</li>'
           <div class="context" id="c#{id}">
             #{frame[:pre_context] ? (<<END3) : ''
-            <ol start="#{frame[:pre_context_lineno]+1}" id="bc#{id}">
+            <ol start="#{frame[:pre_context_lineno] + 1}" id="bc#{id}">
               #{frame[:pre_context].map{|line| "<li>#{h line}</li>"}.join}
             </ol>
 END3
@@ -350,7 +350,7 @@ END3
             </ol>
 
             #{frame[:post_context] ? (<<END4) : ''
-            <ol start='#{frame[:lineno]+1}' id="ac#{id}">
+            <ol start='#{frame[:lineno] + 1}' id="ac#{id}">
               #{frame[:post_context].map{|line| "<li>#{h line}</li>"}.join}
             </ol>
 END4

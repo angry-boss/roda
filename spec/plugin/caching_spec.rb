@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe 'response.cache_control' do
   it 'sets the Cache-Control header' do
     app(:caching) do |r|
-      response.cache_control :public=>true, :no_cache=>true, :max_age => 60
+      response.cache_control public: true, no_cache: true, max_age: 60
     end
     header('Cache-Control').split(', ').sort.must_equal ['max-age=60', 'no-cache', 'public']
   end
@@ -19,7 +21,7 @@ end
 describe 'response.expires' do
   it 'sets the Cache-Control and Expires header' do
     app(:caching) do |r|
-      response.expires 60, :public=>true, :no_cache=>true
+      response.expires 60, public: true, no_cache: true
     end
     header('Cache-Control').split(', ').sort.must_equal ['max-age=60', 'no-cache', 'public']
     ((Time.httpdate(header('Expires')) - Time.now).round - 60).abs.must_be :<=, 1
@@ -74,7 +76,7 @@ describe 'request.last_modified' do
 end
 
 describe 'request.last_modified' do
-  def res(a={})
+  def res(a = {})
     s, h, b = req(a)
     h['Last-Modified'].must_equal @last_modified.httpdate
     [s, b.join]
@@ -140,11 +142,11 @@ describe 'request.etag' do
   end
 
   it 'uses a weak etag with the :weak option' do
-    header('ETag', 'weak'=>true).must_equal 'W/"foo"'
+    header('ETag', 'weak' => true).must_equal 'W/"foo"'
   end
 
   describe 'for GET requests' do
-    def res(a={})
+    def res(a = {})
       s, h, b = req(a)
       h['ETag'].must_equal '"foo"'
       [s, b.join]
@@ -159,7 +161,7 @@ describe 'request.etag' do
     end
 
     it "sets etag and if If-None-Match is * and it is a new resource" do
-      res('HTTP_IF_NONE_MATCH' => '*', 'new_resource'=>true).must_equal [200, 'ok']
+      res('HTTP_IF_NONE_MATCH' => '*', 'new_resource' => true).must_equal [200, 'ok']
     end
 
     it "sets etag and returns 304 if If-None-Match is etag" do
@@ -175,15 +177,15 @@ describe 'request.etag' do
     end
 
     it "sets etag and does not change status code if status code set and not 2xx or 304 if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>499).must_equal [499, 'ok']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 499).must_equal [499, 'ok']
     end
 
     it "sets etag and returns 304 if status code set to 2xx if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>201).must_equal [304, '']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 201).must_equal [304, '']
     end
 
     it "sets etag and returns 304 if status code is already 304 if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>304).must_equal [304, '']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 304).must_equal [304, '']
     end
 
     it "sets etag if If-Match is *" do
@@ -199,17 +201,17 @@ describe 'request.etag' do
     end
 
     it "sets etag and returns 412 if If-Match is * for new resources" do
-      res('HTTP_IF_MATCH' => '*', 'new_resource'=>true).must_equal [412, '']
+      res('HTTP_IF_MATCH' => '*', 'new_resource' => true).must_equal [412, '']
     end
 
     it "sets etag if If-Match does not include etag" do
-      res('HTTP_IF_MATCH' => '"bar", "baz"', 'new_resource'=>true).must_equal [412, '']
+      res('HTTP_IF_MATCH' => '"bar", "baz"', 'new_resource' => true).must_equal [412, '']
     end
   end
 
   describe 'for PUT requests' do
-    def res(a={})
-      s, h, b = req(a.merge('REQUEST_METHOD'=>'PUT'))
+    def res(a = {})
+      s, h, b = req(a.merge('REQUEST_METHOD' => 'PUT'))
       h['ETag'].must_equal '"foo"'
       [s, b.join]
     end
@@ -223,7 +225,7 @@ describe 'request.etag' do
     end
 
     it "sets etag and if If-None-Match is * and it is a new resource" do
-      res('HTTP_IF_NONE_MATCH' => '*', 'new_resource'=>true).must_equal [200, 'ok']
+      res('HTTP_IF_NONE_MATCH' => '*', 'new_resource' => true).must_equal [200, 'ok']
     end
 
     it "sets etag and returns 412 if If-None-Match is etag" do
@@ -239,15 +241,15 @@ describe 'request.etag' do
     end
 
     it "sets etag and does not change status code if status code set and not 2xx or 304 if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>499).must_equal [499, 'ok']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 499).must_equal [499, 'ok']
     end
 
     it "sets etag and returns 304 if status code set to 2xx if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>201).must_equal [412, '']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 201).must_equal [412, '']
     end
 
     it "sets etag and returns 304 if status code is already 304 if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>304).must_equal [412, '']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 304).must_equal [412, '']
     end
 
     it "sets etag if If-Match is *" do
@@ -263,17 +265,17 @@ describe 'request.etag' do
     end
 
     it "sets etag and returns 412 if If-Match is * for new resources" do
-      res('HTTP_IF_MATCH' => '*', 'new_resource'=>true).must_equal [412, '']
+      res('HTTP_IF_MATCH' => '*', 'new_resource' => true).must_equal [412, '']
     end
 
     it "sets etag if If-Match does not include etag" do
-      res('HTTP_IF_MATCH' => '"bar", "baz"', 'new_resource'=>true).must_equal [412, '']
+      res('HTTP_IF_MATCH' => '"bar", "baz"', 'new_resource' => true).must_equal [412, '']
     end
   end
 
   describe 'for POST requests' do
-    def res(a={})
-      s, h, b = req(a.merge('REQUEST_METHOD'=>'POST'))
+    def res(a = {})
+      s, h, b = req(a.merge('REQUEST_METHOD' => 'POST'))
       h['ETag'].must_equal '"foo"'
       [s, b.join]
     end
@@ -283,7 +285,7 @@ describe 'request.etag' do
     end
 
     it "sets etag and returns 412 if If-None-Match is * and it is not a new resource" do
-      res('HTTP_IF_NONE_MATCH' => '*', 'new_resource'=>false).must_equal [412, '']
+      res('HTTP_IF_NONE_MATCH' => '*', 'new_resource' => false).must_equal [412, '']
     end
 
     it "sets etag and if If-None-Match is *" do
@@ -303,19 +305,19 @@ describe 'request.etag' do
     end
 
     it "sets etag and does not change status code if status code set and not 2xx or 304 if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>499).must_equal [499, 'ok']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 499).must_equal [499, 'ok']
     end
 
     it "sets etag and returns 304 if status code set to 2xx if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>201).must_equal [412, '']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 201).must_equal [412, '']
     end
 
     it "sets etag and returns 304 if status code is already 304 if If-None-Match is etag" do
-      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status'=>304).must_equal [412, '']
+      res('HTTP_IF_NONE_MATCH' => '"foo"', 'status' => 304).must_equal [412, '']
     end
 
     it "sets etag if If-Match is * and this is not a new resource" do
-      res('HTTP_IF_MATCH' => '*', 'new_resource'=>false).must_equal [200, 'ok']
+      res('HTTP_IF_MATCH' => '*', 'new_resource' => false).must_equal [200, 'ok']
     end
 
     it "sets etag if If-Match is etag" do
@@ -331,7 +333,7 @@ describe 'request.etag' do
     end
 
     it "sets etag if If-Match does not include etag" do
-      res('HTTP_IF_MATCH' => '"bar", "baz"', 'new_resource'=>true).must_equal [412, '']
+      res('HTTP_IF_MATCH' => '"bar", "baz"', 'new_resource' => true).must_equal [412, '']
     end
   end
 end

@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'tilt/erb'
 rescue LoadError
-  warn "tilt not installed, skipping multi_view plugin test"  
+  warn "tilt not installed, skipping multi_view plugin test"
 else
-describe "multi_view plugin" do 
+describe "multi_view plugin" do
   before do
     app(:bare) do
-      plugin :render, :views=>'spec/views', :layout=>'layout-yield'
+      plugin :render, views: 'spec/views', layout: 'layout-yield'
       plugin :multi_view
 
       route do |r|
@@ -22,14 +24,14 @@ describe "multi_view plugin" do
     body('/b').gsub(/\s+/, '').must_equal "HeaderbFooter"
     body('/c').gsub(/\s+/, '').must_equal "HeadercFooter"
     status('/d').must_equal 404
-    status('/a', 'REQUEST_METHOD'=>'POST').must_equal 404
+    status('/a', 'REQUEST_METHOD' => 'POST').must_equal 404
   end
 end
 
-describe "multi_view plugin multi_view_compile method " do 
+describe "multi_view plugin multi_view_compile method " do
   before do
     app(:bare) do
-      plugin :render, :views=>'spec/views', :layout=>'layout-yield'
+      plugin :render, views: 'spec/views', layout: 'layout-yield'
       plugin :multi_view
       regexp = multi_view_compile(['a', 'b', 'c'])
 
@@ -44,7 +46,7 @@ describe "multi_view plugin multi_view_compile method " do
     body('/b').gsub(/\s+/, '').must_equal "HeaderbFooter"
     body('/c').gsub(/\s+/, '').must_equal "HeadercFooter"
     status('/d').must_equal 404
-    status('/a', 'REQUEST_METHOD'=>'POST').must_equal 404
+    status('/a', 'REQUEST_METHOD' => 'POST').must_equal 404
   end
 end
 end

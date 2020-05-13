@@ -185,7 +185,7 @@ class Roda
     # If you want to precompile your assets, so they do not need to be compiled
     # every time you boot the application, you can provide a :precompiled option
     # when loading the plugin.  The value of this option should be the filename
-    # where the compiled asset metadata is stored.  
+    # where the compiled asset metadata is stored.
     #
     # If the compiled asset metadata file does not exist when the assets plugin
     # is loaded, the plugin will run in non-compiled mode.  However, when you call
@@ -305,19 +305,19 @@ class Roda
     #                     By default, <tt>/</tt> is used as the separator if timestamp paths are enabled.
     module Assets
       DEFAULTS = {
-        :compiled_name    => 'app'.freeze,
-        :js_dir           => 'js'.freeze,
-        :css_dir          => 'css'.freeze,
-        :prefix           => 'assets'.freeze,
-        :concat_only      => false,
-        :compiled         => false,
-        :add_suffix       => false,
-        :early_hints      => false,
-        :timestamp_paths  => false,
-        :group_subdirs    => true,
-        :compiled_css_dir => nil,
-        :compiled_js_dir  => nil,
-        :sri              => :sha256
+        compiled_name: 'app'.freeze,
+        js_dir: 'js'.freeze,
+        css_dir: 'css'.freeze,
+        prefix: 'assets'.freeze,
+        concat_only: false,
+        compiled: false,
+        add_suffix: false,
+        early_hints: false,
+        timestamp_paths: false,
+        group_subdirs: true,
+        compiled_css_dir: nil,
+        compiled_js_dir: nil,
+        sri: :sha256
       }.freeze
 
       # Internal exception raised when a compressor cannot be found
@@ -357,8 +357,8 @@ class Roda
           app.opts[:assets][:orig_opts] = opts
         end
         opts = app.opts[:assets]
-        opts[:path] = app.expand_path(opts[:path]||"assets").freeze
-        opts[:public] = app.expand_path(opts[:public]||"public").freeze
+        opts[:path] = app.expand_path(opts[:path] || "assets").freeze
+        opts[:public] = app.expand_path(opts[:public] || "public").freeze
 
         # Combine multiple values into a path, ignoring trailing slashes
         j = lambda do |*v|
@@ -398,11 +398,11 @@ class Roda
          [:compiled_js_route, :compiled_js_dir],
          [:compiled_css_route, :compiled_css_dir]
         ].each do |k, v|
-          opts[k]  = opts[v] unless opts.has_key?(k)
+          opts[k] = opts[v] unless opts.has_key?(k)
         end
 
         [:css_headers, :js_headers, :css_opts, :js_opts, :dependencies].each do |s|
-          opts[s] ||= {} 
+          opts[s] ||= {}
         end
 
         expanded_deps = opts[:expanded_dependencies] = {}
@@ -451,11 +451,11 @@ class Roda
         # is given, compile both the :css and :js asset types.  You
         # can specify an array of types (e.g. [:css, :frontend]) to
         # compile assets for the given asset group.
-        def compile_assets(type=nil)
+        def compile_assets(type = nil)
           require 'fileutils'
 
           unless assets_opts[:compiled]
-            opts[:assets] = assets_opts.merge(:compiled => {})
+            opts[:assets] = assets_opts.merge(compiled: {})
           end
 
           if type == nil
@@ -579,7 +579,7 @@ class Roda
         # Compress the JS using MinJS, a pure ruby compressor
         def compress_js_minjs(content)
           require 'minjs'
-          Minjs::Compressor::Compressor.new(:debug => false).compress(content).to_js
+          Minjs::Compressor::Compressor.new(debug: false).compress(content).to_js
         end
 
         # Compress the JS using Uglifier, requires javascript runtime
@@ -603,7 +603,7 @@ class Roda
         # Compress the CSS/JS using YUI Compressor, requires java runtime
         def compress_yui(content, meth)
           require 'yuicompressor'
-          ::YUICompressor.public_send(meth, content, :munge => true)
+          ::YUICompressor.public_send(meth, content, munge: true)
         rescue ::Errno::ENOENT => e
           raise CompressorNotFound, "#{e.class}: #{e.message}", e.backtrace
         end
@@ -684,7 +684,7 @@ class Roda
             attrs[:integrity] = "#{algo}-#{h([[hash].pack('H*')].pack('m').tr("\n", ''))}"
           end
 
-          attrs = attrs.map{|k,v| "#{k}=\"#{h(v)}\""}.join(' ')
+          attrs = attrs.map{|k, v| "#{k}=\"#{h(v)}\""}.join(' ')
 
           if ltype == :js
             tag_start = "<script type=\"text/javascript\" #{attrs} src=\""
@@ -697,7 +697,7 @@ class Roda
           paths = assets_paths(type)
           if o[:early_hints]
             early_hint_as = ltype == :js ? 'script' : 'style'
-            send_early_hints('Link'=>paths.map{|p| "<#{p}>; rel=preload; as=#{early_hint_as}"}.join("\n"))
+            send_early_hints('Link' => paths.map{|p| "<#{p}>; rel=preload; as=#{early_hint_as}"}.join("\n"))
           end
           paths.map{|p| "#{tag_start}#{h(p)}#{tag_end}"}.join("\n")
         end
@@ -737,7 +737,7 @@ class Roda
           content = if file.end_with?(".#{type}")
             ::File.read(file)
           else
-            render_asset_file(file, :template_opts=>o[:"#{type}_opts"], :dependencies=>o[:expanded_dependencies][file])
+            render_asset_file(file, template_opts: o[:"#{type}_opts"], dependencies: o[:expanded_dependencies][file])
           end
 
           o[:postprocessor] ? o[:postprocessor].call(file, type, content) : content
@@ -745,7 +745,7 @@ class Roda
 
         private
 
-        def _compiled_assets_hash(type, return_ukey=false)
+        def _compiled_assets_hash(type, return_ukey = false)
           compiled = self.class.assets_opts[:compiled]
           type, *dirs = type if type.is_a?(Array)
           stype = type.to_s
@@ -785,7 +785,7 @@ class Roda
         # Render the given asset file using the render plugin, with the given options.
         # +file+ should be the relative path to the file from the current directory.
         def render_asset_file(file, options)
-          render_template({:path => file}, options)
+          render_template({ path: file }, options)
         end
       end
 
@@ -805,7 +805,7 @@ class Roda
         def assets_regexp(type)
           o = roda_class.assets_opts
           if compiled = o[:compiled]
-            assets = compiled.select{|k,_| k =~ /\A#{type}/}.map do |k, md|
+            assets = compiled.select{|k, _| k =~ /\A#{type}/}.map do |k, md|
               "#{k.sub(/\A#{type}/, '')}.#{md}.#{type}"
             end
             /#{o[:"compiled_#{type}_prefix"]}(#{Regexp.union(assets)})/
@@ -821,7 +821,7 @@ class Roda
         def unnest_assets_hash(h)
           case h
           when Hash
-            h.map do |k,v|
+            h.map do |k, v|
               assets = unnest_assets_hash(v)
               assets = assets.map{|x| "#{k}/#{x}"} if roda_class.assets_opts[:group_subdirs]
               assets

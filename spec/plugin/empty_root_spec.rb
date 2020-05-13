@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "empty_root plugin" do 
+describe "empty_root plugin" do
   it "makes root match on emtpy path" do
     app(:empty_root) do |r|
       r.root{"root"}

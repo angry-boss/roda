@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "spec_helper"
 
 describe "Roda#env" do
@@ -6,6 +8,6 @@ describe "Roda#env" do
       env['PATH_INFO']
     end
 
-    body("/foo").must_equal  "/foo"
+    body("/foo").must_equal "/foo"
   end
 end

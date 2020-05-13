@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "module_include plugin" do 
+describe "module_include plugin" do
   it "must_include given module in request or response class" do
     app(:bare) do
       plugin :module_include

@@ -1,18 +1,20 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 begin
   require 'tilt/erb'
 rescue LoadError
-  warn "tilt not installed, skipping chunked plugin test"  
+  warn "tilt not installed, skipping chunked plugin test"
 else
-describe "chunked plugin" do 
-  def cbody(env={})
-    body({'HTTP_VERSION'=>'HTTP/1.1'}.merge(env))
+describe "chunked plugin" do
+  def cbody(env = {})
+    body({ 'HTTP_VERSION' => 'HTTP/1.1' }.merge(env))
   end
 
   it "streams templates in chunked encoding only if HTTP 1.1 is used" do
     app(:chunked) do |r|
-      chunked(:inline=>'m', :layout=>{:inline=>'h<%= yield %>t'})
+      chunked(inline: 'm', layout: { inline: 'h<%= yield %>t' })
     end
 
     cbody.must_equal "1\r\nh\r\n1\r\nm\r\n1\r\nt\r\n0\r\n\r\n"
@@ -22,7 +24,7 @@ describe "chunked plugin" do
   it "hex encodes chunk sizes" do
     m = 'm' * 31
     app(:chunked) do |r|
-      chunked(:inline=>m.dup, :layout=>{:inline=>'h<%= yield %>t'})
+      chunked(inline: m.dup, layout: { inline: 'h<%= yield %>t' })
     end
 
     cbody.must_equal "1\r\nh\r\n1f\r\n#{m}\r\n1\r\nt\r\n0\r\n\r\n"
@@ -32,7 +34,7 @@ describe "chunked plugin" do
   it "accepts a block that is called after layout yielding but before content when streaming" do
     app(:chunked) do |r|
       @h = nil
-      chunked(:inline=>'m<%= @h %>', :layout=>{:inline=>'<%= @h %><%= yield %>t'}) do
+      chunked(inline: 'm<%= @h %>', layout: { inline: '<%= @h %><%= yield %>t' }) do
         @h = 'h'
       end
     end
@@ -47,7 +49,7 @@ describe "chunked plugin" do
         @h << 'i'
       end
       @h = String.new('h')
-      chunked(:inline=>'m<%= @h %>', :layout=>{:inline=>'<%= @h %><%= yield %>t'}) do
+      chunked(inline: 'm<%= @h %>', layout: { inline: '<%= @h %><%= yield %>t' }) do
         @h << 'j'
       end
     end
@@ -63,7 +65,7 @@ describe "chunked plugin" do
 
   it "works when a layout is not used" do
     app(:chunked) do |r|
-      chunked(:inline=>'m', :layout=>nil)
+      chunked(inline: 'm', layout: nil)
     end
 
     cbody.must_equal "1\r\nm\r\n0\r\n\r\n"
@@ -72,7 +74,7 @@ describe "chunked plugin" do
 
   it "streams partial template responses if flush is used in content template" do
     app(:chunked) do |r|
-      chunked(:inline=>'m<%= flush %>n', :layout=>{:inline=>'h<%= yield %>t'})
+      chunked(inline: 'm<%= flush %>n', layout: { inline: 'h<%= yield %>t' })
     end
 
     cbody.must_equal "1\r\nh\r\n1\r\nm\r\n1\r\nn\r\n1\r\nt\r\n0\r\n\r\n"
@@ -81,7 +83,7 @@ describe "chunked plugin" do
 
   it "streams partial template responses if flush is used in layout template" do
     app(:chunked) do |r|
-      chunked(:inline=>'m', :layout=>{:inline=>'h<%= flush %>i<%= yield %>t'})
+      chunked(inline: 'm', layout: { inline: 'h<%= flush %>i<%= yield %>t' })
     end
 
     cbody.must_equal "1\r\nh\r\n1\r\ni\r\n1\r\nm\r\n1\r\nt\r\n0\r\n\r\n"
@@ -91,7 +93,7 @@ describe "chunked plugin" do
   it "does not stream if no_chunk! is used" do
     app(:chunked) do |r|
       no_chunk!
-      chunked(:inline=>'m', :layout=>{:inline=>'h<%= yield %>t'})
+      chunked(inline: 'm', layout: { inline: 'h<%= yield %>t' })
     end
 
     cbody.must_equal "hmt"
@@ -101,7 +103,7 @@ describe "chunked plugin" do
   it "streams existing response body before call" do
     app(:chunked) do |r|
       response.write('a')
-      response.write chunked(:inline=>'m', :layout=>{:inline=>'h<%= yield %>t'})
+      response.write chunked(inline: 'm', layout: { inline: 'h<%= yield %>t' })
     end
 
     cbody.must_equal "1\r\na\r\n1\r\nh\r\n1\r\nm\r\n1\r\nt\r\n0\r\n\r\n"
@@ -111,18 +113,18 @@ describe "chunked plugin" do
   it "should not include Content-Length header even if body is already written to" do
     app(:chunked) do |r|
       response.write('a')
-      response.write chunked(:inline=>'m', :layout=>{:inline=>'h<%= yield %>t'})
+      response.write chunked(inline: 'm', layout: { inline: 'h<%= yield %>t' })
     end
 
-    header('Content-Length', 'HTTP_VERSION'=>'HTTP/1.1').must_be_nil
-    header('Content-Length', 'HTTP_VERSION'=>'HTTP/1.0').must_equal '4'
+    header('Content-Length', 'HTTP_VERSION' => 'HTTP/1.1').must_be_nil
+    header('Content-Length', 'HTTP_VERSION' => 'HTTP/1.0').must_equal '4'
   end
 
   it "stream template responses for view if :chunk_by_default is used" do
     app(:bare) do
-      plugin :chunked, :chunk_by_default=>true
+      plugin :chunked, chunk_by_default: true
       route do |r|
-        view(:inline=>'m', :layout=>{:inline=>'h<%= yield %>t'})
+        view(inline: 'm', layout: { inline: 'h<%= yield %>t' })
       end
     end
 
@@ -132,31 +134,31 @@ describe "chunked plugin" do
 
   it "uses Transfer-Encoding header when chunking" do
     app(:chunked) do |r|
-      chunked(:inline=>'m', :layout=>{:inline=>'h<%= yield %>t'})
+      chunked(inline: 'm', layout: { inline: 'h<%= yield %>t' })
     end
 
-    header('Transfer-Encoding', 'HTTP_VERSION'=>'HTTP/1.1').must_equal 'chunked'
-    header('Transfer-Encoding', 'HTTP_VERSION'=>'HTTP/1.0').must_be_nil
+    header('Transfer-Encoding', 'HTTP_VERSION' => 'HTTP/1.1').must_equal 'chunked'
+    header('Transfer-Encoding', 'HTTP_VERSION' => 'HTTP/1.0').must_be_nil
   end
 
   it "uses given :headers when chunking" do
     app(:bare) do
-      plugin :chunked, :headers=>{'Foo'=>'bar'}
+      plugin :chunked, headers: { 'Foo' => 'bar' }
       route do |r|
-        chunked(:inline=>'m', :layout=>{:inline=>'h<%= yield %>t'})
+        chunked(inline: 'm', layout: { inline: 'h<%= yield %>t' })
       end
     end
 
-    header('Foo', 'HTTP_VERSION'=>'HTTP/1.1').must_equal 'bar'
-    header('Foo', 'HTTP_VERSION'=>'HTTP/1.0').must_be_nil
+    header('Foo', 'HTTP_VERSION' => 'HTTP/1.1').must_equal 'bar'
+    header('Foo', 'HTTP_VERSION' => 'HTTP/1.0').must_be_nil
   end
 
   it "handles multiple arguments to chunked" do
     app(:bare) do
-      plugin :chunked, :chunk_by_default=>true
-      plugin :render, :views => "./spec/views"
+      plugin :chunked, chunk_by_default: true
+      plugin :render, views: "./spec/views"
       route do |r|
-        chunked('about', :locals=>{:title=>'m'}, :layout=>{:inline=>'h<%= yield %>t'})
+        chunked('about', locals: { title: 'm' }, layout: { inline: 'h<%= yield %>t' })
       end
     end
 
@@ -166,7 +168,7 @@ describe "chunked plugin" do
 
   it "handles multiple hash arguments to chunked" do
     app(:chunked) do |r|
-      chunked({:inline=>'m'}, :layout=>{:inline=>'h<%= yield %>t'})
+      chunked({ inline: 'm' }, layout: { inline: 'h<%= yield %>t' })
     end
 
     cbody.must_equal "1\r\nh\r\n1\r\nm\r\n1\r\nt\r\n0\r\n\r\n"
@@ -175,7 +177,7 @@ describe "chunked plugin" do
 
   it "handles :layout_opts option" do
     app(:chunked) do |r|
-      chunked(:inline=>'m', :layout=>{:inline=>'<%= h %><%= yield %>t'}, :layout_opts=>{:locals=>{:h=>'h'}})
+      chunked(inline: 'm', layout: { inline: '<%= h %><%= yield %>t' }, layout_opts: { locals: { h: 'h' } })
     end
 
     cbody.must_equal "1\r\nh\r\n1\r\nm\r\n1\r\nt\r\n0\r\n\r\n"
@@ -184,7 +186,7 @@ describe "chunked plugin" do
 
   it "uses handle_chunk_error for handling errors when chunking" do
     app(:chunked) do |r|
-      chunked(:inline=>'m', :layout=>{:inline=>'h<%= yield %><% raise %>'})
+      chunked(inline: 'm', layout: { inline: 'h<%= yield %><% raise %>' })
     end
     proc{cbody}.must_raise RuntimeError
     proc{body}.must_raise RuntimeError

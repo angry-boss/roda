@@ -22,7 +22,7 @@ class Roda
     #   plugin :default_headers, 'Bar'=>'baz'
     module DefaultHeaders
       # Merge the given headers into the existing default headers, if any.
-      def self.configure(app, headers={})
+      def self.configure(app, headers = {})
         headers = app.opts[:default_headers] = (app.default_headers || app::RodaResponse::DEFAULT_HEADERS).merge(headers).freeze
 
         if headers.all?{|k, v| k.is_a?(String) && v.is_a?(String)}
@@ -30,17 +30,17 @@ class Roda
           owner = response_class.instance_method(:set_default_headers).owner
           if owner == Base::ResponseMethods || (owner == response_class && app.opts[:set_default_headers_overridder] == response_class)
             app.opts[:set_default_headers_overridder] = response_class
-            response_class.class_eval(<<-END, __FILE__, __LINE__+1)
+            response_class.class_eval(<<-END, __FILE__, __LINE__ + 1)
               private
 
               def set_default_headers
                 h = @headers
-                #{headers.map{|k,v| "h[#{k.inspect}] ||= #{v.inspect}"}.join('; ')}
+                #{headers.map{|k, v| "h[#{k.inspect}] ||= #{v.inspect}"}.join('; ')}
               end
             END
           end
         end
-      end 
+      end
 
       module ClassMethods
         # The default response headers to use for the current class.

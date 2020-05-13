@@ -105,7 +105,7 @@ class Roda
         # check with the arguments.
         %w'get post delete head options link patch put trace unlink'.each do |verb|
           if ::Rack::Request.method_defined?("#{verb}?")
-            class_eval(<<-END, __FILE__, __LINE__+1)
+            class_eval(<<-END, __FILE__, __LINE__ + 1)
               def #{verb}(*args, &block)
                 if (empty = args.empty?) && @_is_verbs
                   @_is_verbs << "#{verb.to_s.upcase}"

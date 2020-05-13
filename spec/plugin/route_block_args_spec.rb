@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe "route_block_args plugin" do
@@ -62,9 +64,9 @@ describe "route_block_args plugin" do
       end
     end
 
-    header('Foo', 'rack.input'=>StringIO.new).must_equal('Bar')
-    body('rack.input'=>StringIO.new).must_equal('-')
-    body('QUERY_STRING'=>'a=c', 'B'=>'D', 'rack.input'=>StringIO.new).must_equal('c-D')
+    header('Foo', 'rack.input' => StringIO.new).must_equal('Bar')
+    body('rack.input' => StringIO.new).must_equal('-')
+    body('QUERY_STRING' => 'a=c', 'B' => 'D', 'rack.input' => StringIO.new).must_equal('c-D')
   end
 
   it "works if given after the route block" do
@@ -79,8 +81,8 @@ describe "route_block_args plugin" do
       end
     end
 
-    header('Foo', 'rack.input'=>StringIO.new).must_equal('Bar')
-    body('rack.input'=>StringIO.new).must_equal('-')
-    body('QUERY_STRING'=>'a=c', 'B'=>'D', 'rack.input'=>StringIO.new).must_equal('c-D')
+    header('Foo', 'rack.input' => StringIO.new).must_equal('Bar')
+    body('rack.input' => StringIO.new).must_equal('-')
+    body('QUERY_STRING' => 'a=c', 'B' => 'D', 'rack.input' => StringIO.new).must_equal('c-D')
   end
 end

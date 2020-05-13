@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
 describe "request_headers plugin" do
@@ -16,12 +18,12 @@ describe "request_headers plugin" do
 
   it "must add HTTP_ prefix when appropriate" do
     header_app('Foo')
-    body('/', {'HTTP_FOO' => 'a'}).must_equal 'a'
+    body('/', { 'HTTP_FOO' => 'a' }).must_equal 'a'
   end
 
   it "must ignore HTTP_ prefix when appropriate" do
     header_app('Content-Type')
-    body('/', {'CONTENT_TYPE' => 'a'}).must_equal 'a'
+    body('/', { 'CONTENT_TYPE' => 'a' }).must_equal 'a'
   end
 
   it "must return nil for non-existant headers" do
@@ -31,9 +33,9 @@ describe "request_headers plugin" do
 
   it "must be case-insensitive" do
     header_app('X-My-Header')
-    body('/', {'HTTP_X_MY_HEADER' => 'a'}).must_equal 'a'
+    body('/', { 'HTTP_X_MY_HEADER' => 'a' }).must_equal 'a'
 
     header_app('x-my-header')
-    body('/', {'HTTP_X_MY_HEADER' => 'a'}).must_equal 'a'
+    body('/', { 'HTTP_X_MY_HEADER' => 'a' }).must_equal 'a'
   end
 end

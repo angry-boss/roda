@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "backtracking_array plugin" do 
+describe "backtracking_array plugin" do
   it "backtracks to next entry in array if later matcher fails" do
     app(:backtracking_array) do |r|
       r.is %w'a a/b' do |id|
@@ -8,7 +10,7 @@ describe "backtracking_array plugin" do
       end
 
       r.is %w'c c/d', %w'd e' do |a, b|
-        "#{a}-#{b}" 
+        "#{a}-#{b}"
       end
 
       r.is [%w'f f/g', %w'g g/h'] do |id|

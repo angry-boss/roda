@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "default_headers plugin" do 
+describe "default_headers plugin" do
   it "sets the default headers to use for the response" do
-    h = {'Content-Type'=>'text/json', 'Foo'=>'bar'}
+    h = { 'Content-Type' => 'text/json', 'Foo' => 'bar' }
 
     app(:bare) do
       plugin :default_headers, h
@@ -12,11 +14,11 @@ describe "default_headers plugin" do
     end
 
     req[1].must_equal h
-    req[1].wont_be_same_as h 
+    req[1].wont_be_same_as h
   end
 
   it "should not override existing default headers" do
-    h = {'Content-Type'=>'text/json', 'Foo'=>'bar'}
+    h = { 'Content-Type' => 'text/json', 'Foo' => 'bar' }
 
     app(:bare) do
       plugin :default_headers, h
@@ -40,11 +42,11 @@ describe "default_headers plugin" do
       end
     end
 
-    req[1].must_equal('Content-Type'=>'text/json', 'Foo'=>'baz')
+    req[1].must_equal('Content-Type' => 'text/json', 'Foo' => 'baz')
   end
 
   it "should have a default Content-Type header" do
-    h = {'Foo'=>'bar'}
+    h = { 'Foo' => 'bar' }
 
     app(:bare) do
       plugin :default_headers, h
@@ -54,11 +56,11 @@ describe "default_headers plugin" do
       end
     end
 
-    req[1].must_equal('Content-Type'=>'text/html', 'Foo'=>'bar')
+    req[1].must_equal('Content-Type' => 'text/html', 'Foo' => 'bar')
   end
 
   it "should work correctly in subclasses" do
-    h = {'Content-Type'=>'text/json', 'Foo'=>'bar'}
+    h = { 'Content-Type' => 'text/json', 'Foo' => 'bar' }
 
     app(:bare) do
       plugin :default_headers, h
@@ -74,7 +76,7 @@ describe "default_headers plugin" do
   end
 
   it "should offer default_headers method on class and response instance" do
-    h = {'Content-Type'=>'text/json', 'Foo'=>'bar'}
+    h = { 'Content-Type' => 'text/json', 'Foo' => 'bar' }
     app.plugin :default_headers, h
     app.default_headers.must_equal h
     app::RodaResponse.new.default_headers.must_equal h

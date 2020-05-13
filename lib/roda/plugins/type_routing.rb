@@ -86,21 +86,21 @@ class Roda
     #                Default is +true+.
     module TypeRouting
       CONFIGURATION = {
-        :mimes => {
+        mimes: {
           'text/json' => :json,
           'application/json' => :json,
           'text/xml' => :xml,
           'application/xml' => :xml,
           'text/html' => :html,
         }.freeze,
-        :types => {
-          :json => 'application/json'.freeze,
-          :xml => 'application/xml'.freeze,
-          :html => 'text/html'.freeze,
+        types: {
+          json: 'application/json'.freeze,
+          xml: 'application/xml'.freeze,
+          html: 'text/html'.freeze,
         }.freeze,
-        :use_extension => true,
-        :use_header => true,
-        :default_type => :html
+        use_extension: true,
+        use_header: true,
+        default_type: :html
       }.freeze
 
       def self.configure(app, opts = {})
@@ -180,7 +180,7 @@ class Roda
 
           if opts[:use_extension]
             if m = path.match(opts[:extension_regexp])
-              @type_routing_extension =  @requested_type = m[2].to_sym
+              @type_routing_extension = @requested_type = m[2].to_sym
               path = m[1]
             end
           end
@@ -193,7 +193,7 @@ class Roda
           mimes = @scope.opts[:type_routing][:mimes]
 
           @env['HTTP_ACCEPT'].to_s.split(/\s*,\s*/).map do |part|
-            mime, _= part.split(/\s*;\s*/, 2)
+            mime, _ = part.split(/\s*;\s*/, 2)
             if sym = mimes[mime]
               return sym
             end

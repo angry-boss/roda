@@ -41,7 +41,7 @@ class Roda
     #   end
     #
     # The following methods are available for configuring the content security policy,
-    # which specify the setting (substituting _ with -): 
+    # which specify the setting (substituting _ with -):
     #
     # * base_uri
     # * child_src
@@ -74,8 +74,8 @@ class Roda
     # Example:
     #
     #   content_security_policy.script_src :self, :unsafe_eval, 'example.com', [:nonce, 'foobarbaz']
-    #   # script-src 'self' 'unsafe-eval' example.com 'nonce-foobarbaz'; 
-    #  
+    #   # script-src 'self' 'unsafe-eval' example.com 'nonce-foobarbaz';
+    #
     # When calling a method with no arguments, the setting is removed from the policy instead
     # of being left empty, since all of these setting require at least one value.  Likewise,
     # if the policy does not have any settings, the header will not be added.
@@ -86,7 +86,7 @@ class Roda
     #
     #   content_security_policy.script_src :self, :unsafe_eval
     #   content_security_policy.add_script_src 'example.com', [:nonce, 'foobarbaz']
-    #   # script-src 'self' 'unsafe-eval' example.com 'nonce-foobarbaz'; 
+    #   # script-src 'self' 'unsafe-eval' example.com 'nonce-foobarbaz';
     #
     #   content_security_policy.get_script_src 'example.com', [:nonce, 'foobarbaz']
     #   # => [:self, :unsafe_eval, 'example.com', [:nonce, 'foobarbaz']]
@@ -166,7 +166,7 @@ class Roda
 
           # Setting method name turns on setting if true or no argument given,
           # or removes setting if false is given.
-          define_method(meth) do |arg=true|
+          define_method(meth) do |arg = true|
             if arg
               @opts[setting] = true
             else
@@ -220,7 +220,7 @@ class Roda
 
         # Set whether the Content-Security-Policy-Report-Only header instead of the
         # default Content-Security-Policy header.
-        def report_only(report=true)
+        def report_only(report = true)
           @report_only = report
         end
 

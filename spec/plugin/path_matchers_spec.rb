@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "path_matchers plugin" do 
+describe "path_matchers plugin" do
   it ":extension matcher should match given file extension" do
     app(:path_matchers) do |r|
       r.on "css" do
-        r.on :extension=>"css" do |file|
+        r.on extension: "css" do |file|
           file
         end
       end
@@ -17,7 +19,7 @@ describe "path_matchers plugin" do
   it ":suffix matcher should match given suffix" do
     app(:path_matchers) do |r|
       r.on "css" do
-        r.on :suffix=>".css" do |file|
+        r.on suffix: ".css" do |file|
           file
         end
       end
@@ -30,7 +32,7 @@ describe "path_matchers plugin" do
   it ":prefix matcher should match given prefix" do
     app(:path_matchers) do |r|
       r.on "css" do
-        r.on :prefix=>"reset" do |file|
+        r.on prefix: "reset" do |file|
           file
         end
       end

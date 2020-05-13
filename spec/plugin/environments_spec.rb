@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "environments plugin" do 
+describe "environments plugin" do
   before do
     app
     app.plugin :environments, :development
@@ -10,7 +12,7 @@ describe "environments plugin" do
     app.environment.must_equal :development
     app.environment = :test
     app.environment.must_equal :test
-    
+
     app.plugin :environments, :production
     app.environment.must_equal :production
   end

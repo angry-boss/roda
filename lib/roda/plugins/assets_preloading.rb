@@ -46,8 +46,8 @@ class Roda
     #
     module AssetsPreloading
       TYPE_AS = {
-        :css => 'style'.freeze,
-        :js => 'script'.freeze,
+        css: 'style'.freeze,
+        js: 'script'.freeze,
       }.freeze
 
       # Depend on the assets plugin, as we'll be calling some functions in it.

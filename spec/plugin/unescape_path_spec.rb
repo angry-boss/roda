@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "unescape_path_path plugin" do 
+describe "unescape_path_path plugin" do
   it "decodes URL-encoded routing path" do
     app(:unescape_path) do |r|
       r.on 'b' do

@@ -8,21 +8,21 @@ class Roda
     # The main reason to use this plugin is when the internal absolute path could change at
     # runtime, either due to a symlink change or chroot call, or you really want to use
     # relative paths instead of absolute paths.
-    # 
+    #
     # Examples:
     #
     #   plugin :strip_path_prefix # Defaults to Dir.pwd
     #   plugin :strip_path_prefix, File.dirname(Dir.pwd)
     module StripPathPrefix
       # Set the regexp to use when stripping prefixes from internal paths.
-      def self.configure(app, prefix=Dir.pwd)
-        prefix += '/' unless prefix=~ /\/\z/
+      def self.configure(app, prefix = Dir.pwd)
+        prefix += '/' unless prefix =~ /\/\z/
         app.opts[:strip_path_prefix] = /\A#{Regexp.escape(prefix)}/
       end
 
       module ClassMethods
         # Strip the path prefix from the gien path if it starts with the prefix.
-        def expand_path(path, root=opts[:root])
+        def expand_path(path, root = opts[:root])
           super.sub(opts[:strip_path_prefix], '')
         end
       end

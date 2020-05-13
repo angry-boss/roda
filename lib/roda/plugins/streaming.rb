@@ -48,7 +48,7 @@ class Roda
         include Enumerable
 
         # Handle streaming options, see Streaming for details.
-        def initialize(opts=OPTS, &block)
+        def initialize(opts = OPTS, &block)
           @block = block
           @out = nil
           @callback = opts[:callback]
@@ -97,7 +97,7 @@ class Roda
         include Enumerable
 
         # Handle streaming options, see Streaming for details.
-        def initialize(opts=OPTS, &block)
+        def initialize(opts = OPTS, &block)
           @stream = Stream.new(opts, &block)
           @queue = opts[:queue] || SizedQueue.new(10) # have some default backpressure
           @thread = Thread.new { enqueue_chunks }
@@ -140,7 +140,7 @@ class Roda
         # Immediately return a streaming response using the current response
         # status and headers, calling the block to get the streaming response.
         # See Streaming for details.
-        def stream(opts=OPTS, &block)
+        def stream(opts = OPTS, &block)
           if opts[:loop]
             block = proc do |out|
               until out.closed?

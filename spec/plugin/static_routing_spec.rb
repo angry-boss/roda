@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "static_routing plugin" do 
+describe "static_routing plugin" do
   it "adds support for static routes that are taken before normal routes" do
     app(:bare) do
       plugin :static_routing
@@ -38,8 +40,8 @@ describe "static_routing plugin" do
       body('/foo').must_equal '/foo:'
       body('/foo/').must_equal 'foo2'
       body('/bar').must_equal 'GET2:/bar:'
-      body('/bar', 'REQUEST_METHOD'=>'POST').must_equal 'POST:/bar:'
-      status('/bar', 'REQUEST_METHOD'=>'PATCH').must_equal 404
+      body('/bar', 'REQUEST_METHOD' => 'POST').must_equal 'POST:/bar:'
+      status('/bar', 'REQUEST_METHOD' => 'PATCH').must_equal 404
       body('/baz').must_equal 'baz'
       status('/quux').must_equal 500
       @app = Class.new(@app)
@@ -63,7 +65,7 @@ describe "static_routing plugin" do
       route{}
     end
     body('/foo').must_equal 'bar'
-    a.must_equal [1,3,2]
+    a.must_equal [1, 3, 2]
   end
 
   it "works with hooks plugin if loaded before" do
@@ -83,7 +85,7 @@ describe "static_routing plugin" do
       route{}
     end
     body('/foo').must_equal 'bar'
-    a.must_equal [1,3,2]
+    a.must_equal [1, 3, 2]
   end
 
   it "supports overridding static routes" do
@@ -145,11 +147,11 @@ describe "static_routing plugin" do
 
     body('/foo').must_equal 'foo'
     body('/bar').must_equal 'bar2'
-    body('/foo', 'REQUEST_METHOD'=>'POST').must_equal 'foo'
+    body('/foo', 'REQUEST_METHOD' => 'POST').must_equal 'foo'
     @app = old_app
     body('/foo').must_equal 'foop'
     body('/bar').must_equal 'bar1'
-    body('/foo', 'REQUEST_METHOD'=>'POST').must_equal 'foo'
+    body('/foo', 'REQUEST_METHOD' => 'POST').must_equal 'foo'
   end
 
   it "freezes static routes when app is frozen" do
@@ -169,12 +171,12 @@ describe "static_routing plugin" do
   end
 
   it 'works with route_block_args plugin' do
-    app(:bare) do 
+    app(:bare) do
       plugin :static_routing
       plugin :route_block_args do
         [request.request_method, request.path]
       end
-      
+
       static_route "/foo" do |meth, path|
         "#{path}-#{meth}"
       end

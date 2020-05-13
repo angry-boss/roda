@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "multi_run plugin" do 
+describe "multi_run plugin" do
   it "adds Roda.run method for setting up prefix delegations to other rack apps" do
     app(:multi_run) do |r|
       r.multi_run

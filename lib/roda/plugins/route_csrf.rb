@@ -124,11 +124,11 @@ class Roda
     # which is stored base64 encoded in the session.  For each CSRF token, it generates 31 bytes
     # of random data.
     #
-    # For request-specific CSRF tokens, this pseudocode generates the HMAC: 
+    # For request-specific CSRF tokens, this pseudocode generates the HMAC:
     #
     #   hmac = HMAC(secret, method + path + random_data)
     #
-    # For CSRF tokens not specific to a request, this pseudocode generates the HMAC: 
+    # For CSRF tokens not specific to a request, this pseudocode generates the HMAC:
     #
     #   hmac = HMAC(secret, random_data)
     #
@@ -142,27 +142,27 @@ class Roda
     #
     # By using an HMAC for tokens not specific to a request, it is not possible to use a
     # valid CSRF token that is not specific to a request to generate a valid request-specific
-    # CSRF token.  
+    # CSRF token.
     #
     # By including random data in the HMAC for all tokens, different tokens are generated
     # each time, mitigating compression ratio attacks such as BREACH.
     module RouteCsrf
       # Default CSRF option values
       DEFAULTS = {
-        :field => '_csrf'.freeze,
-        :header => 'X-CSRF-Token'.freeze,
-        :key => '_roda_csrf_secret'.freeze,
-        :require_request_specific_tokens => true,
-        :csrf_failure => :raise,
-        :check_header => false,
-        :check_request_methods => %w'POST DELETE PATCH PUT'.freeze.each(&:freeze)
+        field: '_csrf'.freeze,
+        header: 'X-CSRF-Token'.freeze,
+        key: '_roda_csrf_secret'.freeze,
+        require_request_specific_tokens: true,
+        csrf_failure: :raise,
+        check_header: false,
+        check_request_methods: %w'POST DELETE PATCH PUT'.freeze.each(&:freeze)
       }.freeze
 
       # Exception class raised when :csrf_failure option is :raise and
       # a valid CSRF token was not provided.
       class InvalidToken < RodaError; end
 
-      def self.configure(app, opts=OPTS, &block)
+      def self.configure(app, opts = OPTS, &block)
         options = app.opts[:route_csrf] = (app.opts[:route_csrf] || DEFAULTS).merge(opts)
         if block || opts[:csrf_failure].is_a?(Proc)
           if block && opts[:csrf_failure]
@@ -181,17 +181,17 @@ class Roda
         # If the CSRF token is valid or the request does not require a CSRF token, return nil.
         # Otherwise, if a block is given, treat it as a routing block and yield to it, and
         # if a block is not given, use the :csrf_failure option to determine how to handle it.
-        def check_csrf!(opts=OPTS, &block)
+        def check_csrf!(opts = OPTS, &block)
           if msg = csrf_invalid_message(opts)
             if block
               @_request.on(&block)
             end
-            
+
             case failure_action = opts.fetch(:csrf_failure, csrf_options[:csrf_failure])
             when :raise
               raise InvalidToken, msg
             when :empty_403
-              throw :halt, [403, {'Content-Type'=>'text/html', 'Content-Length'=>'0'}, []]
+              throw :halt, [403, { 'Content-Type' => 'text/html', 'Content-Length' => '0' }, []]
             when :clear_session
               session.clear
             when :csrf_failure_method
@@ -251,7 +251,7 @@ class Roda
         # argument.  By default, it a path is provided, the POST request method will
         # be assumed.  To generate a token for a non-POST request method, pass the
         # method as the second argument.
-        def csrf_token(path=nil, method=('POST' if path))
+        def csrf_token(path = nil, method = ('POST' if path))
           token = SecureRandom.random_bytes(31)
           token << csrf_hmac(token, method, path)
           Base64.strict_encode64(token)
@@ -264,7 +264,7 @@ class Roda
 
         # Whether the submitted CSRF token is valid for the request.  True if the
         # request does not require a CSRF token.
-        def valid_csrf?(opts=OPTS)
+        def valid_csrf?(opts = OPTS)
           csrf_invalid_message(opts).nil?
         end
 
@@ -285,7 +285,7 @@ class Roda
             when :only
               env[opts[:env_header]]
             when true
-              return (csrf_invalid_message(opts.merge(:check_header=>false)) && csrf_invalid_message(opts.merge(:check_header=>:only)))
+              return (csrf_invalid_message(opts.merge(check_header: false)) && csrf_invalid_message(opts.merge(check_header: :only)))
             else
               @_request.params[opts[:field]]
             end
@@ -327,7 +327,7 @@ class Roda
             end
           end
         end
-        
+
         # Helper for getting the plugin options.
         def csrf_options
           opts[:route_csrf]

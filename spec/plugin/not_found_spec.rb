@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 
-describe "not_found plugin" do 
+describe "not_found plugin" do
   it "executes on no arguments" do
     app(:bare) do
       plugin :not_found

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require_relative "../spec_helper"
 require 'tempfile'
 
-describe "typecast_params plugin" do 
-  def tp(arg='a=1&b[]=2&b[]=3&c[d]=4&c[e]=5&f=&g[]=&h[i]=')
+describe "typecast_params plugin" do
+  def tp(arg = 'a=1&b[]=2&b[]=3&c[d]=4&c[e]=5&f=&g[]=&h[i]=')
     @tp.call(arg)
   end
 
@@ -20,7 +22,7 @@ describe "typecast_params plugin" do
     end
 
     @tp = lambda do |params|
-      req('QUERY_STRING'=>params, 'rack.input'=>StringIO.new)
+      req('QUERY_STRING' => params, 'rack.input' => StringIO.new)
       res
     end
 
@@ -62,9 +64,9 @@ describe "typecast_params plugin" do
   it "#any should not do any conversion" do
     tp.any('a').must_equal '1'
     tp.any('b').must_equal ["2", "3"]
-    tp.any('c').must_equal('d'=>'4', 'e'=>'5')
+    tp.any('c').must_equal('d' => '4', 'e' => '5')
     tp.any('d').must_be_nil
-    tp.any(%w'g h').must_equal([[''], {'i'=>''}])
+    tp.any(%w'g h').must_equal([[''], { 'i' => '' }])
 
     tp.any!('a').must_equal '1'
     tp.any!(%w'a').must_equal %w'1'
@@ -278,7 +280,7 @@ describe "typecast_params plugin" do
     a = 1
     @app.plugin :hooks
     @app.before do
-      request.define_singleton_method(:params){{'a'=>a}}
+      request.define_singleton_method(:params){{ 'a' => a }}
     end
     tp.Integer('a').must_equal 1
     a = 1.0
@@ -348,22 +350,22 @@ describe "typecast_params plugin" do
   it "#Hash should require hashes" do
     lambda{tp.Hash('a')}.must_raise @tp_error
     lambda{tp.Hash('b')}.must_raise @tp_error
-    tp.Hash('c').must_equal('d'=>'4', 'e'=>'5')
+    tp.Hash('c').must_equal('d' => '4', 'e' => '5')
     tp.Hash('d').must_be_nil
     lambda{tp.Hash('f')}.must_raise @tp_error
     lambda{tp.Hash('g')}.must_raise @tp_error
-    tp.Hash('h').must_equal('i'=>'')
+    tp.Hash('h').must_equal('i' => '')
 
-    tp.Hash!('c').must_equal('d'=>'4', 'e'=>'5')
+    tp.Hash!('c').must_equal('d' => '4', 'e' => '5')
     lambda{tp.Hash!('d')}.must_raise @tp_error
-    tp.Hash!('h').must_equal('i'=>'')
+    tp.Hash!('h').must_equal('i' => '')
 
     lambda{tp.array(:Hash, 'c')}.must_raise @tp_error
     lambda{tp('a[][b]=2&a[]=3').array(:Hash, 'a')}.must_raise @tp_error
-    tp('a[][b]=2&a[][b]=3').array(:Hash, 'a').must_equal [{'b'=>'2'}, {'b'=>'3'}]
+    tp('a[][b]=2&a[][b]=3').array(:Hash, 'a').must_equal [{ 'b' => '2' }, { 'b' => '3' }]
     tp.array(:Hash, 'd').must_be_nil
 
-    tp('a[][b]=2&a[][b]=3').array!(:Hash, 'a').must_equal [{'b'=>'2'}, {'b'=>'3'}]
+    tp('a[][b]=2&a[][b]=3').array!(:Hash, 'a').must_equal [{ 'b' => '2' }, { 'b' => '3' }]
     lambda{tp.array!(:Hash, 'd')}.must_raise @tp_error
   end
 
@@ -485,7 +487,7 @@ describe "typecast_params plugin" do
       ptp['c'].convert! do |stp|
         stp.int!(%w'd e')
       end
-    end.must_equal("a"=>1, "b"=>[2, 3], "c"=>{"d"=>4, "e"=>5})
+    end.must_equal("a" => 1, "b" => [2, 3], "c" => { "d" => 4, "e" => 5 })
   end
 
   it "#convert! hash should only include changes made inside block" do
@@ -493,13 +495,13 @@ describe "typecast_params plugin" do
     tp.convert! do |ptp|
       ptp.int!('a')
       ptp.array!(:int, 'b')
-    end.must_equal("a"=>1, "b"=>[2, 3])
+    end.must_equal("a" => 1, "b" => [2, 3])
 
     tp.convert! do |ptp|
       ptp['c'].convert! do |stp|
         stp.int!(%w'd e')
       end
-    end.must_equal("c"=>{"d"=>4, "e"=>5})
+    end.must_equal("c" => { "d" => 4, "e" => 5 })
   end
 
   it "#convert! should handle deeply nested structures" do
@@ -514,7 +516,7 @@ describe "typecast_params plugin" do
           end
         end
       end
-    end.must_equal('a'=>{'b'=>{'c'=>{'d'=>{'e'=>1}}}})
+    end.must_equal('a' => { 'b' => { 'c' => { 'd' => { 'e' => 1 } } } })
 
     tp = tp('a[][b][][e]=1')
     tp.convert! do |tp0|
@@ -527,23 +529,23 @@ describe "typecast_params plugin" do
           end
         end
       end
-    end.must_equal('a'=>[{'b'=>[{'e'=>1}]}])
+    end.must_equal('a' => [{ 'b' => [{ 'e' => 1 }] }])
   end
 
   it "#convert! should not raise errors for missing keys if :raise option is false" do
     tp = tp('a[b]=1')
     tp.convert! do |tp0|
       tp0.convert!('a') do |tp1|
-        tp1.convert!('c', :raise=>false) do |tp2|
+        tp1.convert!('c', raise: false) do |tp2|
           tp2.convert!('d') do |tp2|
           end
         end
       end
-    end.must_equal('a'=>{})
+    end.must_equal('a' => {})
 
-    tp.convert!('b', :raise=>false){}.must_equal({})
+    tp.convert!('b', raise: false){}.must_equal({})
 
-    tp.convert!('b', :raise=>false) do |tp0|
+    tp.convert!('b', raise: false) do |tp0|
         tp1.convert!('c'){}
     end.must_equal({})
   end
@@ -556,14 +558,14 @@ describe "typecast_params plugin" do
           tp4.int('e')
         end
       end
-    end.must_equal('a'=>{'b'=>{'c'=>{'d'=>{'e'=>1}}}})
+    end.must_equal('a' => { 'b' => { 'c' => { 'd' => { 'e' => 1 } } } })
   end
 
   it "#convert! should handle #[] without #convert! below" do
     tp = tp('a[b][c][d][e]=1')
     tp.convert! do |tp0|
       tp0['a']['b']['c']['d'].int('e')
-    end.must_equal('a'=>{'b'=>{'c'=>{'d'=>{'e'=>1}}}})
+    end.must_equal('a' => { 'b' => { 'c' => { 'd' => { 'e' => 1 } } } })
   end
 
   it "#convert! should handle multiple calls to #[] and #convert! below" do
@@ -578,29 +580,29 @@ describe "typecast_params plugin" do
         tp1.int('e')
       end
       tp0['a'].int('f')
-    end.must_equal('a'=>{'b'=>2, 'c'=>3, 'd'=>4, 'e'=>5, 'f'=>6})
+    end.must_equal('a' => { 'b' => 2, 'c' => 3, 'd' => 4, 'e' => 5, 'f' => 6 })
   end
 
   it "#convert! should handle defaults" do
     tp.convert! do |tp0|
       tp0.int('d', 12)
-    end.must_equal('d'=>12)
+    end.must_equal('d' => 12)
 
     tp.convert! do |tp0|
       tp0.int(%w'a d', 12)
-    end.must_equal('a'=>1, 'd'=>12)
+    end.must_equal('a' => 1, 'd' => 12)
 
     tp.convert! do |tp0|
       tp0.array(:int, 'g', [])
-    end.must_equal('g'=>[nil])
+    end.must_equal('g' => [nil])
 
     tp.convert! do |tp0|
       tp0.array(:int, 'j', [])
-    end.must_equal('j'=>[])
+    end.must_equal('j' => [])
 
     tp('a[]=1&g[]=').convert! do |tp0|
       tp0.array(:int, %w'a d g', [2])
-    end.must_equal('a'=>[1], 'd'=>[2], 'g'=>[nil])
+    end.must_equal('a' => [1], 'd' => [2], 'g' => [nil])
   end
 
   it "#convert! should handle multiple convert! calls inside" do
@@ -608,12 +610,12 @@ describe "typecast_params plugin" do
     tp.convert! do |tp0|
       tp0.convert!('a'){|d| d.int('b')}
       tp0.convert!('c'){|d| d.int('d')}
-    end.must_equal('a'=>{'b'=>1}, 'c'=>{'d'=>2})
+    end.must_equal('a' => { 'b' => 1 }, 'c' => { 'd' => 2 })
 
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0.convert!('a'){|d| d.int('b')}
       tp0.convert!('c'){|d| d.int('d')}
-    end.must_equal(:a=>{:b=>1}, :c=>{:d=>2})
+    end.must_equal(a: { b: 1 }, c: { d: 2 })
   end
 
   it "#convert! should include missing values as nil" do
@@ -624,83 +626,83 @@ describe "typecast_params plugin" do
       ptp['c'].convert! do |stp|
         stp.int(%w'x z')
       end
-    end.must_equal("x"=>nil, "y"=>nil, "c"=>{"x"=>nil, "z"=>nil})
+    end.must_equal("x" => nil, "y" => nil, "c" => { "x" => nil, "z" => nil })
   end
 
   it "#convert! with :missing=>:skip should not include missing values" do
     tp = tp()
-    tp.convert!(:skip_missing=>true) do |ptp|
+    tp.convert!(skip_missing: true) do |ptp|
       ptp.int('x')
       ptp.array(:int, 'y')
       ptp['c'].convert! do |stp|
         stp.int(%w'x z')
       end
-    end.must_equal("c"=>{})
+    end.must_equal("c" => {})
 
     tp.convert! do |ptp|
       ptp.int('x')
       ptp.array(:int, 'y')
-      ptp['c'].convert!(:skip_missing=>true) do |stp|
+      ptp['c'].convert!(skip_missing: true) do |stp|
         stp.int(%w'x z')
       end
-    end.must_equal("x"=>nil, "y"=>nil, "c"=>{})
+    end.must_equal("x" => nil, "y" => nil, "c" => {})
 
-    tp.convert!(:skip_missing=>true) do |ptp|
+    tp.convert!(skip_missing: true) do |ptp|
       ptp.int('x')
       ptp.array(:int, 'y')
-      ptp['c'].convert!(:skip_missing=>false) do |stp|
+      ptp['c'].convert!(skip_missing: false) do |stp|
         stp.int(%w'x z')
       end
-    end.must_equal("c"=>{"x"=>nil, "z"=>nil})
+    end.must_equal("c" => { "x" => nil, "z" => nil })
   end
 
   it "#convert_each! should convert each entry in an array" do
     tp = tp('a[][b]=1&a[][c]=2&a[][b]=3&a[][c]=4')
     tp['a'].convert_each! do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{'b'=>1, 'c'=>2}, {'b'=>3, 'c'=>4}]
+    end.must_equal [{ 'b' => 1, 'c' => 2 }, { 'b' => 3, 'c' => 4 }]
   end
 
   it "#convert_each! without :keys option should convert each named entry in a hash when keys are '0'..'N'" do
     tp = tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4')
     tp['a'].convert_each! do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{'b'=>1, 'c'=>2}, {'b'=>3, 'c'=>4}]
+    end.must_equal [{ 'b' => 1, 'c' => 2 }, { 'b' => 3, 'c' => 4 }]
   end
 
   it "#convert_each! with :keys option should convert each named entry in a hash when keys are '0'..'N'" do
     tp = tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4')
-    tp['a'].convert_each!(:keys=>%w'0 1') do |tp0|
+    tp['a'].convert_each!(keys: %w'0 1') do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{'b'=>1, 'c'=>2}, {'b'=>3, 'c'=>4}]
+    end.must_equal [{ 'b' => 1, 'c' => 2 }, { 'b' => 3, 'c' => 4 }]
   end
 
   it "#convert_each! with :keys option should convert each named entry in a hash" do
     tp = tp('a[d][b]=1&a[d][c]=2&a[e][b]=3&a[e][c]=4')
-    tp['a'].convert_each!(:keys=>%w'd e') do |tp0|
+    tp['a'].convert_each!(keys: %w'd e') do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{'b'=>1, 'c'=>2}, {'b'=>3, 'c'=>4}]
+    end.must_equal [{ 'b' => 1, 'c' => 2 }, { 'b' => 3, 'c' => 4 }]
   end
 
   it "#convert_each! with :keys option should store entries when called inside convert" do
     tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4').convert! do |tp|
-      tp['a'].convert_each!(:keys=>%w'0 1') do |tp0|
+      tp['a'].convert_each!(keys: %w'0 1') do |tp0|
         tp0.int(%w'b c')
       end
-    end.must_equal("a"=>{"0"=>{'b'=>1, 'c'=>2}, "1"=>{'b'=>3, 'c'=>4}})
+    end.must_equal("a" => { "0" => { 'b' => 1, 'c' => 2 }, "1" => { 'b' => 3, 'c' => 4 } })
   end
 
   it "#convert_each! :keys option should accept a Proc" do
     tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4').convert! do |tp|
-      tp['a'].convert_each!(:keys=>proc{|obj| obj.keys}) do |tp0|
+      tp['a'].convert_each!(keys: proc{|obj| obj.keys}) do |tp0|
         tp0.int(%w'b c')
       end
-    end.must_equal("a"=>{"0"=>{'b'=>1, 'c'=>2}, "1"=>{'b'=>3, 'c'=>4}})
+    end.must_equal("a" => { "0" => { 'b' => 1, 'c' => 2 }, "1" => { 'b' => 3, 'c' => 4 } })
   end
 
   it "#convert_each! should raise if :keys option is given and not an Array/Proc/Method" do
     tp = tp('a[0][b]=1&a[0][c]=2&a[2][b]=3&a[2][c]=4')
-    lambda{tp['a'].convert_each!(:keys=>Object.new){}}.must_raise Roda::RodaPlugins::TypecastParams::ProgrammerError
+    lambda{tp['a'].convert_each!(keys: Object.new){}}.must_raise Roda::RodaPlugins::TypecastParams::ProgrammerError
   end
 
   it "#convert_each! should raise if obj is a hash without '0' keys" do
@@ -723,31 +725,31 @@ describe "typecast_params plugin" do
 
   it "#convert_each! should not raise errors for missing keys if :raise option is false" do
     tp = tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4')
-    tp['a'].convert_each!(:keys=>%w'0 2', :raise=>false) do |tp0|
+    tp['a'].convert_each!(keys: %w'0 2', raise: false) do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{'b'=>1, 'c'=>2}, nil]
+    end.must_equal [{ 'b' => 1, 'c' => 2 }, nil]
   end
 
   it "#convert! with :symbolize option should return a hash of converted parameters" do
     tp = tp()
-    tp.convert!(:symbolize=>true) do |ptp|
+    tp.convert!(symbolize: true) do |ptp|
       ptp.int!('a')
       ptp.array!(:int, 'b')
       ptp['c'].convert! do |stp|
         stp.int!(%w'd e')
       end
-    end.must_equal(:a=>1, :b=>[2, 3], :c=>{:d=>4, :e=>5})
+    end.must_equal(a: 1, b: [2, 3], c: { d: 4, e: 5 })
   end
 
   it "#convert! with :symbolize option should not persist" do
     tp = tp()
-    tp.convert!(:symbolize=>true) do |ptp|
+    tp.convert!(symbolize: true) do |ptp|
       ptp.int!('a')
       ptp.array!(:int, 'b')
       ptp['c'].convert! do |stp|
         stp.int!(%w'd e')
       end
-    end.must_equal(:a=>1, :b=>[2, 3], :c=>{:d=>4, :e=>5})
+    end.must_equal(a: 1, b: [2, 3], c: { d: 4, e: 5 })
 
     tp.convert! do |ptp|
       ptp.int!('a')
@@ -755,26 +757,26 @@ describe "typecast_params plugin" do
       ptp['c'].convert! do |stp|
         stp.int!(%w'd e')
       end
-    end.must_equal("a"=>1, "b"=>[2, 3], "c"=>{"d"=>4, "e"=>5})
+    end.must_equal("a" => 1, "b" => [2, 3], "c" => { "d" => 4, "e" => 5 })
   end
 
   it "#convert! with :symbolize option hash should only include changes made inside block" do
     tp = tp()
-    tp.convert!(:symbolize=>true) do |ptp|
+    tp.convert!(symbolize: true) do |ptp|
       ptp.int!('a')
       ptp.array!(:int, 'b')
-    end.must_equal(:a=>1, :b=>[2, 3])
+    end.must_equal(a: 1, b: [2, 3])
 
-    tp.convert!(:symbolize=>true) do |ptp|
+    tp.convert!(symbolize: true) do |ptp|
       ptp['c'].convert! do |stp|
         stp.int!(%w'd e')
       end
-    end.must_equal(:c=>{:d=>4, :e=>5})
+    end.must_equal(c: { d: 4, e: 5 })
   end
 
   it "#convert! with :symbolize option should handle deeply nested structures" do
     tp = tp('a[b][c][d][e]=1')
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0['a'].convert! do |tp1|
         tp1['b'].convert! do |tp2|
           tp2['c'].convert! do |tp3|
@@ -784,10 +786,10 @@ describe "typecast_params plugin" do
           end
         end
       end
-    end.must_equal(:a=>{:b=>{:c=>{:d=>{:e=>1}}}})
+    end.must_equal(a: { b: { c: { d: { e: 1 } } } })
 
     tp = tp('a[][b][][e]=1')
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0['a'].convert! do |tp1|
         tp1[0].convert! do |tp2|
           tp2['b'].convert! do |tp3|
@@ -797,30 +799,30 @@ describe "typecast_params plugin" do
           end
         end
       end
-    end.must_equal(:a=>[{:b=>[{:e=>1}]}])
+    end.must_equal(a: [{ b: [{ e: 1 }] }])
   end
 
   it "#convert! with :symbolize option should handle #[] without #convert! at each level" do
     tp = tp('a[b][c][d][e]=1')
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0['a'].convert! do |tp1|
         tp1['b']['c']['d'].convert! do |tp4|
           tp4.int('e')
         end
       end
-    end.must_equal(:a=>{:b=>{:c=>{:d=>{:e=>1}}}})
+    end.must_equal(a: { b: { c: { d: { e: 1 } } } })
   end
 
   it "#convert! with :symbolize option should handle #[] without #convert! below" do
     tp = tp('a[b][c][d][e]=1')
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0['a']['b']['c']['d'].int('e')
-    end.must_equal(:a=>{:b=>{:c=>{:d=>{:e=>1}}}})
+    end.must_equal(a: { b: { c: { d: { e: 1 } } } })
   end
 
   it "#convert! with :symbolize option should handle multiple calls to #[] and #convert! below" do
     tp = tp('a[b]=2&a[c]=3&a[d]=4&a[e]=5&a[f]=6')
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0['a'].int('b')
       tp0['a'].convert! do |tp1|
         tp1.int('c')
@@ -830,91 +832,91 @@ describe "typecast_params plugin" do
         tp1.int('e')
       end
       tp0['a'].int('f')
-    end.must_equal(:a=>{:b=>2, :c=>3, :d=>4, :e=>5, :f=>6})
+    end.must_equal(a: { b: 2, c: 3, d: 4, e: 5, f: 6 })
   end
 
   it "#convert! with :symbolize option should handle defaults" do
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0.int('d', 12)
-    end.must_equal(:d=>12)
+    end.must_equal(d: 12)
 
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0.int(%w'a d', 12)
-    end.must_equal(:a=>1, :d=>12)
+    end.must_equal(a: 1, d: 12)
 
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0.array(:int, 'g', [])
-    end.must_equal(:g=>[nil])
+    end.must_equal(g: [nil])
 
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0.array(:int, 'j', [])
-    end.must_equal(:j=>[])
+    end.must_equal(j: [])
 
-    tp('a[]=1&g[]=').convert!(:symbolize=>true) do |tp0|
+    tp('a[]=1&g[]=').convert!(symbolize: true) do |tp0|
       tp0.array(:int, %w'a d g', [2])
-    end.must_equal(:a=>[1], :d=>[2], :g=>[nil])
+    end.must_equal(a: [1], d: [2], g: [nil])
   end
 
   it "#convert_each! with :symbolize option should convert each entry in an array" do
     tp = tp('a[][b]=1&a[][c]=2&a[][b]=3&a[][c]=4')
-    tp['a'].convert_each!(:symbolize=>true) do |tp0|
+    tp['a'].convert_each!(symbolize: true) do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{:b=>1, :c=>2}, {:b=>3, :c=>4}]
+    end.must_equal [{ b: 1, c: 2 }, { b: 3, c: 4 }]
   end
 
   it "#convert_each! with :symbolize and :keys options should convert each named entry in a hash" do
     tp = tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4')
-    tp['a'].convert_each!(:keys=>%w'0 1', :symbolize=>true) do |tp0|
+    tp['a'].convert_each!(keys: %w'0 1', symbolize: true) do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{:b=>1, :c=>2}, {:b=>3, :c=>4}]
+    end.must_equal [{ b: 1, c: 2 }, { b: 3, c: 4 }]
   end
 
   it "#convert_each! with :symbolize and :keys options should store entries when called inside convert" do
-    tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4').convert!(:symbolize=>true) do |tp|
-      tp['a'].convert_each!(:keys=>%w'0 1') do |tp0|
+    tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4').convert!(symbolize: true) do |tp|
+      tp['a'].convert_each!(keys: %w'0 1') do |tp0|
         tp0.int(%w'b c')
       end
-    end.must_equal(:a=>{:'0'=>{:b=>1, :c=>2}, :'1'=>{:b=>3, :c=>4}})
+    end.must_equal(a: { '0': { b: 1, c: 2 }, '1': { b: 3, c: 4 } })
   end
 
   it "#convert_each! with :symbolize option should not persist" do
     tp = tp('a[][b]=1&a[][c]=2&a[][b]=3&a[][c]=4')
-    tp['a'].convert_each!(:symbolize=>true) do |tp0|
+    tp['a'].convert_each!(symbolize: true) do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{:b=>1, :c=>2}, {:b=>3, :c=>4}]
+    end.must_equal [{ b: 1, c: 2 }, { b: 3, c: 4 }]
 
     tp = tp('a[][b]=1&a[][c]=2&a[][b]=3&a[][c]=4')
     tp['a'].convert_each! do |tp0|
       tp0.int(%w'b c')
-    end.must_equal [{'b'=>1, 'c'=>2}, {'b'=>3, 'c'=>4}]
+    end.must_equal [{ 'b' => 1, 'c' => 2 }, { 'b' => 3, 'c' => 4 }]
   end
 
   it "#convert! with :symbolize options specified at different levels should work" do
     tp = tp('a[b][c][d][e]=1')
-    tp.convert!(:symbolize=>true) do |tp0|
-      tp0['a'].convert!(:symbolize=>false) do |tp1|
-        tp1['b'].convert!(:symbolize=>true) do |tp2|
-          tp2['c'].convert!(:symbolize=>false) do |tp3|
-            tp3['d'].convert!(:symbolize=>true) do |tp4|
+    tp.convert!(symbolize: true) do |tp0|
+      tp0['a'].convert!(symbolize: false) do |tp1|
+        tp1['b'].convert!(symbolize: true) do |tp2|
+          tp2['c'].convert!(symbolize: false) do |tp3|
+            tp3['d'].convert!(symbolize: true) do |tp4|
               tp4.int('e')
             end
           end
         end
       end
-    end.must_equal(:a=>{'b'=>{:c=>{'d'=>{:e=>1}}}})
+    end.must_equal(a: { 'b' => { c: { 'd' => { e: 1 } } } })
 
     tp = tp('a[][b][][e]=1')
-    tp.convert!(:symbolize=>true) do |tp0|
+    tp.convert!(symbolize: true) do |tp0|
       tp0['a'].convert! do |tp1|
-        tp1[0].convert!(:symbolize=>false) do |tp2|
+        tp1[0].convert!(symbolize: false) do |tp2|
           tp2['b'].convert! do |tp3|
-            tp3[0].convert!(:symbolize=>true) do |tp4|
+            tp3[0].convert!(symbolize: true) do |tp4|
               tp4.int('e')
             end
           end
         end
       end
-    end.must_equal(:a=>[{'b'=>[{:e=>1}]}])
+    end.must_equal(a: [{ 'b' => [{ e: 1 }] }])
   end
 
   it "#dig should return nested values or nil if there is no value" do
@@ -996,13 +998,13 @@ describe "typecast_params plugin" do
   it "#convert! should work with dig" do
     tp('a[b][c][d][e]=1').convert! do |tp|
       tp.dig(:int, 'a', 'b', 'c', 'd', 'e')
-    end.must_equal('a'=>{'b'=>{'c'=>{'d'=>{'e'=>1}}}})
+    end.must_equal('a' => { 'b' => { 'c' => { 'd' => { 'e' => 1 } } } })
   end
 
   it "#convert! with :symbolize option should work with dig" do
-    tp('a[b][c][d][e]=1').convert!(:symbolize=>true) do |tp|
+    tp('a[b][c][d][e]=1').convert!(symbolize: true) do |tp|
       tp.dig(:int, 'a', 'b', 'c', 'd', 'e')
-    end.must_equal(:a=>{:b=>{:c=>{:d=>{:e=>1}}}})
+    end.must_equal(a: { b: { c: { d: { e: 1 } } } })
   end
 
   it "#fetch should be the same as #[] if the key is present" do
@@ -1069,7 +1071,7 @@ describe "typecast_params plugin" do
 
   it "Error#param_names and #all_errors should handle array submission" do
     tp = tp('a[][b]=0')
-    e = error do 
+    e = error do
       tp.convert!('a') do |tp0|
         tp0.int(%w'a b c')
         tp0.array(:int, %w'a b c')
@@ -1081,7 +1083,7 @@ describe "typecast_params plugin" do
 
   it "Error#param_names and #all_errors should include all errors raised in convert! blocks" do
     tp = tp('a[][b][][e]=0')
-    e = error do 
+    e = error do
       tp.convert! do |tp0|
         tp0['a'].convert! do |tp1|
           tp1[0].convert! do |tp2|
@@ -1105,7 +1107,7 @@ describe "typecast_params plugin" do
 
   it "Error#param_names and #all_errors should handle #[] failures by skipping the rest of the block" do
     tp = tp('a[][b][][e]=0')
-    e = error do 
+    e = error do
       tp.convert! do |tp0|
         tp0['b']
         tp0.int!('c')
@@ -1114,7 +1116,7 @@ describe "typecast_params plugin" do
     e.param_names.must_equal %w'b'
     e.all_errors.map(&:reason).must_equal [:missing]
 
-    e = error do 
+    e = error do
       tp.convert! do |tp0|
         tp0['a'][0].convert! do |tp1|
           tp1['c']
@@ -1139,7 +1141,7 @@ describe "typecast_params plugin" do
 
   it "Error#param_names and #all_errors should handle keys given to convert" do
     tp = tp('e[][b][][e]=0')
-    e = error do 
+    e = error do
       tp.convert! do |tp0|
         tp0.convert!(['a', 0, 'b', 0]) do |tp1|
           tp1.pos_int!('e')
@@ -1157,7 +1159,7 @@ describe "typecast_params plugin" do
   end
 
   it "Error#param_names and #all_errors should include all errors raised in convert_each! blocks" do
-    e = error do 
+    e = error do
       tp('a[][b]=0&a[][b]=1')['a'].convert_each! do |tp0|
         tp0.dig!(:pos_int, 'b', 0, 'e')
         tp0.dig!(:int, 'b', 0, %w'f g')
@@ -1173,7 +1175,7 @@ describe "typecast_params plugin" do
   it "Error#param_names and #all_errors should include all errors for invalid keys used in convert_each!" do
     tp = tp('a[0][b]=1&a[0][c]=2&a[1][b]=3&a[1][c]=4')
     e = error do
-      tp['a'].convert_each!(:keys=>%w'0 2 3') do |tp0|
+      tp['a'].convert_each!(keys: %w'0 2 3') do |tp0|
         tp0.int(%w'b c')
       end
     end
@@ -1182,8 +1184,8 @@ describe "typecast_params plugin" do
   end
 end
 
-describe "typecast_params plugin with customized params" do 
-  def tp(arg='a=1&b[]=2&b[]=3&c[d]=4&c[e]=5&f=&g[]=&h[i]=')
+describe "typecast_params plugin with customized params" do
+  def tp(arg = 'a=1&b[]=2&b[]=3&c[d]=4&c[e]=5&f=&g[]=&h[i]=')
     @tp.call(arg)
   end
 
@@ -1197,7 +1199,7 @@ describe "typecast_params plugin with customized params" do
       end
       plugin :typecast_params do
         handle_type(:double) do |v|
-          v*2
+          v * 2
         end
       end
 
@@ -1208,7 +1210,7 @@ describe "typecast_params plugin with customized params" do
     end
 
     @tp = lambda do |params|
-      req('QUERY_STRING'=>params, 'rack.input'=>StringIO.new)
+      req('QUERY_STRING' => params, 'rack.input' => StringIO.new)
       res
     end
 
@@ -1277,7 +1279,7 @@ describe "typecast_params plugin with customized params" do
   end
 end
 
-describe "typecast_params plugin with files" do 
+describe "typecast_params plugin with files" do
   def tp
     @tp.call
   end
@@ -1292,10 +1294,10 @@ describe "typecast_params plugin with files" do
       nil
     end
     app::RodaRequest.send(:define_method, :params) do
-      {'testfile'=>{:tempfile=>tempfile}, 'testfile2'=>{:tempfile=>tempfile},
-       'testfile_array'=>[{:tempfile=>tempfile}, {:tempfile=>tempfile}],
-       'a'=>{'b'=>'c', 'tempfile'=>'f'},
-       'c'=>['']}
+      { 'testfile' => { tempfile: tempfile }, 'testfile2' => { tempfile: tempfile },
+       'testfile_array' => [{ tempfile: tempfile }, { tempfile: tempfile }],
+       'a' => { 'b' => 'c', 'tempfile' => 'f' },
+       'c' => [''] }
     end
 
     @tp = lambda do
@@ -1307,26 +1309,26 @@ describe "typecast_params plugin with files" do
   end
 
   it "#file should require an uploaded file" do
-    tp.file('testfile').must_equal(:tempfile=>@tempfile)
-    tp.file(%w'testfile testfile2').must_equal [{:tempfile=>@tempfile}, {:tempfile=>@tempfile}]
+    tp.file('testfile').must_equal(tempfile: @tempfile)
+    tp.file(%w'testfile testfile2').must_equal [{ tempfile: @tempfile }, { tempfile: @tempfile }]
 
     lambda{tp.file('a')}.must_raise @tp_error
     tp.file('b').must_be_nil
     lambda{tp.file('c')}.must_raise @tp_error
 
-    tp.file!('testfile').must_equal(:tempfile=>@tempfile)
-    tp.file!(%w'testfile testfile2').must_equal [{:tempfile=>@tempfile}, {:tempfile=>@tempfile}]
+    tp.file!('testfile').must_equal(tempfile: @tempfile)
+    tp.file!(%w'testfile testfile2').must_equal [{ tempfile: @tempfile }, { tempfile: @tempfile }]
     lambda{tp.file!('a')}.must_raise @tp_error
     lambda{tp.file!('b')}.must_raise @tp_error
     lambda{tp.file!('c')}.must_raise @tp_error
 
-    tp.array(:file, 'testfile_array').must_equal [{:tempfile=>@tempfile}, {:tempfile=>@tempfile}]
+    tp.array(:file, 'testfile_array').must_equal [{ tempfile: @tempfile }, { tempfile: @tempfile }]
     lambda{tp.array(:file, 'testfile')}.must_raise @tp_error
     lambda{tp.array(:file, 'a')}.must_raise @tp_error
     tp.array(:file, 'b').must_be_nil
     lambda{tp.array(:file, 'c')}.must_raise @tp_error
 
-    tp.array!(:file, 'testfile_array').must_equal [{:tempfile=>@tempfile}, {:tempfile=>@tempfile}]
+    tp.array!(:file, 'testfile_array').must_equal [{ tempfile: @tempfile }, { tempfile: @tempfile }]
     lambda{tp.array!(:file, 'testfile')}.must_raise @tp_error
     lambda{tp.array!(:file, 'a')}.must_raise @tp_error
     lambda{tp.array!(:file, 'b')}.must_raise @tp_error
@@ -1334,8 +1336,8 @@ describe "typecast_params plugin with files" do
   end
 end
 
-describe "typecast_params plugin with strip: :all option" do 
-  def tp(arg='a=+1+')
+describe "typecast_params plugin with strip: :all option" do
+  def tp(arg = 'a=+1+')
     @tp.call(arg)
   end
 
@@ -1351,7 +1353,7 @@ describe "typecast_params plugin with strip: :all option" do
     end
 
     @tp = lambda do |params|
-      req('QUERY_STRING'=>params, 'rack.input'=>StringIO.new)
+      req('QUERY_STRING' => params, 'rack.input' => StringIO.new)
       res
     end
 

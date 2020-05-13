@@ -100,11 +100,11 @@ class Roda
           super do |*a|
             if pc
               @_params_captures = nil
-              pc.zip(a).each do |k,v|
+              pc.zip(a).each do |k, v|
                 params[k] = v
               end
             end
-            params['captures'].concat(a) 
+            params['captures'].concat(a)
             yield(*a)
           end
         end

@@ -34,11 +34,11 @@ class Roda
 
       # Set the default prefix and suffix to use in match patterns, if a non-nil value
       # is given.
-      def self.configure(app, prefix, suffix=nil)
+      def self.configure(app, prefix, suffix = nil)
         app.opts[:match_prefix] = prefix if prefix
         app.opts[:match_suffix] = suffix if suffix
       end
-      
+
       module RequestClassMethods
         private
 

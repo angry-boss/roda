@@ -45,14 +45,14 @@ class Roda
         # :local :: The local variable to use for the current enum value
         #           inside the template.  An explicit +nil+ value does not
         #           set a local variable.  If not set, uses the template name.
-        def render_each(enum, template, opts=(no_opts = true; optimized_template = _cached_render_each_template_method(template); OPTS))
+        def render_each(enum, template, opts = (no_opts = true; optimized_template = _cached_render_each_template_method(template); OPTS))
           if optimized_template
             return _optimized_render_each(enum, optimized_template, render_each_default_local(template), {})
           elsif opts.has_key?(:local)
             as = opts[:local]
           else
             as = render_each_default_local(template)
-            if no_opts && optimized_template.nil? && (optimized_template = _optimized_render_method_for_locals(template, (locals = {as=>nil})))
+            if no_opts && optimized_template.nil? && (optimized_template = _optimized_render_method_for_locals(template, (locals = { as => nil })))
               return _optimized_render_each(enum, optimized_template, as, locals)
             end
           end
@@ -76,7 +76,7 @@ class Roda
             render_template(template, opts)
           end.join
         end
-        
+
         private
 
         # The default local variable name to use for the template, if the :local option
