@@ -22,6 +22,9 @@ Gem::Specification.new do |s|
   s.files = %w'README.rdoc MIT-LICENSE CHANGELOG' + Dir['doc/*.rdoc'] + Dir['doc/release_notes/3.*.txt'] + Dir['lib/**/*.rb']
   s.extra_rdoc_files = %w'README.rdoc MIT-LICENSE CHANGELOG' + Dir["doc/*.rdoc"] + Dir['doc/release_notes/3.*.txt']
 
+  s.bindir = 'bin'
+  s.executables << 'rackup'
+  
   s.add_runtime_dependency "rack"
   s.add_development_dependency "rake"
   s.add_development_dependency "minitest", ">= 5.7.0"
