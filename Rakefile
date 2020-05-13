@@ -112,4 +112,5 @@ task :irb do
   sh %{#{irb} -I lib -r #{NAME}}
 end
 
-
+desc "Run all the tests we run on CI"
+task ci: :spec
