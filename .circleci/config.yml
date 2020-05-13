@@ -46,7 +46,7 @@ jobs:
 
   test-ruby-2.5:
     docker:
-      - image: circleci/ruby:2.5
+      - image: circleci/ruby:2.5.1
         # Spawn a process owned by root
         # This works around an issue explained here:
         # https://github.com/circleci/circleci-images/pull/132
